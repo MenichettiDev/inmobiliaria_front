@@ -1,0 +1,478 @@
+/* ========================================
+   ESTILOS ESPECÍFICOS - COMPONENTE PRÉSTAMO
+   ========================================
+
+   Los estilos comunes se han movido a movimientos-style.css
+   Este archivo contiene estilos específicos para préstamos.
+   ======================================== */
+
+/* ========================================
+   CARD DEL FORMULARIO - PRÉSTAMO
+   ======================================== */
+.prestamo-form-card {
+  display: flex;
+  flex-direction: column;
+  height: auto !important;
+  min-height: 100%;
+  overflow: visible;
+}
+
+.prestamo-form-card .card-body {
+  overflow: visible;
+}
+
+/* Fix for combo dropdown overflow */
+.form-field-wrapper {
+  position: relative;
+  z-index: auto;
+}
+
+.form-field-wrapper app-cbo-herramientas {
+  position: relative;
+  z-index: 10;
+}
+
+/* Ensure container allows dropdown expansion */
+.prestamo-container {
+  overflow: visible;
+}
+
+.prestamo-container .row {
+  overflow: visible;
+}
+
+.prestamo-container .col-lg-8,
+.prestamo-container .col-md-10 {
+  overflow: visible;
+}
+
+/* ========================================
+   ESTILOS ESPECÍFICOS PARA RESPONSABLE CARD
+   ======================================== */
+
+/* Card Principal con efectos avanzados */
+.info-card.responsable-card {
+  border: none;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  background: white;
+}
+
+.info-card.responsable-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #0dcaf0, #0aa2c0);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s ease;
+}
+
+.info-card.responsable-card:hover::before {
+  transform: scaleX(1);
+}
+
+.info-card.responsable-card:hover {
+  transform: translateY(-1px) scale(1.002);
+  box-shadow: 0 6px 12px rgba(13, 202, 240, 0.1),
+    0 0 0 1px rgba(13, 202, 240, 0.06);
+  z-index: 1;
+}
+
+/* Header con animación de gradiente */
+.info-card.responsable-card .card-header {
+  background: linear-gradient(135deg, #0dcaf0 0%, #0aa2c0 100%);
+  padding: 1rem 1.25rem;
+  border: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.info-card.responsable-card .card-header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.info-card.responsable-card:hover .card-header::before {
+  left: 100%;
+}
+
+.info-card.responsable-card .card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.info-card.responsable-card .card-title i {
+  font-size: 1.25rem;
+  animation: personPulse 3s ease-in-out infinite;
+}
+
+@keyframes personPulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* Body con efectos */
+.info-card.responsable-card .card-body {
+  padding: 1.5rem;
+  background: linear-gradient(to bottom, white, #f8f9fa);
+}
+
+/* ========================================
+   ESTILOS ESPECÍFICOS PARA OBRA CARD
+   ======================================== */
+
+/* Card Principal con efectos avanzados */
+.info-card.obra-card {
+  border: none;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  background: white;
+}
+
+.info-card.obra-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #ffc107, #e0a800);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s ease;
+}
+
+.info-card.obra-card:hover::before {
+  transform: scaleX(1);
+}
+
+.info-card.obra-card:hover {
+  transform: translateY(-1px) scale(1.002);
+  box-shadow: 0 6px 12px rgba(255, 193, 7, 0.1),
+    0 0 0 1px rgba(255, 193, 7, 0.06);
+  z-index: 1;
+}
+
+/* Header con animación de gradiente */
+.info-card.obra-card .card-header {
+  background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+  padding: 1rem 1.25rem;
+  border: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.info-card.obra-card .card-header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.info-card.obra-card:hover .card-header::before {
+  left: 100%;
+}
+
+.info-card.obra-card .card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.info-card.obra-card .card-title i {
+  font-size: 1.25rem;
+  animation: buildingPulse 3s ease-in-out infinite;
+}
+
+@keyframes buildingPulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* Body con efectos */
+.info-card.obra-card .card-body {
+  padding: 1.5rem;
+  background: linear-gradient(to bottom, white, #f8f9fa);
+}
+
+/* ========================================
+   ESTADO CON INFORMACIÓN (LLENO) - RESPONSABLE
+   ======================================== */
+.info-content-responsable {
+  animation: contentSlideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ========================================
+   ESTADO CON INFORMACIÓN (LLENO) - OBRA
+   ======================================== */
+.info-content-obra {
+  animation: contentSlideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ========================================
+   LISTA DE INFORMACIÓN MEJORADA - RESPONSABLE
+   ======================================== */
+.info-list-responsable {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.info-item-responsable {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.875rem 1rem;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.info-item-responsable::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, #0dcaf0, #0aa2c0);
+  transform: scaleY(0);
+  transition: transform 0.3s ease;
+}
+
+.info-item-responsable:hover {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-color: #0dcaf0;
+  transform: translateX(3px);
+  box-shadow: 0 4px 12px rgba(13, 202, 240, 0.08);
+}
+
+.info-item-responsable:hover::before {
+  transform: scaleY(1);
+}
+
+.info-item-responsable:nth-child(1) {
+  animation: itemSlideIn 0.4s ease 0.1s both;
+}
+
+.info-item-responsable:nth-child(2) {
+  animation: itemSlideIn 0.4s ease 0.2s both;
+}
+
+.info-label-responsable {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-size: 0.875rem;
+  color: #495057;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.info-item-responsable:hover .info-label-responsable {
+  color: #212529;
+  transform: translateX(2px);
+}
+
+.info-label-responsable i {
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+}
+
+.info-item-responsable:hover .info-label-responsable i {
+  transform: scale(1.15);
+  filter: drop-shadow(0 0 4px rgba(13, 202, 240, 0.4));
+}
+
+.info-value-responsable {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #212529;
+  text-align: right;
+  background: linear-gradient(135deg, #0dcaf0, #0aa2c0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  transition: all 0.3s ease;
+}
+
+.info-item-responsable:hover .info-value-responsable {
+  transform: scale(1.05);
+  letter-spacing: 0.3px;
+}
+
+.info-badge-responsable {
+  font-size: 0.8rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  font-weight: 600;
+  background: linear-gradient(135deg, #0dcaf0, #0aa2c0) !important;
+  color: white !important;
+  border: none;
+  box-shadow: 0 2px 4px rgba(13, 202, 240, 0.2);
+  transition: all 0.3s ease;
+}
+
+.info-item-responsable:hover .info-badge-responsable {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(13, 202, 240, 0.3);
+}
+
+/* ========================================
+   LISTA DE INFORMACIÓN MEJORADA - OBRA
+   ======================================== */
+.info-list-obra {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.info-item-obra {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.875rem 1rem;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.info-item-obra::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, #ffc107, #e0a800);
+  transform: scaleY(0);
+  transition: transform 0.3s ease;
+}
+
+.info-item-obra:hover {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-color: #ffc107;
+  transform: translateX(3px);
+  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.08);
+}
+
+.info-item-obra:hover::before {
+  transform: scaleY(1);
+}
+
+.info-item-obra:nth-child(1) {
+  animation: itemSlideIn 0.4s ease 0.1s both;
+}
+
+.info-item-obra:nth-child(2) {
+  animation: itemSlideIn 0.4s ease 0.2s both;
+}
+
+.info-item-obra:nth-child(3) {
+  animation: itemSlideIn 0.4s ease 0.3s both;
+}
+
+.info-item-obra:nth-child(4) {
+  animation: itemSlideIn 0.4s ease 0.4s both;
+}
+
+.info-label-obra {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-size: 0.875rem;
+  color: #495057;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.info-item-obra:hover .info-label-obra {
+  color: #212529;
+  transform: translateX(2px);
+}
+
+.info-label-obra i {
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+}
+
+.info-item-obra:hover .info-label-obra i {
+  transform: scale(1.15);
+  filter: drop-shadow(0 0 4px rgba(255, 193, 7, 0.4));
+}
+
+.info-value-obra {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #212529;
+  text-align: right;
+  background: linear-gradient(135deg, #ffc107, #e0a800);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  transition: all 0.3s ease;
+}
+
+.info-item-obra:hover .info-value-obra {
+  transform: scale(1.05);
+  letter-spacing: 0.3px;
+}
+
+/* Estilo para el combo de obras deshabilitado */
+.form-field-wrapper.disabled {
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.form-field-wrapper.disabled app-cbo-obra {
+  cursor: not-allowed;
+}

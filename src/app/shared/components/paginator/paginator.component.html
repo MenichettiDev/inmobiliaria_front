@@ -1,0 +1,22 @@
+<div class="paginator">
+  <!-- Centro: flechas y número de página -->
+  <div class="paginator-center" role="navigation" aria-label="Paginación">
+  <button (click)="goTo(0)" [disabled]="pageIndex === 0" [ngbTooltip]="'Primera página'" container="body" aria-label="Primera página">«</button>
+  <button (click)="prev()" [disabled]="pageIndex === 0" [ngbTooltip]="'Página anterior'" container="body" aria-label="Página anterior">‹</button>
+    <!-- Page buttons (center) -->
+    <!-- Page buttons (center) -->
+    <div class="page-buttons" role="group" aria-label="Seleccionar página">
+      <button *ngFor="let p of pageButtons" [class.active]="p === (pageIndex + 1)" (click)="goTo(p - 1)" [disabled]="length === 0">{{p}}</button>
+    </div>
+
+    <!-- aria live region for screen readers -->
+    <div aria-live="polite" class="sr-only">{{ ariaPageMessage }}</div>
+  <button (click)="next()" [disabled]="pageIndex >= totalPages - 1" [ngbTooltip]="'Página siguiente'" container="body" aria-label="Página siguiente">›</button>
+  <button (click)="goTo(totalPages - 1)" [disabled]="pageIndex >= totalPages - 1" [ngbTooltip]="'Última página'" container="body" aria-label="Última página">»</button>
+  </div>
+
+  <!-- Right side left empty (page size fixed) -->
+  <div class="paginator-right" aria-hidden="false">
+  <span class="page-indicator" [ngbTooltip]="'Página ' + (pageIndex + 1) + ' de ' + totalPages" container="body">Página {{ pageIndex + 1 }} de {{ totalPages }}</span>
+  </div>
+</div>

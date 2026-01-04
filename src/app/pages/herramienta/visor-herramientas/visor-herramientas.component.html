@@ -1,0 +1,264 @@
+<!-- Título y botón -->
+<div class="container-fluid page-shell page-header-container">
+  <div class="d-flex justify-content-end align-items-center mb-3 gap-3">
+    <a class="header-action" (click)="createNewTool()" role="button">
+      <i class="bx bx-plus bx-tada" aria-hidden="true"></i> Agregar
+    </a>
+  </div>
+</div>
+
+<div
+  class="user-list-container visor-herramientas container-fluid page-shell mt-2"
+>
+  <div class="pyre-table-shell">
+    <!-- 🔍 Filtros -->
+    <div class="pyre-filter-bar container-fluid">
+      <div class="row g-3 align-items-end">
+        <!-- Código -->
+        <div class="col-lg-2 col-md-3 col-sm-6">
+          <div class="filter-item">
+            <div class="filter-input-group">
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="filtroCodigo"
+                placeholder="Código de herramienta"
+                (keyup.enter)="onSearch()"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Nombre -->
+        <div class="col-lg-3 col-md-3 col-sm-6">
+          <div class="filter-item">
+            <div class="filter-input-group">
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="filtroNombre"
+                placeholder="Nombre de herramienta"
+                (keyup.enter)="onSearch()"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Marca -->
+        <div class="col-lg-2 col-md-3 col-sm-6">
+          <div class="filter-item">
+            <div class="filter-input-group">
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="filtroMarca"
+                placeholder="Marca"
+                (keyup.enter)="onSearch()"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Disponibilidad -->
+        <div class="col-lg-3 col-md-3 col-sm-6">
+          <div class="filter-item">
+            <div class="filter-input-group">
+              <app-cbo-disponibilidad-herramienta
+                [isDisabled]="false"
+                [(ngModel)]="filtroDisponibilidadId"
+                (disponibilidadSelected)="onDisponibilidadSelected($event)"
+              ></app-cbo-disponibilidad-herramienta>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reset + Buscar -->
+        <div class="col-lg-2 col-md-12 col-sm-12 d-flex justify-content-end">
+          <div class="filter-actions d-flex gap-2">
+            <!-- MOVIDO: Botón Exportar colocado a la izquierda de Limpiar filtros -->
+            <a
+              class="header-action-table-export"
+              (click)="downloadReporteExcel()"
+              role="button"
+              ngbTooltip="Exportar Excel"
+              placement="top"
+              container="body"
+            >
+              <i class="pi pi-file-excel pi-tada" aria-hidden="true"></i>
+            </a>
+
+            <button
+              type="button"
+              class="reset-button-inline"
+              (click)="onResetFilters()"
+              [disabled]="!hasActiveFilters()"
+              [ngbTooltip]="
+                hasActiveFilters()
+                  ? 'Limpiar filtros'
+                  : 'No hay filtros activos'
+              "
+            >
+              <i class="pi pi-filter-slash"></i>
+            </button>
+
+            <button
+              type="button"
+              class="btn btn-primary"
+              (click)="onSearch()"
+              ngbTooltip="Buscar"
+              placement="top"
+              container="body"
+            >
+              <i class="pi pi-search"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Spinner global (overlay) -->
+    <app-spinner [isLoading]="isLoading"></app-spinner>
+
+    <!-- Tabla -->
+    <div *ngIf="!isLoading" class="custom-table-container">
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Nombre</th>
+            <th>Marca</th>
+            <th>Estado Físico</th>
+            <th>Disponibilidad</th>
+            <th>Estado</th>
+            <th style="text-align: center">Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr
+            *ngFor="
+              let herramienta of getPaginatedHerramientas();
+              let i = index
+            "
+          >
+            <td>
+              <span class="codigo-badge">{{ herramienta.codigo }}</span>
+            </td>
+            <td>{{ herramienta.nombre }}</td>
+            <td>{{ herramienta.marca }}</td>
+            <td>
+              <span
+                class="estado-badge"
+                [ngClass]="
+                  'estado-' + getEstadoClass(herramienta.estadoFisico || '')
+                "
+              >
+                {{ herramienta.estadoFisico }}
+              </span>
+            </td>
+            <td>{{ herramienta.disponibilidad }}</td>
+
+            <td>
+              <div
+                class="estado-toggle d-flex align-items-center justify-content-center"
+              >
+                <!-- 🔓 Candado abierto (no bloqueada) -->
+                <button
+                  type="button"
+                  class="btn-icon"
+                  *ngIf="!herramienta.bloqueado"
+                  [disabled]="
+                    herramienta.disponibilidad?.toLowerCase() !==
+                      'disponible' &&
+                    herramienta.disponibilidad?.toLowerCase() !== 'bloqueada'
+                  "
+                  (click)="toggleBloqueo(herramienta)"
+                  [ngbTooltip]="
+                    herramienta.disponibilidad?.toLowerCase() ===
+                      'disponible' ||
+                    herramienta.disponibilidad?.toLowerCase() === 'bloqueada'
+                      ? 'Bloquear herramienta'
+                      : 'No se puede bloquear porque la herramienta está ' +
+                        (herramienta.disponibilidad?.toLowerCase() ===
+                        'mantenimiento'
+                          ? 'en mantenimiento'
+                          : herramienta.disponibilidad?.toLowerCase())
+                  "
+                  placement="top"
+                  container="body"
+                  style="color: #28a745"
+                >
+                  <i class="pi pi-lock-open" style="font-size: 1.2rem"></i>
+                </button>
+
+                <!-- 🔒 Candado cerrado (bloqueada) -->
+                <button
+                  type="button"
+                  class="btn-icon"
+                  *ngIf="herramienta.bloqueado"
+                  (click)="toggleBloqueo(herramienta)"
+                  ngbTooltip="Desbloquear herramienta"
+                  placement="top"
+                  container="body"
+                  style="color: #dc3545"
+                >
+                  <i class="pi pi-lock" style="font-size: 1.2rem"></i>
+                </button>
+              </div>
+            </td>
+
+            <td>
+              <div class="action-buttons">
+                <button
+                  type="button"
+                  class="btn-icon btn-edit"
+                  (click)="editTool(herramienta)"
+                  ngbTooltip="Ver / Editar herramienta"
+                  placement="top"
+                  container="body"
+                >
+                  <i class="pi pi-eye"></i>
+                </button>
+                <button
+                  type="button"
+                  class="btn-icon btn-delete"
+                  (click)="deleteTool(herramienta)"
+                  ngbTooltip="Eliminar herramienta"
+                  placement="top"
+                  container="body"
+                >
+                  <i class="pi pi-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+
+          <tr *ngIf="getPaginatedHerramientas().length === 0">
+            <td colspan="7" class="empty-message">
+              No se encontraron herramientas.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Paginador -->
+    <div *ngIf="!isLoading && totalItems > 0" class="paginator-container">
+      <app-paginator
+        [length]="totalItems"
+        [pageSize]="pageSize"
+        [pageIndex]="currentPage - 1"
+        (pageChange)="onPageEvent($event)"
+      ></app-paginator>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <app-herramientas-modal
+    *ngIf="showToolModal"
+    [initialData]="modalInitialData"
+    [mode]="modalMode"
+    (submit)="onModalSubmit($event)"
+    (close)="closeToolModal()"
+  ></app-herramientas-modal>
+</div>

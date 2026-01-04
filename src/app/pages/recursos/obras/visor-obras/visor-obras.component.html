@@ -1,0 +1,156 @@
+<div class="container-fluid page-shell page-header-container">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div></div>
+    <a class="header-action" (click)="createNewObra()" role="button">
+      <i class="bx bx-plus bx-tada" aria-hidden="true"></i> Agregar
+    </a>
+  </div>
+</div>
+
+<!-- Reemplazar wrapper específico por clases compartidas -->
+<div class="user-list-container visor-obras container-fluid page-shell mt-2">
+  <div class="pyre-table-shell">
+    <!-- Filter bar: estructura unificada con otros visores -->
+    <div class="pyre-filter-bar container-fluid">
+      <div class="row g-3 align-items-end">
+        <!-- Código (nuevo, primero) -->
+        <div class="col-lg-3 col-md-4 col-sm-12">
+          <div class="filter-item">
+            <div class="filter-input-group">
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="filtroCodigo"
+                placeholder="Código"
+                (keyup.enter)="onSearch()"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Nombre de la obra (ya existía, ahora segundo) -->
+        <div class="col-lg-5 col-md-6 col-sm-12">
+          <div class="filter-item">
+            <div class="filter-input-group">
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="filtroNombre"
+                placeholder="Nombre de obra"
+                (keyup.enter)="onSearch()"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Ajuste: eliminar filtro Estado y dejar espacio flexible -->
+        <div class="col-lg-2 col-md-2 col-sm-6 d-none d-md-block"></div>
+
+        <!-- Reset + Buscar -->
+        <div class="col-lg-2 col-md-12 col-sm-12 d-flex justify-content-end">
+          <div class="d-flex gap-2">
+            <button
+              type="button"
+              class="reset-button-inline"
+              (click)="onResetFilters()"
+              [disabled]="!hasActiveFilters()"
+              [title]="
+                hasActiveFilters()
+                  ? 'Limpiar filtros'
+                  : 'No hay filtros activos'
+              "
+            >
+              <i class="pi pi-filter-slash"></i>
+            </button>
+
+            <button
+              type="button"
+              class="btn btn-primary"
+              (click)="onSearch()"
+              title="Buscar"
+            >
+              <i class="pi pi-search"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Spinner global -->
+    <app-spinner [isLoading]="isLoading"></app-spinner>
+
+    <!-- Custom table -->
+    <div *ngIf="!isLoading" class="custom-table-container">
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Nombre</th>
+            <th>Descripcion</th>
+            <th>Fecha Inicio</th>
+            <th>Fecha Fin</th>
+            <!-- <th>Estado</th> -->
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let obra of getPaginatedObras(); let i = index">
+            <td>
+              <span class="codigo-badge">{{ obra.codigo }}</span>
+            </td>
+            <td>{{ obra.nombreObra }}</td>
+            <td>{{ obra.descripcion }}</td>
+            <td>{{ obra.fechaInicio | date : "dd/MM/yyyy" }}</td>
+            <td>{{ obra.fechaFin | date : "dd/MM/yyyy" }}</td>
+            <td>
+              <div class="action-buttons">
+                <button
+                  type="button"
+                  class="btn-icon btn-edit"
+                  (click)="editObra(obra)"
+                  ngbTooltip="Ver/Editar obra"
+                  placement="top"
+                  container="body"
+                >
+                  <i class="pi pi-eye"></i>
+                </button>
+                <button
+                  type="button"
+                  class="btn-icon btn-delete"
+                  (click)="deleteObra(obra)"
+                  ngbTooltip="Eliminar obra"
+                  placement="top"
+                  container="body"
+                >
+                  <i class="pi pi-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="getPaginatedObras().length === 0">
+            <td colspan="6" class="empty-message">No se encontraron obras.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Reemplazar la paginación custom por app-paginator -->
+    <div *ngIf="!isLoading && totalItems > 0" class="paginator-container">
+      <app-paginator
+        [length]="totalItems"
+        [pageSize]="pageSize"
+        [pageIndex]="currentPage - 1"
+        (pageChange)="onPageEvent($event)"
+      >
+      </app-paginator>
+    </div>
+  </div>
+
+  <app-obra-edit-modal
+    *ngIf="showObraModal"
+    [initialData]="modalInitialData"
+    [mode]="modalMode"
+    (submit)="onModalSubmit($event)"
+    (close)="closeObraModal()"
+  ></app-obra-edit-modal>
+</div>

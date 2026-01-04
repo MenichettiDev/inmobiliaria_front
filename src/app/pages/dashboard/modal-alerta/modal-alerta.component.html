@@ -1,0 +1,89 @@
+<div class="modal-overlay" *ngIf="visible" role="dialog" aria-modal="true">
+  <div class="modal-wrapper">
+    <div class="modal-content">
+      <!-- Header -->
+      <div class="modal-header">
+        <div class="modal-title-wrapper">
+          <h3 class="modal-title">Extender Plazo de Devolución</h3>
+          <small class="title-expired" *ngIf="formattedFechaVencimiento">
+            Vencimiento: {{ formattedFechaVencimiento }}
+          </small>
+        </div>
+        <button class="close-btn" aria-label="Cerrar" (click)="onCancel()">
+          <span class="pi pi-times"></span>
+        </button>
+      </div>
+
+      <!-- Loading -->
+      <div *ngIf="!alerta" class="loading-container">
+        <div class="loading-spinner"></div>
+        <p>Cargando alerta...</p>
+      </div>
+
+      <!-- Form -->
+      <form *ngIf="alerta" (ngSubmit)="onSaveEdit()" class="modal-form">
+        <!-- Fila con Herramienta, Tipo de Alerta y Fecha Generación -->
+        <div class="info-row">
+          <div class="info-item">
+            <label>Herramienta</label>
+            <p>{{ alerta.nombreHerramienta }}</p>
+          </div>
+
+          <div class="info-item">
+            <label>Generada</label>
+            <p>{{ alerta.fechaGeneracion | date : "dd/MM/yyyy HH:mm" }}</p>
+          </div>
+
+          <!-- MOVER Nueva Fecha Estimada dentro de la misma fila -->
+          <div class="info-item">
+            <label *ngIf="alerta?.idTipoAlerta === 2" class="required"
+              >Nueva Fecha Estimada</label
+            >
+            <ng-container *ngIf="alerta?.idTipoAlerta === 2; else noFecha">
+              <!-- Mostrar solo la fecha (sin hora). Min = mañana -->
+              <input
+                type="date"
+                [(ngModel)]="nuevaFechaEstimada"
+                name="nuevaFecha"
+                class="form-control"
+                [attr.min]="minDate"
+                required
+              />
+            </ng-container>
+            <ng-template #noFecha>
+              <!-- espacio reservado cuando no corresponde mostrar input -->
+              <p class="field-value">-</p>
+            </ng-template>
+          </div>
+        </div>
+
+        <!-- Comentario -->
+        <div class="field-group full-width">
+          <label class="required">Comentario</label>
+          <textarea
+            [(ngModel)]="nuevaComentario"
+            name="comentario"
+            rows="3"
+            required
+          ></textarea>
+        </div>
+
+        <!-- Actions -->
+        <div class="actions">
+          <button type="button" class="btn-cancel" (click)="onCancel()">
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            class="btn-submit"
+            [disabled]="!isFormValid || isProcessing"
+          >
+            Guardar Cambios
+          </button>
+        </div>
+      </form>
+
+      <!-- confirmación manejada por AlertaService.confirm (SweetAlert2) -->
+    </div>
+  </div>
+</div>

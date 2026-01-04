@@ -1,0 +1,67 @@
+/* Import generic combo styles */
+@import "../cbo.component.css";
+
+/* Specific styles for obra combo */
+.option-codigo {
+  font-family: monospace;
+  font-weight: 600;
+  color: var(--color-primary, #3b82f6);
+  font-size: 0.9rem;
+  min-width: 60px;
+}
+
+.option-nombre {
+  flex: 1;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.option-descripcion {
+  color: var(--color-text-secondary, #6b7280);
+  font-style: italic;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+}
+
+.dropdown-option.selected .option-codigo {
+  color: var(--color-white, #ffffff);
+}
+
+.dropdown-option.selected .option-ubicacion {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.dropdown-option.selected .option-fecha {
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--color-white, #ffffff);
+}
+
+/* Responsive adjustments for obra-specific elements */
+@media (max-width: 768px) {
+  .option-codigo {
+    font-size: 0.85rem;
+    min-width: 50px;
+  }
+
+  .option-nombre {
+    font-size: 0.9rem;
+  }
+
+  .option-descripcion {
+    font-size: 0.8rem;
+  }
+
+  .option-fecha {
+    font-size: 0.75rem;
+    padding: 1px 4px;
+  }
+}
+
+/* El componente de obras reutiliza los estilos comunes de cbo-movimientos.css */
+@import "../cbo-movimientos.css";
+
+/* Usar exclusivamente estilos compartidos desde cbo-movimientos.css.
+   Mantener wrapper mínimo para posicionamiento si fuera necesario. */
+.cbo-wrapper {
+  position: relative;
+}

@@ -1,0 +1,24 @@
+<div
+  *ngIf="internalVisible"
+  class="toast toast-{{ type }}"
+  [class.enter]="animState === 'enter'"
+  [class.exit]="animState === 'exit'"
+  [class.idle]="animState === 'idle'"
+  [class.preset-1]="animationPreset === 'preset-1'"
+  [class.preset-2]="animationPreset === 'preset-2'"
+  [class.preset-3]="animationPreset === 'preset-3'"
+  role="status"
+  aria-live="polite"
+  aria-atomic="true"
+>
+  <div class="toast-icon" aria-hidden="true">
+    <!-- Iconos simples según tipo -->
+    <span *ngIf="type === 'success'">✔</span>
+    <span *ngIf="type === 'error'">✖</span>
+    <span *ngIf="type === 'warning'">⚠</span>
+  </div>
+
+  <div class="toast-content">
+    <div class="toast-message">{{ message }}</div>
+  </div>
+</div>

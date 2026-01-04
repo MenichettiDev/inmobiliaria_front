@@ -1,0 +1,168 @@
+<!-- TOPBAR MEJORADO CON BREADCRUMBS Y TÍTULO DINÁMICO -->
+<nav class="topbar" [class.logged-in]="isLoggedIn && !isSmallScreen">
+  <div class="topbar-container">
+    <!-- Botón hamburguesa (móvil) - icono moderno que cambia según el estado del sidebar -->
+    <button
+      *ngIf="isLoggedIn && isSmallScreen"
+      class="btn-hamburger"
+      (click)="toggleSidebar()"
+      aria-label="Toggle sidebar"
+    >
+      <!-- Mostrar icono 'compacto' cuando el sidebar está colapsado (isSidebarVisible === false)
+           Mostrar icono 'cerrar' o 'chevron' cuando el sidebar está visible -->
+      <ng-container *ngIf="!isSidebarVisible; else expandedIcon">
+        <!-- Modern hamburger SVG (rounded bars) -->
+        <svg
+          class="menu-icon"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+        >
+          <rect x="3" y="5" width="18" height="2" rx="1" fill="currentColor" />
+          <rect
+            x="3"
+            y="11"
+            width="18"
+            height="2"
+            rx="1"
+            fill="currentColor"
+            opacity="0.9"
+          />
+          <rect
+            x="3"
+            y="17"
+            width="12"
+            height="2"
+            rx="1"
+            fill="currentColor"
+            opacity="0.8"
+          />
+        </svg>
+      </ng-container>
+      <ng-template #expandedIcon>
+        <!-- Chevron / collapse icon when sidebar is open -->
+        <svg
+          class="chev-icon"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+        >
+          <path
+            d="M15 6L9 12L15 18"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </ng-template>
+    </button>
+
+    <!-- SECCIÓN DE TÍTULO CON BREADCRUMBS -->
+    <div class="topbar-title-section" [@titleChange]>
+      <!-- Breadcrumbs (si existen y no es móvil) -->
+      <nav
+        *ngIf="hasBreadcrumbs && !isSmallScreen"
+        class="breadcrumbs"
+        aria-label="breadcrumb"
+      >
+        <ol class="breadcrumb-list">
+          <li
+            *ngFor="let crumb of breadcrumbs; let last = last"
+            class="breadcrumb-item"
+            [@breadcrumbSlide]
+          >
+            <a
+              *ngIf="crumb.route && !last"
+              [routerLink]="crumb.route"
+              class="breadcrumb-link"
+            >
+              <i *ngIf="crumb.icon" [class]="'bi ' + crumb.icon + ' me-1'"></i>
+              {{ crumb.label }}
+            </a>
+            <span
+              *ngIf="!crumb.route || last"
+              class="breadcrumb-current"
+              [class.active]="last"
+            >
+              <i *ngIf="crumb.icon" [class]="'bi ' + crumb.icon + ' me-1'"></i>
+              {{ crumb.label }}
+            </span>
+            <i
+              *ngIf="!last"
+              class="bi bi-chevron-right breadcrumb-separator"
+            ></i>
+          </li>
+        </ol>
+      </nav>
+
+      <!-- TÍTULO PRINCIPAL FIJO (GRANDE) -->
+      <div class="topbar-title-main" aria-hidden="true">
+        <h1>Sistema de Gestión de Pañol</h1>
+      </div>
+
+      <!-- SUBTÍTULO DINÁMICO (MÁS CHICO) - SOLO UNA VEZ -->
+      <div class="topbar-subtitle" *ngIf="displayTitle">
+        <span>{{ displayTitle }}</span>
+      </div>
+    </div>
+
+    <!-- Sección de notificaciones unificada (REEMPLAZA la anterior) -->
+    <div class="topbar-alerts-section">
+      <div class="notifications-container">
+        <!-- Versión desktop: solo icono + badge numérico -->
+        <div
+          class="notifications-btn"
+          [class.empty]="getTotalNotifications() === 0"
+          [class.has-critical]="hasCriticalAlerts()"
+          (click)="onNotificationsClick()"
+          [ngbTooltip]="getTooltipMessage()"
+          container="body"
+        >
+          <!-- Icono principal -->
+          <div
+            class="notifications-icon"
+            [class.attention]="animateAlerts"
+            [class.shake]="animateShake"
+          >
+            <i class="bi bi-bell" aria-hidden="true"></i>
+            <!-- Badge numérico en la esquina superior derecha del icono -->
+            <div
+              *ngIf="getTotalNotifications() > 0"
+              class="critical-dot"
+              aria-live="polite"
+              aria-atomic="true"
+              title="{{ getTotalNotifications() + ' alertas vencidas' }}"
+            >
+              {{
+                getTotalNotifications() > 99 ? "99+" : getTotalNotifications()
+              }}
+            </div>
+          </div>
+
+          <!-- Texto oculto: mantenemos por accesibilidad pero escondido visualmente -->
+          <div class="notifications-content visually-hidden" aria-hidden="true">
+            <div class="notifications-title"></div>
+            <div class="notifications-subtitle"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECCIÓN DE USUARIO (Derecha) -->
+    <div class="topbar-user-section" *ngIf="isLoggedIn">
+      <!-- Botón de logout (icono) -->
+      <button
+        class="logout-icon-btn"
+        (click)="confirmLogout()"
+        [ngbTooltip]="'Cerrar Sesión'"
+        aria-label="Cerrar sesión"
+        *ngIf="!isSmallScreen"
+      >
+        <i class="bi bi-power"></i>
+      </button>
+    </div>
+  </div>
+</nav>

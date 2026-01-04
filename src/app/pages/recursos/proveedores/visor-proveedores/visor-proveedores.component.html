@@ -1,0 +1,186 @@
+<div class="container-fluid page-shell page-header-container">
+  <div class="d-flex justify-content-end align-items-center mb-3">
+    <a class="header-action" (click)="createNewProveedor()" role="button">
+      <i class="bx bx-plus bx-tada" aria-hidden="true"></i> Agregar
+    </a>
+  </div>
+</div>
+
+<!-- Reemplazado: usar las mismas clases estructurales que en visor-usuario -->
+<div
+  class="user-list-container visor-proveedores container-fluid page-shell mt-2"
+>
+  <div class="pyre-table-shell">
+    <!-- Filter bar: misma estructura de grid que visor-usuario -->
+    <div class="pyre-filter-bar container-fluid">
+      <div class="row g-3 align-items-end">
+        <!-- Nombre del proveedor -->
+        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6">
+          <div class="filter-item">
+            <div class="filter-input-group">
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="filtroNombre"
+                placeholder="Nombre del proveedor"
+                (keyup.enter)="onSearch()"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Estado -->
+        <div class="col-xl-2 col-lg-2 col-md-3 col-sm-6">
+          <div class="filter-item">
+            <div class="filter-input-group">
+              <select class="form-control" [(ngModel)]="filtroEstado">
+                <option value="">Todos los estados</option>
+                <option value="activo">Activo</option>
+                <option value="inactivo">Inactivo</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reset + Buscar -->
+        <div
+          class="col-xl-7 col-lg-7 col-md-5 col-sm-12 d-flex justify-content-end"
+        >
+          <div class="d-flex gap-2">
+            <button
+              type="button"
+              class="reset-button-inline"
+              (click)="onResetFilters()"
+              [disabled]="!hasActiveFilters()"
+              [ngbTooltip]="
+                hasActiveFilters()
+                  ? 'Limpiar filtros'
+                  : 'No hay filtros activos'
+              "
+              placement="top"
+              container="body"
+            >
+              <i class="pi pi-filter-slash"></i>
+            </button>
+
+            <button
+              type="button"
+              class="btn btn-primary"
+              (click)="onSearch()"
+              ngbTooltip="Buscar"
+              placement="top"
+              container="body"
+            >
+              <i class="pi pi-search"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Spinner global -->
+    <app-spinner [isLoading]="isLoading"></app-spinner>
+
+    <!-- Custom table -->
+    <div *ngIf="!isLoading" class="custom-table-container">
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th>CUIT</th>
+            <th>Nombre</th>
+            <th>Contacto</th>
+            <th>Descripción</th>
+            <th>Teléfono</th>
+            <th>Email</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            *ngFor="let proveedor of getPaginatedProveedores(); let i = index"
+          >
+            <td>
+              <span class="cuit-badge">{{ proveedor.cuit }}</span>
+            </td>
+            <td>{{ proveedor.nombreProveedor }}</td>
+            <td>{{ proveedor.contacto }}</td>
+            <td>{{ proveedor.descripcion }}</td>
+            <td>{{ proveedor.telefono }}</td>
+            <td>{{ proveedor.email }}</td>
+            <td>
+              <div class="estado-toggle">
+                <label
+                  class="toggle-switch"
+                  [ngbTooltip]="proveedor.activo ? 'Activo' : 'Inactivo'"
+                  placement="top"
+                  container="body"
+                >
+                  <input
+                    type="checkbox"
+                    [checked]="proveedor.activo"
+                    (click)="toggleProveedorActive($event, proveedor)"
+                    [disabled]="proveedor._pending"
+                  />
+                  <span
+                    class="toggle-slider modern"
+                    [class.active]="proveedor.activo"
+                  ></span>
+                </label>
+              </div>
+            </td>
+            <td>
+              <div class="action-buttons">
+                <button
+                  type="button"
+                  class="btn-icon btn-edit"
+                  (click)="editProveedor(proveedor)"
+                  ngbTooltip="Ver/Editar proveedor"
+                  placement="top"
+                  container="body"
+                >
+                  <i class="pi pi-eye"></i>
+                </button>
+                <button
+                  type="button"
+                  class="btn-icon btn-delete"
+                  (click)="deleteProveedor(proveedor)"
+                  ngbTooltip="Eliminar proveedor"
+                  placement="top"
+                  container="body"
+                >
+                  <i class="pi pi-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="getPaginatedProveedores().length === 0">
+            <td colspan="8" class="empty-message">
+              No se encontraron proveedores.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Custom pagination -->
+    <div *ngIf="!isLoading && totalItems > 0" class="paginator-container">
+      <app-paginator
+        [length]="totalItems"
+        [pageSize]="pageSize"
+        [pageIndex]="currentPage - 1"
+        (pageChange)="onPageEvent($event)"
+      >
+      </app-paginator>
+    </div>
+  </div>
+
+  <!-- Instancia del modal de proveedor -->
+  <app-modal-proveedor
+    *ngIf="showProveedorModal"
+    [initialData]="modalInitialData"
+    [mode]="modalMode"
+    (submit)="onModalSubmit($event)"
+    (close)="closeProveedorModal()"
+  ></app-modal-proveedor>
+</div>

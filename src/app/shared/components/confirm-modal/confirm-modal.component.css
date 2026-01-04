@@ -1,0 +1,127 @@
+/* Fondo oscuro semitransparente */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Usar overlay global para coherencia con la app */
+    background: var(--color-overlay, rgba(0,0,0,0.45));
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+    opacity: 0;
+    /* Comienza invisible */
+    transition: opacity 0.5s ease-in-out;
+    /* Animación de opacidad */
+}
+
+.modal-overlay.visible {
+    opacity: 1;
+    /* Se vuelve visible cuando tiene la clase 'visible' */
+}
+
+/* Contenedor del modal */
+.modal-container {
+    background: var(--color-bg-surface, #ffffff);
+    padding: 20px 18px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    text-align: center;
+    max-width: 420px;
+    width: 100%;
+    transform-origin: center;
+    border: 1px solid var(--color-border, #ddd);
+}
+
+/* Cambio de color del texto */
+.modal-container h2 {
+    color: var(--color-text, #333333);
+    font-size: 1.4rem;
+    margin-bottom: 8px;
+    font-family: 'Oswald', sans-serif;
+}
+
+.modal-container p {
+    color: var(--color-text-secondary, #666666);
+    font-size: 1rem;
+    margin-bottom: 18px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Estilos de los botones */
+.modal-actions button {
+    margin: 10px;
+    padding: 10px 28px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    /* Transición suave para el hover */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    letter-spacing: 0.5px;
+}
+
+.modal-actions button:first-child {
+    background: linear-gradient(90deg, var(--color-success, #4CAF50), var(--color-success-dark, #2E7D32));
+    color: var(--color-white, #ffffff);
+    border: 1px solid var(--color-success, #4CAF50);
+}
+
+.modal-actions button:last-child {
+    background: linear-gradient(135deg, var(--color-error, #DC3545), var(--color-error-dark, #a71b18));
+    color: var(--color-white, #ffffff);
+    border: 1px solid var(--color-error, #DC3545);
+}
+
+/* Efecto hover para los botones */
+.modal-actions button:hover {
+    transform: scale(1.07);
+    /* Aumenta ligeramente el tamaño */
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+    /* Sombra al pasar el mouse */
+}
+
+.modal-actions button:first-child:hover {
+    background: linear-gradient(90deg, var(--color-success-dark, #2E7D32), var(--color-success, #4CAF50));
+    color: #fff;
+}
+
+.modal-actions button:last-child:hover {
+    background: linear-gradient(135deg, var(--color-error-dark, #a71b18) 40%, var(--color-error, #DC3545) 100%);
+    color: #fff;
+}
+
+/* Media query para pantallas pequeñas */
+@media (max-width: 600px) {
+    .modal-container {
+        width: 90%;
+        /* Ocupa todo el ancho de la pantalla */
+        max-width: 100%;
+        /* Elimina el límite de ancho máximo */
+        padding: 15px;
+        /* Reduce el padding para ahorrar espacio */
+        border-radius: 10px;
+        /* Quita los bordes redondeados para aprovechar mejor el espacio */
+    }
+
+    .modal-container h2 {
+        font-size: 1.2rem;
+        /* Reduce el tamaño del título */
+    }
+
+    .modal-container p {
+        font-size: 0.95rem;
+        /* Reduce el tamaño del mensaje */
+    }
+
+    .modal-actions button {
+        font-size: 0.95rem;
+        /* Reduce el tamaño del texto de los botones */
+        padding: 8px 14px;
+        /* Reduce el padding de los botones */
+    }
+}

@@ -1,0 +1,56 @@
+/* ==========================================================
+   Variables CSS
+   ========================================================== */
+:root {
+  --topbar-height: 70px;
+  --sidebar-width: 260px;
+  --z-index-topbar: 1030;
+  --z-index-sidebar: 1020;
+  --z-index-content: 1010;
+}
+
+/* ==========================================================
+   Layout principal de la aplicación
+   ========================================================== */
+.app-container {
+  display: grid;
+  grid-template-rows: var(--topbar-height) 1fr;
+  grid-template-columns: 100%;
+  width: 100%;
+  height: 100vh;
+  overflow-x: hidden;  /* ✅ Evita scroll horizontal */
+  overflow-y: visible; /* ✅ Permite que dropdowns/flotantes se vean */
+}
+
+
+.main-wrapper {
+  grid-row: 2 / 3;
+  grid-column: 1 / 2;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto; /* Scroll solo en el área de contenido */
+  overflow-x: hidden;
+  transition: margin-left 0.3s ease;
+  padding: 1rem;
+  z-index: var(--z-index-content);
+}
+
+/* Ajustar margen cuando el sidebar está visible */
+.main-wrapper.with-sidebar {
+  margin-left: var(--sidebar-width);
+}
+
+/* ==========================================================
+   Responsive Design
+   ========================================================== */
+@media (max-width: 991.98px) {
+  .main-wrapper.with-sidebar {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .main-wrapper {
+    padding: 0.75rem;
+  }
+}

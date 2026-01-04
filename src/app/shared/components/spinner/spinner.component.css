@@ -1,0 +1,76 @@
+/* Overlay que cubre toda la pantalla */
+.loader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  backdrop-filter: blur(2px);
+}
+
+/* Loader principal */
+.loader {
+  width: 100px;
+  height: 100px;
+  position: relative;
+  border-radius: 50%;
+  border-top: 5px solid #e74c3c;
+  box-sizing: border-box;
+  animation: load 2s linear infinite;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  color: #fff;
+}
+
+/* Círculos adicionales del loader */
+.loader::before,
+.loader::after {
+  content: "";
+  width: 100px;
+  height: 100px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  border-radius: 50%;
+  box-sizing: border-box;
+}
+
+.loader::before {
+  border-top: 5px solid #e67e22;
+  transform: rotate(120deg);
+}
+
+.loader::after {
+  border-top: 5px solid #3498db;
+  transform: rotate(240deg);
+}
+
+/* Texto centrado */
+.loader span {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  line-height: 100px;
+  animation: text-rotate 2s linear infinite;
+}
+
+/* Animaciones */
+@keyframes load {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes text-rotate {
+  to {
+    transform: rotate(-360deg);
+  }
+}
