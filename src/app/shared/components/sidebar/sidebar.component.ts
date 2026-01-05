@@ -9,7 +9,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule, NavigationEnd } from '@angular/router'; // agregué NavigationEnd
 import { filter } from 'rxjs/operators'; // nuevo import
-import { AuthService } from '../../../services/auth.service';
+import { AuthService } from '../../../pages/auth/auth.service';
 import { AlertaService } from '../../../services/alerta.service';
 import { Roles } from '../../enums/roles';
 import { Subscription } from 'rxjs';
@@ -506,8 +506,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
         mappedRoleId != null
           ? mappedRoleId
           : user.id_acceso != null
-          ? Number(user.id_acceso)
-          : 0;
+            ? Number(user.id_acceso)
+            : 0;
 
       const nombre = user.nombre || '';
       const apellido = user.apellido || '';

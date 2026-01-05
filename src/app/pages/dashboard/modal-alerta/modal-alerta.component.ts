@@ -15,7 +15,7 @@ import {
   AlertaService,
   UpdateAlertaMovimientoDto,
 } from '../../../services/alerta.service';
-import { AuthService } from '../../../services/auth.service';
+import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'app-modal-alerta',

@@ -16,7 +16,7 @@ import {
   MovimientoService,
   CreateMovimientoDto,
 } from '../../../services/movimiento.service';
-import { AuthService } from '../../../services/auth.service';
+import { AuthService } from '../../auth/auth.service';
 import { PageTitleService } from '../../../services/page-title.service';
 import { AlertaService } from '../../../services/alerta.service';
 import { CboProveedorComponent } from '../../../shared/components/Cbo/cbo-proveedor/cbo-proveedor.component';
@@ -79,7 +79,7 @@ export class ReparacionComponent implements OnInit {
     private authService: AuthService,
     private pageTitleService: PageTitleService,
     private alertService: AlertaService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.pageTitleService.setTitle('Registrar Reparación');
@@ -268,7 +268,7 @@ export class ReparacionComponent implements OnInit {
         this.isLoading = false;
         this.alertService.error(
           error.error?.message ||
-            'Ha ocurrido un error inesperado. Por favor, intente nuevamente.',
+          'Ha ocurrido un error inesperado. Por favor, intente nuevamente.',
           '✗ Error al Registrar'
         );
         console.error('Error al crear reparaciones:', error);

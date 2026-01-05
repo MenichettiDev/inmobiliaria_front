@@ -1,7 +1,6 @@
 export interface CreateUserDTO {
   Nombre: string;
   Apellido: string;
-  Legajo: string;
   Dni: string;
   Email: string;
   Telefono?: string; // opcional

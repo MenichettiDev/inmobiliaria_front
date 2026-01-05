@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
-import { environment } from '../../environments/environment';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -19,23 +19,17 @@ export class AuthService {
 
   // Guardar token y datos del usuario
   saveAuthData(token: string, user: any): void {
-    console.log('saveAuthData called with user:', user);
-
-    // Normalizar shape: mapear rolId/rolNombre a id_acceso
     const normalized = {
       id: user.id || user.idUsuario || user.userId || null,
       nombre: user.nombre || user.firstName || '',
       apellido: user.apellido || user.lastName || '',
-      email: user.email || user.correo || '',
+      email: user.email || user.correo || '', // Ensure email is mapped correctly
       dni: user.dni || user.documento || '',
-      legajo: user.legajo || user.numeroLegajo || user.employeeId || '',
       id_acceso: user.rolId || user.id_acceso || user.roleId || user.rol?.id || null,
       rolNombre: user.rolNombre || user.rol?.nombre || user.role?.name || user.roleName || null,
       avatar: user.avatar || user.foto || null,
-      raw: user
+      raw: user,
     };
-
-    console.log('Normalized user data:', normalized);
 
     sessionStorage.setItem(this.TOKEN_KEY, token);
     sessionStorage.setItem(this.USER_KEY, JSON.stringify(normalized));

@@ -12,7 +12,6 @@ interface LoginResponse {
     Nombre: string;
     Email: string;
     Dni: string;
-    Legajo: string;
     RolId: number;
     RolNombre: string;
     Avatar: string | null;
@@ -29,7 +28,7 @@ export class LoginService {
     private http: HttpClient
   ) { }
 
-  login(legajo: string, password: string): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.apiUrl}/auth/login`, { legajo, password });
+  login(email: string, password: string): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${this.apiUrl}/auth/login`, { email, password });
   }
 }

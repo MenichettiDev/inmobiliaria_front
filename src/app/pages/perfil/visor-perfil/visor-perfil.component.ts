@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { PerfilService } from '../../../services/perfil.service';
 import { AlertaService } from '../../../services/alerta.service';
 import { Router, NavigationEnd } from '@angular/router';
-import { AuthService } from '../../../services/auth.service';
+import { AuthService } from '../../auth/auth.service';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
@@ -28,7 +28,7 @@ export class VisorPerfilComponent implements OnInit, OnDestroy {
     private alerta: AlertaService,
     private router: Router,
     private authService: AuthService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     const id = this.getLoggedUserId();

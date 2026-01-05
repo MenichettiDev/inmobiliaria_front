@@ -3,7 +3,7 @@ import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { SidebarComponent } from "./shared/components/sidebar/sidebar.component";
 import { Subscription } from 'rxjs';
-import { AuthService } from './services/auth.service';
+import { AuthService } from './../app/pages/auth/auth.service';
 import { SidebarService } from './services/sidebar.service';
 
 @Component({
@@ -71,20 +71,4 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
 
-  // <!-- Topbar -->
-  // <app-topbar
-  //   [isLoggedIn]="isLoggedIn"
-  //   [isSmallScreen]="isSmallScreen"
-  //   [userEmail]="userEmail"
-  //   [displayEmail]="displayEmail"
-  //   [userLegajo]="userLegajo"
-  //   [displayLegajo]="displayLegajo"
-  //   [userRole]="userRole"
-  //   [displayRole]="displayRole"
-  //   [userLabel]="userLabel"
-  //   (perfilModalToggled)="onPerfilModalToggled($event)"
-  //   (homeNavigation)="onHomeNavigation()"
-  //   (logoutRequested)="onLogoutRequested()"
-  //   (sidebarToggled)="onSidebarToggled()">
-  // </app-topbar>
 }

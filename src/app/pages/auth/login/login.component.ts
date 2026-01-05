@@ -8,7 +8,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { Router } from '@angular/router';
-import { AuthService } from '../../../services/auth.service';
+import { AuthService } from '../../auth/auth.service';
 import { LoginService } from '../../../services/login.service';
 import { SpinnerComponent } from '../../../shared/components/spinner/spinner.component'; // nuevo import
 import { ToastModalComponent } from '../../../shared/components/toast-modal/toast-modal.component'; // nuevo import
@@ -52,7 +52,7 @@ export class LoginComponent implements OnInit {
     private authService: AuthService
   ) {
     this.loginForm = this.fb.group({
-      legajo: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
     });
   }
@@ -74,13 +74,13 @@ export class LoginComponent implements OnInit {
     }
 
     if (this.loginForm.valid) {
-      const { legajo, password } = this.loginForm.value;
+      const { email, password } = this.loginForm.value;
 
       // Mostrar spinner inmediatamente al intentar loguear
       this.isLoading = true;
       this.loginStartTime = Date.now();
 
-      this.loginService.login(legajo, password).subscribe({
+      this.loginService.login(email, password).subscribe({
         next: (response) => {
           // Calcula cuánto tiempo ha pasado desde que se mostró el spinner
           const now = Date.now();
@@ -119,16 +119,14 @@ export class LoginComponent implements OnInit {
 
               // Usar mensaje normalizado (preferir backend si lo había)
               const errorMessage =
-                normalizedMessage || 'Legajo o contraseña incorrectos.';
-
-              this.loginForm.patchValue({ password: '' });
+                normalizedMessage || 'Correo o contraseña incorrectos.';
               this.showErrorToast(errorMessage);
 
               setTimeout(() => {
-                const legajoElement = document.getElementById(
-                  'legajo'
+                const emailElement = document.getElementById(
+                  'email'
                 ) as HTMLInputElement;
-                if (legajoElement) legajoElement.focus();
+                if (emailElement) emailElement.focus();
               }, 100);
 
               this.errorMessage = null;
@@ -150,28 +148,23 @@ export class LoginComponent implements OnInit {
   }
 
   validateForm(): boolean {
-    const legajoControl = this.loginForm.get('legajo');
+    const emailControl = this.loginForm.get('email');
     const passwordControl = this.loginForm.get('password');
 
-    // Validar legajo
-    if (!legajoControl?.value || legajoControl?.value.trim() === '') {
-      this.showValidationToast('El número de legajo es requerido', 'legajo');
-      // Asegurar spinner apagado por si acaso
+    // Validate email
+    if (!emailControl?.value || emailControl?.value.trim() === '') {
+      this.showValidationToast('El correo electrónico es requerido', 'email');
       this.isLoading = false;
       return false;
     }
 
-    // Validar que el legajo solo contenga números
-    if (!/^\d+$/.test(legajoControl.value)) {
-      this.showValidationToast(
-        'El legajo debe contener solo números',
-        'legajo'
-      );
+    if (!emailControl.valid) {
+      this.showValidationToast('Ingrese un correo electrónico válido', 'email');
       this.isLoading = false;
       return false;
     }
 
-    // Validar contraseña
+    // Validate password
     if (!passwordControl?.value || passwordControl?.value.trim() === '') {
       this.showValidationToast('La contraseña es requerida', 'password');
       this.isLoading = false;
@@ -275,9 +268,8 @@ export class LoginComponent implements OnInit {
             (typeof err.error === 'string' ? err.error : null);
           if (backendMsg) return backendMsg;
           if (status === 401) return 'Legajo o contraseña incorrectos.';
-          return `Error ${status}: ${
-            err.statusText || 'Error en la comunicación con el servidor'
-          }`;
+          return `Error ${status}: ${err.statusText || 'Error en la comunicación con el servidor'
+            }`;
         }
 
         // Fallback: si viene { error: '...' } o { message: '...' }
