@@ -19,17 +19,23 @@ export class AuthService {
 
   // Guardar token y datos del usuario
   saveAuthData(token: string, user: any): void {
+    console.log('saveAuthData called with user:', user);
+
+    // Normalizar shape: mapear la nueva estructura de respuesta
     const normalized = {
-      id: user.id || user.idUsuario || user.userId || null,
-      nombre: user.nombre || user.firstName || '',
-      apellido: user.apellido || user.lastName || '',
-      email: user.email || user.correo || '', // Ensure email is mapped correctly
-      dni: user.dni || user.documento || '',
-      id_acceso: user.rolId || user.id_acceso || user.roleId || user.rol?.id || null,
-      rolNombre: user.rolNombre || user.rol?.nombre || user.role?.name || user.roleName || null,
-      avatar: user.avatar || user.foto || null,
-      raw: user,
+      id: user.id || null,
+      nombre: user.nombre || '',
+      apellido: '', // No viene en la respuesta, mantener vacío
+      email: user.email || '',
+      dni: '', // No viene en la respuesta, mantener vacío
+      id_acceso: user.idRol || null, // Mapear idRol a id_acceso
+      rolNombre: user.rolNombre || null,
+      idEstado: user.idEstado || null,
+      avatar: null, // No viene en la respuesta
+      raw: user
     };
+
+    console.log('Normalized user data:', normalized);
 
     sessionStorage.setItem(this.TOKEN_KEY, token);
     sessionStorage.setItem(this.USER_KEY, JSON.stringify(normalized));

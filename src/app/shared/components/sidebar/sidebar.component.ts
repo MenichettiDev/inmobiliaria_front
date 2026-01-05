@@ -1,694 +1,595 @@
-import {
-  Component,
-  OnInit,
-  OnDestroy,
-  inject,
-  HostListener,
-  ElementRef,
-} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule, NavigationEnd } from '@angular/router'; // agregué NavigationEnd
-import { filter } from 'rxjs/operators'; // nuevo import
+import { Router, RouterModule } from '@angular/router';
+import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { AuthService } from '../../../pages/auth/auth.service';
-import { AlertaService } from '../../../services/alerta.service';
-import { Roles } from '../../enums/roles';
-import { Subscription } from 'rxjs';
-import { TopbarComponent } from '../topbar/topbar.component';
-import { SidebarService } from '../../../services/sidebar.service';
-import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap'; // Asegurar la importación
+import { TopbarComponent } from "../topbar/topbar.component";
 
 interface MenuItem {
   id: number;
   descripcion: string;
   icono: string;
   link: string;
-  grupo: string;
-  principal: boolean;
-  orden: number;
-  estado: boolean;
+  roles: number[];
+  submenus?: MenuItem[];
+  soloLectura?: boolean;
   expanded?: boolean;
-  requiredAccess: number[];
 }
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterModule, TopbarComponent, NgbTooltipModule], // Asegurarse de incluir TopbarComponent
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.css'],
+  imports: [CommonModule, RouterModule, NgbTooltipModule, TopbarComponent],
 })
-export class SidebarComponent implements OnInit, OnDestroy {
-  // Estados del componente
-  isSidebarVisible = false;
+export class SidebarComponent implements OnInit {
+  // Propiedades requeridas por el template
   isLoggedIn = false;
-  id_acceso = 0;
+  isSidebarVisible = true;
   isSmallScreen = window.innerWidth < 992;
-  isPerfilModalVisible = false;
+  userRole: number = 0;
 
-  // Propiedades de usuario
-  nombreCompleto = '';
+  // Propiedades de usuario requeridas por topbar
   userEmail: string = '';
   displayEmail: string = '';
   userLegajo: string = '';
   displayLegajo: string = '';
   displayRole: string = '';
-  displayUserLabel: string = ''; // Agregar la propiedad que falta
+  displayUserLabel: string = '';
+  pageTitle: string = 'Dashboard';
 
-  // Tooltip dinámico para el legajo y rol
-  get pillTooltip(): string {
-    const leg = this.userLegajo || this.displayLegajo || '';
-    const role = this.displayRole || '';
-    return role ? `${leg} — ${role}` : leg;
-  }
-
-  // Nuevo: título dinámico para topbar
-  pageTitle: string = 'Sistema de Gestión';
-
-  private subscription = new Subscription();
-
-  // Menú refactorizado según nueva estructura
-  private readonly allMenuItems: MenuItem[] = [
-    // 1. Listado de Herramientas
+  menuItems: MenuItem[] = [
+    // 🏠 Dashboard - Acceso diferenciado por rol
     {
       id: 1,
-      descripcion: 'Herramientas', // Cambiado a un nombre más conciso
-      icono: 'bi bi-tools', // Cambiado a un icono más representativo
-      link: '/herramienta/list',
-      grupo: 'GM01',
-      principal: true,
-      orden: 1,
-      estado: true,
-      requiredAccess: [
-        Roles.SuperAdmin,
-        Roles.Operario,
-        Roles.Supervisor,
-        Roles.Administrador,
+      descripcion: 'Dashboard',
+      icono: 'bi bi-speedometer2',
+      link: '/dashboard',
+      roles: [1, 2, 3, 4, 6], // Todos los roles
+      submenus: [
+        {
+          id: 11,
+          descripcion: 'KPIs Generales',
+          icono: 'bi bi-graph-up',
+          link: '/dashboard/kpis',
+          roles: [1, 2, 3], // Solo Admin, Programador y Supervisor
+        },
+        {
+          id: 12,
+          descripcion: 'Actividad Reciente',
+          icono: 'bi bi-clock-history',
+          link: '/dashboard/actividad',
+          roles: [1, 2, 3, 4, 6], // Todos
+        },
+        {
+          id: 13,
+          descripcion: 'Alertas',
+          icono: 'bi bi-exclamation-triangle',
+          link: '/dashboard/alertas',
+          roles: [1, 2, 3, 4, 6], // Todos
+        },
       ],
     },
 
-    // 2. Lista de Usuarios
+    // 🏘 Propiedades - Permisos según rol
     {
       id: 2,
-      descripcion: 'Usuarios', // Cambiado a un nombre más conciso
-      icono: 'bi bi-people', // Cambiado a un icono más representativo
-      link: '/user/list',
-      grupo: 'GM02',
-      principal: true,
-      orden: 2,
-      estado: true,
-      requiredAccess: [
-        Roles.SuperAdmin,
-        // Roles.Operario,
-        // Roles.Supervisor,
-        // Roles.Administrador,
+      descripcion: 'Propiedades',
+      icono: 'bi bi-house-door',
+      link: '/propiedades',
+      roles: [1, 2, 3, 4, 6], // Todos pueden ver (con restricciones)
+      submenus: [
+        {
+          id: 21,
+          descripcion: 'Ver Listado',
+          icono: 'bi bi-list-ul',
+          link: '/propiedades/listado',
+          roles: [1, 2, 3, 4, 6], // Todos pueden ver
+        },
+        {
+          id: 22,
+          descripcion: 'Crear / Editar',
+          icono: 'bi bi-plus-circle',
+          link: '/propiedades/crear',
+          roles: [2, 3, 4], // Solo Admin, Supervisor y Agente
+        },
+        {
+          id: 23,
+          descripcion: 'Publicar / Despublicar',
+          icono: 'bi bi-broadcast',
+          link: '/propiedades/publicar',
+          roles: [2, 3, 4], // Solo Admin, Supervisor y Agente
+        },
+        {
+          id: 24,
+          descripcion: 'Cambiar Estado',
+          icono: 'bi bi-arrow-repeat',
+          link: '/propiedades/estados',
+          roles: [2, 3, 4], // Solo Admin, Supervisor y Agente
+        },
       ],
     },
 
+    // 👥 Leads / CRM - Restricciones por rol
     {
       id: 3,
-      descripcion: 'Proveedores',
-      icono: 'bi bi-truck',
-      link: '/recursos/proveedores',
-      grupo: 'GM03',
-      principal: true,
-      orden: 3,
-      estado: true,
-      requiredAccess: [
-        Roles.SuperAdmin,
-        Roles.Operario,
-        Roles.Supervisor,
-        Roles.Administrador,
+      descripcion: 'Leads / CRM',
+      icono: 'bi bi-people',
+      link: '/leads',
+      roles: [2, 3, 4, 6], // Admin, Supervisor, Agente y Asistente
+      submenus: [
+        {
+          id: 31,
+          descripcion: 'Crear / Recibir Leads',
+          icono: 'bi bi-person-plus',
+          link: '/leads/crear',
+          roles: [2, 3, 4], // Solo Admin, Supervisor y Agente
+        },
+        {
+          id: 32,
+          descripcion: 'Cambiar Estado',
+          icono: 'bi bi-arrow-repeat',
+          link: '/leads/estados',
+          roles: [2, 3, 4, 6], // Todos excepto Programador
+        },
+        {
+          id: 33,
+          descripcion: 'Historial',
+          icono: 'bi bi-clock-history',
+          link: '/leads/historial',
+          roles: [2, 3, 4, 6], // Todos excepto Programador
+        },
+        {
+          id: 34,
+          descripcion: 'Notas',
+          icono: 'bi bi-journal-text',
+          link: '/leads/notas',
+          roles: [2, 3, 4, 6], // Todos excepto Programador
+        },
+        {
+          id: 35,
+          descripcion: 'Adjuntos',
+          icono: 'bi bi-paperclip',
+          link: '/leads/adjuntos',
+          roles: [2, 3, 4, 6], // Todos excepto Programador
+        },
+        {
+          id: 36,
+          descripcion: 'Mis Leads',
+          icono: 'bi bi-person',
+          link: '/leads/mis-leads',
+          roles: [4], // Solo Agente - ve solo sus leads
+        },
+        {
+          id: 37,
+          descripcion: 'Leads Asignados',
+          icono: 'bi bi-person-check',
+          link: '/leads/asignados',
+          roles: [6], // Solo Asistente - ve leads asignados
+        },
+        {
+          id: 38,
+          descripcion: 'Todos los Leads',
+          icono: 'bi bi-people-fill',
+          link: '/leads/todos',
+          roles: [2, 3], // Solo Admin y Supervisor
+        },
       ],
     },
 
+    // 📅 Agenda
     {
       id: 4,
-      descripcion: 'Clientes',
-      icono: 'bi bi-people-fill',
-      link: '/recursos/clientes',
-      grupo: 'GM03',
-      principal: true,
-      orden: 4,
-      estado: true,
-      requiredAccess: [
-        Roles.SuperAdmin,
-        Roles.Operario,
-        Roles.Supervisor,
-        Roles.Administrador,
+      descripcion: 'Agenda',
+      icono: 'bi bi-calendar',
+      link: '/agenda',
+      roles: [2, 3, 4, 6], // Admin, Supervisor, Agente y Asistente
+      submenus: [
+        {
+          id: 41,
+          descripcion: 'Ver Agenda',
+          icono: 'bi bi-calendar-event',
+          link: '/agenda/ver',
+          roles: [2, 3, 4, 6], // Todos excepto Programador
+        },
+        {
+          id: 42,
+          descripcion: 'Crear Visitas',
+          icono: 'bi bi-calendar-plus',
+          link: '/agenda/crear-visita',
+          roles: [2, 3, 4, 6], // Todos excepto Programador
+        },
+        {
+          id: 43,
+          descripcion: 'Recordatorios',
+          icono: 'bi bi-bell',
+          link: '/agenda/recordatorios',
+          roles: [2, 3, 4, 6], // Todos excepto Programador
+        },
       ],
     },
 
+    // 👤 Clientes
     {
       id: 5,
-      descripcion: 'Obras',
-      icono: 'bi bi-card-list',
-      link: '/recursos/obras',
-      grupo: 'GM04',
-      principal: true,
-      orden: 5,
-      estado: true,
-      requiredAccess: [
-        Roles.SuperAdmin,
-        Roles.Operario,
-        Roles.Supervisor,
-        Roles.Administrador,
+      descripcion: 'Clientes',
+      icono: 'bi bi-person-badge',
+      link: '/clientes',
+      roles: [2, 3, 4], // Admin, Supervisor y Agente
+      submenus: [
+        {
+          id: 51,
+          descripcion: 'Ver / Crear Clientes',
+          icono: 'bi bi-person-plus',
+          link: '/clientes/gestionar',
+          roles: [2, 3, 4], // Admin, Supervisor y Agente
+        },
+        {
+          id: 52,
+          descripcion: 'Historial',
+          icono: 'bi bi-clock-history',
+          link: '/clientes/historial',
+          roles: [2, 3, 4], // Admin, Supervisor y Agente
+        },
       ],
     },
 
-    // 6. Movimientos (principal con submenús)
+    // 🧾 Operaciones
     {
       id: 6,
-      descripcion: 'Movimientos',
-      icono: 'bi bi-arrow-left-right',
-      link: '/movimientos',
-      grupo: 'GM05',
-      principal: true,
-      orden: 6,
-      estado: true,
-      requiredAccess: [
-        Roles.SuperAdmin,
-        Roles.Operario,
-        Roles.Supervisor,
-        Roles.Administrador,
-      ],
-    },
-    {
-      id: 51,
-      descripcion: 'Registrar Préstamo',
-      icono: 'bi bi-box-arrow-in-right',
-      link: '/movimientos/prestamo',
-      grupo: 'GM05',
-      principal: false,
-      orden: 1,
-      estado: true,
-      requiredAccess: [
-        Roles.SuperAdmin,
-        Roles.Operario,
-        Roles.Supervisor,
-        Roles.Administrador,
-      ],
-    },
-    {
-      id: 52,
-      descripcion: 'Registrar Devolución',
-      icono: 'bi bi-box-arrow-in-left',
-      link: '/movimientos/devolucion',
-      grupo: 'GM05',
-      principal: false,
-      orden: 2,
-      estado: true,
-      requiredAccess: [
-        Roles.SuperAdmin,
-        Roles.Operario,
-        Roles.Supervisor,
-        Roles.Administrador,
-      ],
-    },
-    {
-      id: 53,
-      descripcion: 'Registrar Reparación',
-      icono: 'bi bi-tools',
-      link: '/movimientos/reparacion',
-      grupo: 'GM05',
-      principal: false,
-      orden: 3,
-      estado: true,
-      requiredAccess: [
-        Roles.SuperAdmin,
-        Roles.Operario,
-        Roles.Supervisor,
-        Roles.Administrador,
-      ],
-    },
-    {
-      id: 54,
-      descripcion: 'Historial de Movimientos',
-      icono: 'bi bi-clock-history',
-      link: '/movimientos/historial',
-      grupo: 'GM05',
-      principal: false,
-      orden: 4,
-      estado: true,
-      requiredAccess: [
-        Roles.SuperAdmin,
-        Roles.Operario,
-        Roles.Supervisor,
-        Roles.Administrador,
+      descripcion: 'Operaciones',
+      icono: 'bi bi-briefcase',
+      link: '/operaciones',
+      roles: [2, 3], // Solo Admin y Supervisor
+      submenus: [
+        {
+          id: 61,
+          descripcion: 'Crear Operaciones',
+          icono: 'bi bi-plus-circle',
+          link: '/operaciones/crear',
+          roles: [2, 3], // Solo Admin y Supervisor
+        },
+        {
+          id: 62,
+          descripcion: 'Cerrar Ventas / Alquileres',
+          icono: 'bi bi-check-circle',
+          link: '/operaciones/cerrar',
+          roles: [2, 3], // Solo Admin y Supervisor
+        },
+        {
+          id: 63,
+          descripcion: 'Ver Comisiones',
+          icono: 'bi bi-cash-coin',
+          link: '/operaciones/comisiones',
+          roles: [2, 3], // Solo Admin y Supervisor
+        },
       ],
     },
 
-    // 6. Reportes (principal con submenús)
+    // 👥 Equipo - Solo Admin
     {
-      id: 6,
+      id: 7,
+      descripcion: 'Equipo',
+      icono: 'bi bi-people-fill',
+      link: '/equipo',
+      roles: [2], // Solo Administrador
+      submenus: [
+        {
+          id: 71,
+          descripcion: 'Alta / Baja Usuarios',
+          icono: 'bi bi-person-plus',
+          link: '/equipo/usuarios',
+          roles: [2], // Solo Administrador
+        },
+        {
+          id: 72,
+          descripcion: 'Asignar Roles',
+          icono: 'bi bi-shield-check',
+          link: '/equipo/roles',
+          roles: [2], // Solo Administrador
+        },
+        {
+          id: 73,
+          descripcion: 'Estados de Usuario',
+          icono: 'bi bi-person-check',
+          link: '/equipo/estados',
+          roles: [2], // Solo Administrador
+        },
+      ],
+    },
+
+    // 🏢 Inmobiliaria - Solo Admin
+    {
+      id: 8,
+      descripcion: 'Inmobiliaria',
+      icono: 'bi bi-building',
+      link: '/inmobiliaria',
+      roles: [2], // Solo Administrador
+      submenus: [
+        {
+          id: 81,
+          descripcion: 'Datos de la Inmobiliaria',
+          icono: 'bi bi-info-circle',
+          link: '/inmobiliaria/datos',
+          roles: [2], // Solo Administrador
+        },
+        {
+          id: 82,
+          descripcion: 'Marca / Subdominio',
+          icono: 'bi bi-globe',
+          link: '/inmobiliaria/marca',
+          roles: [2], // Solo Administrador
+        },
+        {
+          id: 83,
+          descripcion: 'Integraciones',
+          icono: 'bi bi-plug',
+          link: '/inmobiliaria/integraciones',
+          roles: [2], // Solo Administrador
+        },
+      ],
+    },
+
+    // 💳 Plan & Facturación - Solo Admin
+    {
+      id: 9,
+      descripcion: 'Plan & Facturación',
+      icono: 'bi bi-credit-card',
+      link: '/plan-facturacion',
+      roles: [2], // Solo Administrador
+      submenus: [
+        {
+          id: 91,
+          descripcion: 'Plan Actual',
+          icono: 'bi bi-star',
+          link: '/plan-facturacion/plan',
+          roles: [2], // Solo Administrador
+        },
+        {
+          id: 92,
+          descripcion: 'Facturas',
+          icono: 'bi bi-receipt',
+          link: '/plan-facturacion/facturas',
+          roles: [2], // Solo Administrador
+        },
+        {
+          id: 93,
+          descripcion: 'Métodos de Pago',
+          icono: 'bi bi-credit-card',
+          link: '/plan-facturacion/metodos-pago',
+          roles: [2], // Solo Administrador
+        },
+      ],
+    },
+
+    // 📊 Reportes - Admin y Supervisor
+    {
+      id: 10,
       descripcion: 'Reportes',
       icono: 'bi bi-bar-chart',
       link: '/reportes',
-      grupo: 'GM06',
-      principal: true,
-      orden: 6,
-      estado: true,
-      requiredAccess: [
-        Roles.SuperAdmin,
-        Roles.Operario,
-        Roles.Supervisor,
-        Roles.Administrador,
-      ],
-    },
-    {
-      id: 61,
-      descripcion: 'Herramientas por Estado',
-      icono: 'bi bi-clipboard-data',
-      link: '/reportes/estado',
-      grupo: 'GM06',
-      principal: false,
-      orden: 1,
-      estado: true,
-      requiredAccess: [
-        Roles.SuperAdmin,
-        Roles.Operario,
-        Roles.Supervisor,
-        Roles.Administrador,
-      ],
-    },
-    {
-      id: 62,
-      descripcion: 'Stock Valorizado',
-      icono: 'bi bi-cash-coin',
-      link: '/reportes/valorizacion',
-      grupo: 'GM06',
-      principal: false,
-      orden: 2,
-      estado: true,
-      requiredAccess: [
-        Roles.SuperAdmin,
-        Roles.Operario,
-        Roles.Supervisor,
-        Roles.Administrador,
-      ],
-    },
-    {
-      id: 64,
-      descripcion: 'Disponibilidad de Herramientas',
-      icono: 'bi bi-calendar-range',
-      link: '/reportes/disponibilidad',
-      grupo: 'GM06',
-      principal: false,
-      orden: 4,
-      estado: true,
-      requiredAccess: [
-        Roles.SuperAdmin,
-        Roles.Operario,
-        Roles.Supervisor,
-        Roles.Administrador,
+      roles: [2, 3], // Admin y Supervisor
+      submenus: [
+        {
+          id: 101,
+          descripcion: 'Reportes Generales',
+          icono: 'bi bi-graph-up',
+          link: '/reportes/generales',
+          roles: [2, 3], // Admin y Supervisor
+        },
+        {
+          id: 102,
+          descripcion: 'Exportaciones',
+          icono: 'bi bi-download',
+          link: '/reportes/exportaciones',
+          roles: [2, 3], // Admin y Supervisor
+        },
       ],
     },
 
-    // 7. Configuración (solo SuperAdmin, con submenús)
+    // ⚙️ Configuración - Solo Admin
     {
-      id: 7,
+      id: 11,
       descripcion: 'Configuración',
       icono: 'bi bi-gear',
       link: '/configuracion',
-      grupo: 'GM07',
-      principal: true,
-      orden: 7,
-      estado: false,
-      requiredAccess: [Roles.SuperAdmin],
+      roles: [2], // Solo Administrador
+      submenus: [
+        {
+          id: 111,
+          descripcion: 'Estados',
+          icono: 'bi bi-tags',
+          link: '/configuracion/estados',
+          roles: [2], // Solo Administrador
+        },
+        {
+          id: 112,
+          descripcion: 'Automatizaciones',
+          icono: 'bi bi-robot',
+          link: '/configuracion/automatizaciones',
+          roles: [2], // Solo Administrador
+        },
+        {
+          id: 113,
+          descripcion: 'Plantillas',
+          icono: 'bi bi-file-earmark-text',
+          link: '/configuracion/plantillas',
+          roles: [2], // Solo Administrador
+        },
+      ],
     },
+
+    // 🔔 Notificaciones - Todos los roles
     {
-      id: 71,
-      descripcion: 'Parámetros Generales',
-      icono: 'bi bi-sliders',
-      link: '/configuracion/parametros',
-      grupo: 'GM07',
-      principal: false,
-      orden: 1,
-      estado: true,
-      requiredAccess: [Roles.SuperAdmin],
+      id: 12,
+      descripcion: 'Notificaciones',
+      icono: 'bi bi-bell',
+      link: '/notificaciones',
+      roles: [1, 2, 3, 4, 6], // Todos los roles
     },
+
+    // 🧩 Integraciones - Solo Admin
     {
-      id: 72,
-      descripcion: 'Tipos de Estado',
-      icono: 'bi bi-tags',
-      link: '/configuracion/estados',
-      grupo: 'GM07',
-      principal: false,
-      orden: 2,
-      estado: true,
-      requiredAccess: [Roles.SuperAdmin],
+      id: 13,
+      descripcion: 'Integraciones',
+      icono: 'bi bi-plug',
+      link: '/integraciones',
+      roles: [2], // Solo Administrador
     },
+
+    // 🆘 Ayuda & Soporte - Todos los roles
     {
-      id: 73,
-      descripcion: 'Alertas y Notificaciones',
-      icono: 'bi bi-bell-fill',
-      link: '/configuracion/alertas',
-      grupo: 'GM07',
-      principal: false,
-      orden: 3,
-      estado: true,
-      requiredAccess: [Roles.SuperAdmin],
+      id: 14,
+      descripcion: 'Ayuda & Soporte',
+      icono: 'bi bi-question-circle',
+      link: '/ayuda',
+      roles: [1, 2, 3, 4, 6], // Todos los roles
+    },
+
+    // 🔐 Gestión SaaS - Solo Programador (Super Admin)
+    {
+      id: 15,
+      descripcion: 'Gestión SaaS',
+      icono: 'bi bi-cloud',
+      link: '/gestion-saas',
+      roles: [1], // Solo Programador
+      submenus: [
+        {
+          id: 151,
+          descripcion: 'Inmobiliarias',
+          icono: 'bi bi-building',
+          link: '/gestion-saas/inmobiliarias',
+          roles: [1], // Solo Programador
+        },
+        {
+          id: 152,
+          descripcion: 'Planes',
+          icono: 'bi bi-star',
+          link: '/gestion-saas/planes',
+          roles: [1], // Solo Programador
+        },
+        {
+          id: 153,
+          descripcion: 'Suscripciones',
+          icono: 'bi bi-calendar-check',
+          link: '/gestion-saas/suscripciones',
+          roles: [1], // Solo Programador
+        },
+        {
+          id: 154,
+          descripcion: 'Métricas Globales',
+          icono: 'bi bi-graph-up-arrow',
+          link: '/gestion-saas/metricas',
+          roles: [1], // Solo Programador
+        },
+        {
+          id: 155,
+          descripcion: 'Feature Flags',
+          icono: 'bi bi-flag',
+          link: '/gestion-saas/features',
+          roles: [1], // Solo Programador
+        },
+        {
+          id: 156,
+          descripcion: 'Estados Maestros',
+          icono: 'bi bi-gear-wide-connected',
+          link: '/gestion-saas/estados-maestros',
+          roles: [1], // Solo Programador
+        },
+        {
+          id: 157,
+          descripcion: 'Logs',
+          icono: 'bi bi-journal-code',
+          link: '/gestion-saas/logs',
+          roles: [1], // Solo Programador
+        },
+      ],
     },
   ];
 
-  // Servicios inyectados
-  private authService = inject(AuthService);
-  private alertaService = inject(AlertaService);
-  private router = inject(Router);
-  private el = inject(ElementRef);
-  private sidebarService = inject(SidebarService);
+  constructor(private authService: AuthService, private router: Router) { }
 
-  // Mapeo de roles a IDs
-  private roleMapping = {
-    SuperAdmin: Roles.SuperAdmin,
-    Administrador: Roles.Administrador,
-    Supervisor: Roles.Supervisor,
-    Operario: Roles.Operario,
-  };
-
-  @HostListener('window:resize')
-  onResize() {
-    const previousState = this.isSmallScreen;
-    this.isSmallScreen = window.innerWidth < 992;
-
-    if (this.isSmallScreen !== previousState) {
-      if (this.isSmallScreen) {
-        this.isSidebarVisible = false;
-        // sincronizar con el servicio para que otros componentes (topbar) reciban el cambio
-        this.sidebarService.hide();
-      } else {
-        this.isSidebarVisible = this.isLoggedIn;
-        // sincronizar con el servicio
-        if (this.isLoggedIn) {
-          this.sidebarService.show();
-        } else {
-          this.sidebarService.hide();
-        }
-      }
-    }
-  }
-
-  ngOnInit() {
+  ngOnInit(): void {
     this.loadUserData();
-
-    // Suscribir al router para actualizar el título de la página
-    this.subscription.add(
-      this.router.events
-        .pipe(filter((e) => e instanceof NavigationEnd))
-        .subscribe((nav) => {
-          const navEnd = nav as NavigationEnd;
-          const path = navEnd.urlAfterRedirects || navEnd.url;
-
-          // Determinar título específico según la ruta - ser más conciso
-          if (path && path.startsWith('/perfil')) {
-            this.pageTitle = 'Mi Perfil';
-          } else if (path && path.startsWith('/herramienta')) {
-            this.pageTitle = 'Herramientas';
-          } else if (path && path.startsWith('/user')) {
-            this.pageTitle = 'Usuarios';
-          } else if (path && path.startsWith('/recursos/proveedores')) {
-            this.pageTitle = 'Proveedores';
-          } else if (path && path.startsWith('/recursos/clientes')) {
-            this.pageTitle = 'Clientes';
-          } else if (path && path.startsWith('/recursos/obras')) {
-            this.pageTitle = 'Obras';
-          } else if (path && path.startsWith('/movimientos')) {
-            // Rutas específicas dentro de /movimientos
-            const segments = path.split('/').filter((s) => s.length > 0);
-            const sub = (segments[1] ?? '').toLowerCase();
-            switch (sub) {
-              case 'prestamo':
-                this.pageTitle = 'Registrar Préstamo';
-                break;
-              case 'devolucion':
-                this.pageTitle = 'Registrar Devolución';
-                break;
-              case 'reparacion':
-                this.pageTitle = 'Registrar Reparación';
-                break;
-              case 'historial':
-                this.pageTitle = 'Historial de Movimientos';
-                break;
-              default:
-                this.pageTitle = 'Movimientos';
-            }
-          } else if (path && path.startsWith('/reportes')) {
-            // Rutas específicas dentro de /reportes
-            const segments = path.split('/').filter((s) => s.length > 0);
-            const sub = (segments[1] ?? '').toLowerCase();
-            switch (sub) {
-              case 'estado':
-                this.pageTitle = 'Herramientas por Estado';
-                break;
-              case 'valorizacion':
-              case 'valorización':
-                this.pageTitle = 'Stock Valorizado';
-                break;
-              case 'disponibilidad':
-                this.pageTitle = 'Disponibilidad de Herramientas';
-                break;
-              default:
-                this.pageTitle = 'Reportes';
-            }
-          } else if (path && path.startsWith('/configuracion')) {
-            this.pageTitle = 'Configuración';
-          } else if (
-            path &&
-            (path.startsWith('/dashboard') ||
-              path === '/inicio' ||
-              path === '/')
-          ) {
-            this.pageTitle = 'Inicio';
-          } else {
-            // Para rutas no reconocidas, usar un título neutro específico
-            this.pageTitle = 'Navegación';
-          }
-        })
-    );
-
-    this.subscription.add(
-      this.authService.loggedIn$.subscribe((isLoggedIn: boolean) => {
-        this.isLoggedIn = isLoggedIn;
-        if (isLoggedIn) {
-          if (this.isSmallScreen) {
-            this.sidebarService.hide();
-          } else {
-            this.sidebarService.show();
-          }
-          this.loadUserData();
-        } else {
-          this.sidebarService.hide();
-        }
-      })
-    );
-
-    this.subscription.add(
-      this.sidebarService.visible$.subscribe((v) => {
-        this.isSidebarVisible = v;
-      })
-    );
+    this.checkAuthStatus();
   }
 
-  ngOnDestroy() {
-    this.subscription.unsubscribe();
+  private checkAuthStatus(): void {
+    this.isLoggedIn = this.authService.isLoggedIn();
+    this.authService.loggedIn$.subscribe(loggedIn => {
+      this.isLoggedIn = loggedIn;
+      if (loggedIn) {
+        this.loadUserData();
+      }
+    });
   }
 
-  private loadUserData() {
+  private loadUserData(): void {
     const user = this.authService.getUser();
     if (user) {
-      console.log('Cargando datos del usuario en SidebarComponent:', user);
-
-      // Mapear el rol string a número
-      const roleName = user.rolNombre ?? user.role ?? user.rol ?? '';
-      const mappedRoleId =
-        this.roleMapping[roleName as keyof typeof this.roleMapping];
-
-      this.id_acceso =
-        mappedRoleId != null
-          ? mappedRoleId
-          : user.id_acceso != null
-            ? Number(user.id_acceso)
-            : 0;
-
-      const nombre = user.nombre || '';
-      const apellido = user.apellido || '';
-      this.nombreCompleto = `${nombre} ${apellido}`.trim() || 'Usuario';
-
+      this.userRole = user.id_acceso || 0;
       this.userEmail = user.email || '';
-      this.displayEmail =
-        this.userEmail && this.userEmail.length > 22
-          ? this.userEmail.slice(0, 19) + '...'
-          : this.userEmail;
-
-      this.userLegajo = user.legajo ? String(user.legajo) : '';
-      this.displayLegajo =
-        this.userLegajo && this.userLegajo.length > 12
-          ? this.userLegajo.slice(0, 9) + '...'
-          : this.userLegajo;
-
-      this.displayRole = user.rolNombre || user.role || user.rol || '';
-
-      const legInfo = this.userLegajo ? `Legajo: ${this.userLegajo}` : '';
-      const nameInfo = this.nombreCompleto ? ` — ${this.nombreCompleto}` : '';
-      this.displayUserLabel = (legInfo + nameInfo).trim() || 'Usuario'; // Asignar valor a displayUserLabel
-
-      console.log('Usuario cargado:', {
-        roleName,
-        mappedRoleId,
-        id_acceso: this.id_acceso,
-        user,
-      });
-    } else {
-      this.id_acceso = 0;
-      this.nombreCompleto = 'Usuario Demo';
-      this.userEmail = '';
-      this.displayEmail = '';
-      this.userLegajo = '';
+      this.displayEmail = this.userEmail.length > 22 ? this.userEmail.slice(0, 19) + '...' : this.userEmail;
+      this.userLegajo = ''; // No hay legajo en la nueva estructura
       this.displayLegajo = '';
-      this.displayUserLabel = 'Usuario'; // Valor por defecto
-      this.displayRole = '';
+      this.displayRole = user.rolNombre || '';
+      this.displayUserLabel = user.nombre || 'Usuario';
     }
   }
 
-  // Getters para el menú filtrado
   get visibleMenuItems(): MenuItem[] {
-    return this.allMenuItems
-      .filter(
-        (item) =>
-          item.principal && item.estado && this.isItemVisibleForUser(item)
-      )
-      .sort((a, b) => a.orden - b.orden);
+    return this.menuItems.filter((item) => item.roles.includes(this.userRole));
   }
 
   getSubMenus(menu: MenuItem): MenuItem[] {
-    return this.allMenuItems
-      .filter(
-        (item) =>
-          !item.principal &&
-          item.grupo === menu.grupo &&
-          item.estado &&
-          this.isItemVisibleForUser(item)
-      )
-      .sort((a, b) => a.orden - b.orden);
-  }
-
-  private isItemVisibleForUser(item: MenuItem): boolean {
-    if (!this.isLoggedIn || !this.id_acceso) return false;
-
-    const itemAllowed =
-      item.requiredAccess && item.requiredAccess.length > 0
-        ? item.requiredAccess.map((x) => Number(x))
-        : undefined;
-
-    const parentAllowed = this.getParentRequiredAccessForLink(item.link);
-
-    if (parentAllowed && parentAllowed.length > 0) {
-      const allowed =
-        itemAllowed && itemAllowed.length > 0
-          ? itemAllowed.filter((x) => parentAllowed.includes(x))
-          : parentAllowed;
-      return allowed.includes(this.id_acceso);
-    }
-
-    if (!itemAllowed || itemAllowed.length === 0) return true;
-    return itemAllowed.includes(this.id_acceso);
-  }
-
-  private getParentRequiredAccessForLink(link: string): number[] | undefined {
-    try {
-      const segments = link.split('/').filter((s) => s.length > 0);
-      if (segments.length === 0) return undefined;
-      const first = segments[0];
-      const route = this.router.config.find((r) => r.path === first);
-      const ra = route?.data?.['requiredAccess'] as number[] | undefined;
-      return ra ? ra.map((x) => Number(x)) : undefined;
-    } catch (e) {
-      return undefined;
-    }
-  }
-
-  toggleSubMenu(menu: MenuItem) {
-    if (this.getSubMenus(menu).length === 0 && menu.link) {
-      this.router.navigate([menu.link]); // Navegar directamente si no hay submenús
-      if (this.isSmallScreen) {
-        this.sidebarService.hide();
-      }
-    } else {
-      this.visibleMenuItems.forEach((m) => {
-        if (m !== menu) m.expanded = false;
-      });
-      menu.expanded = !menu.expanded;
-    }
-  }
-
-  navigateToSubMenu(subMenu: MenuItem) {
-    if (subMenu.link && subMenu.link !== '/') {
-      this.router.navigate([subMenu.link]);
-      if (this.isSmallScreen) {
-        this.sidebarService.hide();
-      }
-    }
+    return menu.submenus?.filter((submenu) =>
+      submenu.roles.includes(this.userRole)
+    ) || [];
   }
 
   isMenuExpanded(menu: MenuItem): boolean {
     return !!menu.expanded;
   }
 
-  toggleSidebar() {
-    this.sidebarService.toggle();
-  }
-
-  navigateToHome() {
-    this.router.navigate(['/inicio']);
-  }
-
-  getNombreCompleto(): string {
-    return this.nombreCompleto || 'Usuario';
-  }
-
-  confirmLogout() {
-    this.isPerfilModalVisible = false;
-
-    this.alertaService
-      .confirm('¿Estás seguro de que deseas cerrar sesión?', '¿Cerrar sesión?')
-      .then((result: any) => {
-        if (result && result.isConfirmed) {
-          this.authService.logout();
-          this.router.navigate(['/login/login']);
-        }
+  toggleSubMenu(menu: MenuItem): void {
+    if (!menu.submenus || menu.submenus.length === 0) {
+      this.navigateTo(menu.link);
+    } else {
+      // Cerrar otros menús
+      this.menuItems.forEach(item => {
+        if (item !== menu) item.expanded = false;
       });
-  }
-
-  togglePerfilModal() {
-    this.isPerfilModalVisible = !this.isPerfilModalVisible;
-  }
-
-  onPerfilModalToggled(isVisible: boolean) {
-    this.isPerfilModalVisible = isVisible;
-  }
-
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: Event) {
-    const target = event.target as HTMLElement;
-    if (!this.isPerfilModalVisible) return;
-
-    const toggle = this.el.nativeElement.querySelector(
-      '.profile-toggle'
-    ) as HTMLElement | null;
-    const dropdown = this.el.nativeElement.querySelector(
-      '.profile-dropdown'
-    ) as HTMLElement | null;
-
-    if (
-      (toggle && toggle.contains(target)) ||
-      (dropdown && dropdown.contains(target))
-    ) {
-      return;
+      menu.expanded = !menu.expanded;
     }
-
-    this.isPerfilModalVisible = false;
   }
 
-  // Helper method para verificar roles
+  navigateToSubMenu(subMenu: MenuItem): void {
+    this.navigateTo(subMenu.link);
+  }
+
+  navigateTo(link: string): void {
+    this.router.navigate([link]);
+  }
+
+  navigateToHome(): void {
+    this.router.navigate(['/dashboard']);
+  }
+
+  // Métodos requeridos por topbar
+  onPerfilModalToggled(isVisible: boolean): void {
+    // Implementar según necesidad
+  }
+
+  confirmLogout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
+
+  toggleSidebar(): void {
+    this.isSidebarVisible = !this.isSidebarVisible;
+  }
+
   isRole(roleName: string): boolean {
     return this.displayRole?.toLowerCase() === roleName.toLowerCase();
   }

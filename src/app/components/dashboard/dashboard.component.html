@@ -1,0 +1,115 @@
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <h1>Dashboard</h1>
+    <div class="date-filter">
+      <select class="form-select">
+        <option>Hoy</option>
+        <option>Esta semana</option>
+        <option>Este mes</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- KPIs Cards -->
+  <div class="kpis-section">
+    <div class="row">
+      <div class="col-md-2">
+        <div class="kpi-card leads">
+          <div class="kpi-icon">👥</div>
+          <div class="kpi-content">
+            <h3>{{ kpis.leadsNuevos }}</h3>
+            <p>Leads Nuevos</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2">
+        <div class="kpi-card leads-active">
+          <div class="kpi-icon">🔥</div>
+          <div class="kpi-content">
+            <h3>{{ kpis.leadsActivos }}</h3>
+            <p>Leads Activos</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2">
+        <div class="kpi-card propiedades">
+          <div class="kpi-icon">🏠</div>
+          <div class="kpi-content">
+            <h3>{{ kpis.propiedadesPublicadas }}</h3>
+            <p>Propiedades</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2">
+        <div class="kpi-card visitas">
+          <div class="kpi-icon">📅</div>
+          <div class="kpi-content">
+            <h3>{{ kpis.visitasHoy }}</h3>
+            <p>Visitas Hoy</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2">
+        <div class="kpi-card visitas-semana">
+          <div class="kpi-icon">📆</div>
+          <div class="kpi-content">
+            <h3>{{ kpis.visitasSemana }}</h3>
+            <p>Esta Semana</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2">
+        <div class="kpi-card operaciones">
+          <div class="kpi-icon">💰</div>
+          <div class="kpi-content">
+            <h3>{{ kpis.operacionesCerradas }}</h3>
+            <p>Cerradas</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alertas -->
+  <div class="alerts-section" *ngIf="alertas.length > 0">
+    <h3>Alertas Importantes</h3>
+    <div class="alerts-container">
+      <div *ngFor="let alerta of alertas" 
+           class="alert" 
+           [ngClass]="'alert-' + alerta.tipo">
+        {{ alerta.mensaje }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Actividad Reciente -->
+  <div class="activity-section">
+    <h3>Actividad Reciente</h3>
+    <div class="activity-list">
+      <div *ngFor="let actividad of actividadReciente" class="activity-item">
+        <div class="activity-time">{{ actividad.fecha }}</div>
+        <div class="activity-description">{{ actividad.descripcion }}</div>
+        <div class="activity-type">{{ actividad.tipo }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Accesos Rápidos -->
+  <div class="quick-actions">
+    <h3>Accesos Rápidos</h3>
+    <div class="action-buttons">
+      <button class="btn btn-primary" routerLink="/leads/crear">
+        <i class="bi bi-person-plus"></i>
+        Nuevo Lead
+      </button>
+      <button class="btn btn-success" routerLink="/propiedades/crear">
+        <i class="bi bi-house-add"></i>
+        Nueva Propiedad
+      </button>
+      <button class="btn btn-info" routerLink="/agenda/crear-visita">
+        <i class="bi bi-calendar-plus"></i>
+        Agendar Visita
+      </button>
+    </div>
+  </div>
+</div>

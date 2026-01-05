@@ -42,7 +42,6 @@
         <!-- Enlace del menú principal -->
         <a class="nav-link" (click)="toggleSubMenu(menu)">
           <i class="{{ menu.icono }}"></i>
-          <!-- Icono del menú principal -->
           <span>{{ menu.descripcion }}</span>
           <i
             class="arrow"
@@ -69,28 +68,13 @@
           </li>
         </ul>
       </li>
-
-      <!-- Nuevo ítem "Perfil" visible solo para roles distintos a SuperAdmin -->
-      <li class="nav-item" *ngIf="!isRole('SuperAdmin')">
-        <a
-          class="nav-link"
-          routerLink="/perfil"
-          routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: true }"
-        >
-          <i class="bx bx-user" aria-hidden="true"></i>
-          <span>Perfil</span>
-        </a>
-      </li>
     </ul>
 
     <!-- Información del usuario logueado -->
-    <div class="sidebar-user-info" *ngIf="isLoggedIn">
+    <div class="sidebar-user-info">
       <div class="user-pill" [ngbTooltip]="displayUserLabel" placement="top">
         <i class="bi bi-person-badge"></i>
-        <span class="user-legajo">{{
-          displayLegajo || userLegajo || "Sin legajo"
-        }}</span>
+        <span class="user-legajo">{{ displayLegajo || "Sin legajo" }}</span>
       </div>
       <div
         class="user-role-badge"

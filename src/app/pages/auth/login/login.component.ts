@@ -68,7 +68,6 @@ export class LoginComponent implements OnInit {
   onSubmit(): void {
     // Validar campos antes de enviar
     if (!this.validateForm()) {
-      // Asegurar spinner apagado si la validación falla
       this.isLoading = false;
       return;
     }
@@ -76,26 +75,22 @@ export class LoginComponent implements OnInit {
     if (this.loginForm.valid) {
       const { email, password } = this.loginForm.value;
 
-      // Mostrar spinner inmediatamente al intentar loguear
       this.isLoading = true;
       this.loginStartTime = Date.now();
 
       this.loginService.login(email, password).subscribe({
         next: (response) => {
-          // Calcula cuánto tiempo ha pasado desde que se mostró el spinner
           const now = Date.now();
           const elapsed = this.loginStartTime ? now - this.loginStartTime : 0;
           const remaining = Math.max(0, this.ARTIFICIAL_DELAY_MS - elapsed);
 
-          // Esperar el tiempo restante para asegurar que el spinner haya estado visible 3s
           setTimeout(() => {
-            // Usar directamente la estructura del usuario que viene en la respuesta
+            // Usar la estructura del usuario que viene en response.usuario
             const userData = response.usuario;
 
             // Save token and user data
             this.authService.saveAuthData(response.token, userData);
 
-            // Apagar spinner y navegar
             this.isLoading = false;
             this.loginStartTime = null;
             this.router.navigate(['/dashboard']);
@@ -104,10 +99,8 @@ export class LoginComponent implements OnInit {
         error: (error) => {
           console.error('Login error:', error);
 
-          // Normalizar mensaje amigable
           const normalizedMessage = this.normalizeError(error);
 
-          // Si es 401 (contraseña/usuario incorrecto) mantener spinner hasta completar el retardo mínimo
           if (this.isUnauthorized(error)) {
             const now = Date.now();
             const elapsed = this.loginStartTime ? now - this.loginStartTime : 0;
@@ -117,9 +110,10 @@ export class LoginComponent implements OnInit {
               this.isLoading = false;
               this.loginStartTime = null;
 
-              // Usar mensaje normalizado (preferir backend si lo había)
               const errorMessage =
                 normalizedMessage || 'Correo o contraseña incorrectos.';
+
+              this.loginForm.patchValue({ password: '' });
               this.showErrorToast(errorMessage);
 
               setTimeout(() => {
@@ -132,7 +126,6 @@ export class LoginComponent implements OnInit {
               this.errorMessage = null;
             }, remaining);
           } else {
-            // Otros errores: ocultar spinner y mostrar mensaje amigable inmediatamente
             this.isLoading = false;
             this.loginStartTime = null;
 
@@ -267,7 +260,7 @@ export class LoginComponent implements OnInit {
             err.error?.message ||
             (typeof err.error === 'string' ? err.error : null);
           if (backendMsg) return backendMsg;
-          if (status === 401) return 'Legajo o contraseña incorrectos.';
+          if (status === 401) return 'Correo o contraseña incorrectos.';
           return `Error ${status}: ${err.statusText || 'Error en la comunicación con el servidor'
             }`;
         }
