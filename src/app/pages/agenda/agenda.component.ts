@@ -157,4 +157,8 @@ export class AgendaComponent implements OnInit {
     this.fechaActual = dia;
     this.vistaCalendario = 'dia';
   }
+
+  obtenerEventosDelDia(fecha: string) {
+    return this.eventos.filter(evento => evento.fecha === fecha);
+  }
 }

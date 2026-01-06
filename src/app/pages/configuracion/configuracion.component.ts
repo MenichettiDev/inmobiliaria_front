@@ -158,6 +158,10 @@ export class ConfiguracionComponent implements OnInit {
     }
   }
 
+  eliminarFuente(id: number): void {
+    this.fuentesLead = this.fuentesLead.filter(f => f.id !== id);
+  }
+
   // Etiquetas
   agregarEtiqueta(): void {
     if (this.nuevaEtiqueta.nombre.trim()) {

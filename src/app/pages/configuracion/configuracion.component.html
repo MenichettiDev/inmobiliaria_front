@@ -7,27 +7,47 @@
   <!-- Navegación por pestañas -->
   <ul class="nav nav-tabs mb-4">
     <li class="nav-item">
-      <a class="nav-link" [class.active]="seccionActiva === 'estados'" (click)="cambiarSeccion('estados')">
+      <a
+        class="nav-link"
+        [class.active]="seccionActiva === 'estados'"
+        (click)="cambiarSeccion('estados')"
+      >
         <i class="bi bi-tags"></i> Estados
       </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" [class.active]="seccionActiva === 'fuentes'" (click)="cambiarSeccion('fuentes')">
+      <a
+        class="nav-link"
+        [class.active]="seccionActiva === 'fuentes'"
+        (click)="cambiarSeccion('fuentes')"
+      >
         <i class="bi bi-funnel"></i> Fuentes de Leads
       </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" [class.active]="seccionActiva === 'etiquetas'" (click)="cambiarSeccion('etiquetas')">
+      <a
+        class="nav-link"
+        [class.active]="seccionActiva === 'etiquetas'"
+        (click)="cambiarSeccion('etiquetas')"
+      >
         <i class="bi bi-bookmark"></i> Etiquetas
       </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" [class.active]="seccionActiva === 'automatizaciones'" (click)="cambiarSeccion('automatizaciones')">
+      <a
+        class="nav-link"
+        [class.active]="seccionActiva === 'automatizaciones'"
+        (click)="cambiarSeccion('automatizaciones')"
+      >
         <i class="bi bi-robot"></i> Automatizaciones
       </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" [class.active]="seccionActiva === 'plantillas'" (click)="cambiarSeccion('plantillas')">
+      <a
+        class="nav-link"
+        [class.active]="seccionActiva === 'plantillas'"
+        (click)="cambiarSeccion('plantillas')"
+      >
         <i class="bi bi-file-earmark-text"></i> Plantillas
       </a>
     </li>
@@ -58,14 +78,19 @@
                 </td>
                 <td>
                   <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" 
-                           [checked]="estado.activo"
-                           (change)="toggleEstadoPropiedad(estado.id)">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      [checked]="estado.activo"
+                      (change)="toggleEstadoPropiedad(estado.id)"
+                    />
                   </div>
                 </td>
                 <td>
-                  <button class="btn btn-sm btn-outline-danger" 
-                          (click)="eliminarEstadoPropiedad(estado.id)">
+                  <button
+                    class="btn btn-sm btn-outline-danger"
+                    (click)="eliminarEstadoPropiedad(estado.id)"
+                  >
                     <i class="bi bi-trash"></i>
                   </button>
                 </td>
@@ -80,11 +105,19 @@
           <div class="card-body">
             <div class="mb-3">
               <label class="form-label">Nombre</label>
-              <input type="text" class="form-control" [(ngModel)]="nuevoEstado.nombre">
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="nuevoEstado.nombre"
+              />
             </div>
             <div class="mb-3">
               <label class="form-label">Color</label>
-              <input type="color" class="form-control" [(ngModel)]="nuevoEstado.color">
+              <input
+                type="color"
+                class="form-control"
+                [(ngModel)]="nuevoEstado.color"
+              />
             </div>
             <button class="btn btn-primary" (click)="agregarEstadoPropiedad()">
               <i class="bi bi-plus"></i> Agregar
@@ -101,17 +134,24 @@
     <div class="row">
       <div class="col-md-8">
         <div class="list-group">
-          <div class="list-group-item d-flex justify-content-between align-items-center" 
-               *ngFor="let fuente of fuentesLead">
+          <div
+            class="list-group-item d-flex justify-content-between align-items-center"
+            *ngFor="let fuente of fuentesLead"
+          >
             <span>{{ fuente.nombre }}</span>
             <div>
               <div class="form-check form-switch d-inline-block me-2">
-                <input class="form-check-input" type="checkbox" 
-                       [checked]="fuente.activo"
-                       (change)="toggleFuente(fuente.id)">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  [checked]="fuente.activo"
+                  (change)="toggleFuente(fuente.id)"
+                />
               </div>
-              <button class="btn btn-sm btn-outline-danger" 
-                      (click)="eliminarFuente(fuente.id)">
+              <button
+                class="btn btn-sm btn-outline-danger"
+                (click)="eliminarFuente(fuente.id)"
+              >
                 <i class="bi bi-trash"></i>
               </button>
             </div>
@@ -124,7 +164,11 @@
           <div class="card-body">
             <div class="mb-3">
               <label class="form-label">Nombre</label>
-              <input type="text" class="form-control" [(ngModel)]="nuevaFuente.nombre">
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="nuevaFuente.nombre"
+              />
             </div>
             <button class="btn btn-primary" (click)="agregarFuente()">
               <i class="bi bi-plus"></i> Agregar
@@ -136,7 +180,10 @@
   </div>
 
   <!-- Automatizaciones -->
-  <div *ngIf="seccionActiva === 'automatizaciones'" class="seccion-automatizaciones">
+  <div
+    *ngIf="seccionActiva === 'automatizaciones'"
+    class="seccion-automatizaciones"
+  >
     <h4>Reglas de Automatización</h4>
     <div class="row">
       <div class="col-md-12">
@@ -150,11 +197,17 @@
               </div>
               <div class="d-flex align-items-center">
                 <div class="form-check form-switch me-3">
-                  <input class="form-check-input" type="checkbox" 
-                         [checked]="auto.activa"
-                         (change)="toggleAutomatizacion(auto.id)">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    [checked]="auto.activa"
+                    (change)="toggleAutomatizacion(auto.id)"
+                  />
                 </div>
-                <button class="btn btn-outline-primary" (click)="editarAutomatizacion(auto.id)">
+                <button
+                  class="btn btn-outline-primary"
+                  (click)="editarAutomatizacion(auto.id)"
+                >
                   <i class="bi bi-pencil"></i>
                 </button>
               </div>
@@ -185,24 +238,38 @@
               <tr *ngFor="let plantilla of plantillas">
                 <td>{{ plantilla.nombre }}</td>
                 <td>
-                  <span class="badge" [ngClass]="plantilla.tipo === 'email' ? 'bg-primary' : 'bg-success'">
+                  <span
+                    class="badge"
+                    [ngClass]="
+                      plantilla.tipo === 'email' ? 'bg-primary' : 'bg-success'
+                    "
+                  >
                     {{ plantilla.tipo }}
                   </span>
                 </td>
-                <td>{{ plantilla.asunto || '-' }}</td>
+                <td>{{ plantilla.asunto || "-" }}</td>
                 <td>
                   <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" 
-                           [checked]="plantilla.activa"
-                           (change)="togglePlantilla(plantilla.id)">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      [checked]="plantilla.activa"
+                      (change)="togglePlantilla(plantilla.id)"
+                    />
                   </div>
                 </td>
                 <td>
                   <div class="btn-group btn-group-sm">
-                    <button class="btn btn-outline-primary" (click)="editarPlantilla(plantilla.id)">
+                    <button
+                      class="btn btn-outline-primary"
+                      (click)="editarPlantilla(plantilla.id)"
+                    >
                       <i class="bi bi-pencil"></i>
                     </button>
-                    <button class="btn btn-outline-info" (click)="previsualizarPlantilla(plantilla.id)">
+                    <button
+                      class="btn btn-outline-info"
+                      (click)="previsualizarPlantilla(plantilla.id)"
+                    >
                       <i class="bi bi-eye"></i>
                     </button>
                   </div>

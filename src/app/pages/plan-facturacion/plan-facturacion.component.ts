@@ -6,7 +6,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './plan-facturacion.component.html',
-  styleUrls: ['./plan-facturacion.component.css']
+  // styleUrls: ['./plan-facturacion.component.css']
 })
 export class PlanFacturacionComponent implements OnInit {
   // Plan actual

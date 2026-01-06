@@ -114,6 +114,27 @@ export class OperacionesListadoComponent implements OnInit {
     console.log('Aplicando filtros operaciones');
   }
 
+  limpiarFiltros(): void {
+    this.filtros = {
+      tipo: '',
+      estado: '',
+      agente: '',
+      fechaDesde: '',
+      fechaHasta: ''
+    };
+  }
+
+  calcularComisionTotal(): number {
+    return this.operaciones
+      .filter(op => op.estado === 3)
+      .reduce((total, op) => total + op.comision, 0);
+  }
+
+  obtenerColorEstado(estadoId: number): string {
+    const estado = this.estadosOperacion.find(e => e.id === estadoId);
+    return estado ? estado.color : '#6c757d';
+  }
+
   obtenerEstadoNombre(estadoId: number): string {
     const estado = this.estadosOperacion.find(e => e.id === estadoId);
     return estado ? estado.nombre : 'Sin estado';

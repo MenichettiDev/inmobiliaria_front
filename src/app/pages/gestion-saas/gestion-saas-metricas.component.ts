@@ -6,8 +6,8 @@ import { FormsModule } from '@angular/forms';
   selector: 'app-gestion-saas-metricas',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './gestion-saas-metricas.component.html',
-  styleUrls: ['./gestion-saas-metricas.component.css']
+  template: '',
+  // styleUrls: ['./gestion-saas-metricas.component.css']
 })
 export class GestionSaasMetricasComponent implements OnInit {
   // Período seleccionado
@@ -112,7 +112,7 @@ export class GestionSaasMetricasComponent implements OnInit {
       usuarios: this.crecimiento.usuarios > 10 ? 25 : (this.crecimiento.usuarios > 5 ? 15 : 5),
       soporte: this.metricasSoporte.satisfaccionCliente > 4.5 ? 25 : (this.metricasSoporte.satisfaccionCliente > 4 ? 15 : 5)
     };
-    
+
     return factores.mrr + factores.churn + factores.usuarios + factores.soporte;
   }
 

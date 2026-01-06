@@ -1,109 +1,146 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>Test Menu</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .menu-item { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
-        .submenu { margin-left: 20px; }
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      .menu-item {
+        margin: 10px 0;
+        padding: 10px;
+        border: 1px solid #ccc;
+      }
+      .submenu {
+        margin-left: 20px;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <h1>Menu de Prueba - SaaS Inmobiliario</h1>
-    
+
     <div class="menu-item">
-        <strong>🏠 Dashboard</strong> - <a href="/dashboard">/dashboard</a>
-        <div class="submenu">
-            <div>📊 KPIs Generales - /dashboard/kpis</div>
-            <div>⏰ Actividad Reciente - /dashboard/actividad</div>
-            <div>⚠️ Alertas - /dashboard/alertas</div>
+      <strong>🏠 Dashboard</strong> - <a href="/dashboard">/dashboard</a>
+      <div class="submenu">
+        <div>📊 KPIs Generales - /dashboard/kpis</div>
+        <div>⏰ Actividad Reciente - /dashboard/actividad</div>
+        <div>⚠️ Alertas - /dashboard/alertas</div>
+      </div>
+    </div>
+
+    <div class="menu-item">
+      <strong>🏘 Propiedades</strong> - <a href="/propiedades">/propiedades</a>
+      <div class="submenu">
+        <div>
+          📋 Ver Listado -
+          <a href="/propiedades/listado">/propiedades/listado</a>
         </div>
-    </div>
-
-    <div class="menu-item">
-        <strong>🏘 Propiedades</strong> - <a href="/propiedades">/propiedades</a>
-        <div class="submenu">
-            <div>📋 Ver Listado - <a href="/propiedades/listado">/propiedades/listado</a></div>
-            <div>➕ Crear/Editar - <a href="/propiedades/crear">/propiedades/crear</a></div>
+        <div>
+          ➕ Crear/Editar - <a href="/propiedades/crear">/propiedades/crear</a>
         </div>
+      </div>
     </div>
 
     <div class="menu-item">
-        <strong>👥 Leads/CRM</strong> - <a href="/leads">/leads</a>
-        <div class="submenu">
-            <div>📋 Listado - <a href="/leads/listado">/leads/listado</a></div>
-            <div>➕ Crear - <a href="/leads/crear">/leads/crear</a></div>
-            <div>👤 Mis Leads - <a href="/leads/mis-leads">/leads/mis-leads</a></div>
-            <div>📌 Asignados - <a href="/leads/asignados">/leads/asignados</a></div>
+      <strong>👥 Leads/CRM</strong> - <a href="/leads">/leads</a>
+      <div class="submenu">
+        <div>📋 Listado - <a href="/leads/listado">/leads/listado</a></div>
+        <div>➕ Crear - <a href="/leads/crear">/leads/crear</a></div>
+        <div>
+          👤 Mis Leads - <a href="/leads/mis-leads">/leads/mis-leads</a>
         </div>
-    </div>
-
-    <div class="menu-item">
-        <strong>📅 Agenda</strong> - <a href="/agenda">/agenda</a>
-        <div class="submenu">
-            <div>➕ Crear Visita - <a href="/agenda/crear-visita">/agenda/crear-visita</a></div>
+        <div>
+          📌 Asignados - <a href="/leads/asignados">/leads/asignados</a>
         </div>
+      </div>
     </div>
 
     <div class="menu-item">
-        <strong>👤 Clientes</strong> - <a href="/clientes">/clientes</a>
-    </div>
-
-    <div class="menu-item">
-        <strong>🧾 Operaciones</strong> - <a href="/operaciones">/operaciones</a>
-    </div>
-
-    <div class="menu-item">
-        <strong>👥 Equipo</strong> - <a href="/equipo">/equipo</a>
-    </div>
-
-    <div class="menu-item">
-        <strong>🏢 Inmobiliaria</strong> - <a href="/inmobiliaria">/inmobiliaria</a>
-        <div class="submenu">
-            <div>📄 Datos - <a href="/inmobiliaria/datos">/inmobiliaria/datos</a></div>
+      <strong>📅 Agenda</strong> - <a href="/agenda">/agenda</a>
+      <div class="submenu">
+        <div>
+          ➕ Crear Visita -
+          <a href="/agenda/crear-visita">/agenda/crear-visita</a>
         </div>
+      </div>
     </div>
 
     <div class="menu-item">
-        <strong>💳 Plan & Facturación</strong> - <a href="/plan-facturacion">/plan-facturacion</a>
+      <strong>👤 Clientes</strong> - <a href="/clientes">/clientes</a>
     </div>
 
     <div class="menu-item">
-        <strong>📊 Reportes</strong> - <a href="/reportes">/reportes</a>
+      <strong>🧾 Operaciones</strong> - <a href="/operaciones">/operaciones</a>
     </div>
 
     <div class="menu-item">
-        <strong>⚙️ Configuración</strong> - <a href="/configuracion">/configuracion</a>
+      <strong>👥 Equipo</strong> - <a href="/equipo">/equipo</a>
     </div>
 
     <div class="menu-item">
-        <strong>🔔 Notificaciones</strong> - <a href="/notificaciones">/notificaciones</a>
-    </div>
-
-    <div class="menu-item">
-        <strong>🧩 Integraciones</strong> - <a href="/integraciones">/integraciones</a>
-    </div>
-
-    <div class="menu-item">
-        <strong>🆘 Ayuda & Soporte</strong> - <a href="/ayuda">/ayuda</a>
-    </div>
-
-    <div class="menu-item">
-        <strong>🔐 Gestión SaaS (Super Admin)</strong> - <a href="/gestion-saas">/gestion-saas</a>
-        <div class="submenu">
-            <div>🏢 Inmobiliarias - <a href="/gestion-saas/inmobiliarias">/gestion-saas/inmobiliarias</a></div>
-            <div>📋 Planes - <a href="/gestion-saas/planes">/gestion-saas/planes</a></div>
-            <div>📊 Métricas - <a href="/gestion-saas/metricas">/gestion-saas/metricas</a></div>
-            <div>📜 Logs - <a href="/gestion-saas/logs">/gestion-saas/logs</a></div>
+      <strong>🏢 Inmobiliaria</strong> -
+      <a href="/inmobiliaria">/inmobiliaria</a>
+      <div class="submenu">
+        <div>
+          📄 Datos - <a href="/inmobiliaria/datos">/inmobiliaria/datos</a>
         </div>
+      </div>
+    </div>
+
+    <div class="menu-item">
+      <strong>💳 Plan & Facturación</strong> -
+      <a href="/plan-facturacion">/plan-facturacion</a>
+    </div>
+
+    <div class="menu-item">
+      <strong>📊 Reportes</strong> - <a href="/reportes">/reportes</a>
+    </div>
+
+    <div class="menu-item">
+      <strong>⚙️ Configuración</strong> -
+      <a href="/configuracion">/configuracion</a>
+    </div>
+
+    <div class="menu-item">
+      <strong>🔔 Notificaciones</strong> -
+      <a href="/notificaciones">/notificaciones</a>
+    </div>
+
+    <div class="menu-item">
+      <strong>🧩 Integraciones</strong> -
+      <a href="/integraciones">/integraciones</a>
+    </div>
+
+    <div class="menu-item">
+      <strong>🆘 Ayuda & Soporte</strong> - <a href="/ayuda">/ayuda</a>
+    </div>
+
+    <div class="menu-item">
+      <strong>🔐 Gestión SaaS (Super Admin)</strong> -
+      <a href="/gestion-saas">/gestion-saas</a>
+      <div class="submenu">
+        <div>
+          🏢 Inmobiliarias -
+          <a href="/gestion-saas/inmobiliarias">/gestion-saas/inmobiliarias</a>
+        </div>
+        <div>
+          📋 Planes - <a href="/gestion-saas/planes">/gestion-saas/planes</a>
+        </div>
+        <div>
+          📊 Métricas -
+          <a href="/gestion-saas/metricas">/gestion-saas/metricas</a>
+        </div>
+        <div>📜 Logs - <a href="/gestion-saas/logs">/gestion-saas/logs</a></div>
+      </div>
     </div>
 
     <script>
-        console.log('Menu de prueba cargado');
-        console.log('Rutas disponibles:');
-        document.querySelectorAll('a[href]').forEach(link => {
-            console.log(link.href);
-        });
+      console.log("Menu de prueba cargado");
+      console.log("Rutas disponibles:");
+      document.querySelectorAll("a[href]").forEach((link) => {
+        console.log(link.href);
+      });
     </script>
-</body>
+  </body>
 </html>

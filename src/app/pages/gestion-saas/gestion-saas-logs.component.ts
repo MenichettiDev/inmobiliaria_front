@@ -6,8 +6,8 @@ import { FormsModule } from '@angular/forms';
   selector: 'app-gestion-saas-logs',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './gestion-saas-logs.component.html',
-  styleUrls: ['./gestion-saas-logs.component.css']
+  template: '',
+  // styleUrls: ['./gestion-saas-logs.component.css']
 })
 export class GestionSaasLogsComponent implements OnInit {
   // Filtros de logs
@@ -151,20 +151,20 @@ export class GestionSaasLogsComponent implements OnInit {
     }
 
     if (this.filtros.inmobiliaria) {
-      filtrados = filtrados.filter(log => 
+      filtrados = filtrados.filter(log =>
         log.inmobiliaria && log.inmobiliaria.toLowerCase().includes(this.filtros.inmobiliaria.toLowerCase())
       );
     }
 
     if (this.filtros.usuario) {
-      filtrados = filtrados.filter(log => 
+      filtrados = filtrados.filter(log =>
         log.usuario && log.usuario.toLowerCase().includes(this.filtros.usuario.toLowerCase())
       );
     }
 
     if (this.filtros.busqueda) {
       const termino = this.filtros.busqueda.toLowerCase();
-      filtrados = filtrados.filter(log => 
+      filtrados = filtrados.filter(log =>
         log.mensaje.toLowerCase().includes(termino) ||
         JSON.stringify(log.detalles).toLowerCase().includes(termino)
       );

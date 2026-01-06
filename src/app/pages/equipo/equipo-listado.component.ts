@@ -6,8 +6,8 @@ import { FormsModule } from '@angular/forms';
   selector: 'app-equipo-listado',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './equipo-listado.component.html',
-  styleUrls: ['./equipo-listado.component.css']
+  template: '',
+  // styleUrls: ['./equipo-listado.component.css']
 })
 export class EquipoListadoComponent implements OnInit {
   // Roles disponibles

@@ -1,12 +1,17 @@
 <div class="notificaciones-container">
-  <div class="page-header d-flex justify-content-between align-items-center mb-4">
+  <div
+    class="page-header d-flex justify-content-between align-items-center mb-4"
+  >
     <h1><i class="bi bi-bell"></i> Notificaciones</h1>
     <div class="header-actions">
       <span class="badge bg-primary me-2" *ngIf="cantidadNoLeidas > 0">
         {{ cantidadNoLeidas }} sin leer
       </span>
-      <button class="btn btn-outline-primary me-2" (click)="marcarTodasLeidas()"
-              *ngIf="cantidadNoLeidas > 0">
+      <button
+        class="btn btn-outline-primary me-2"
+        (click)="marcarTodasLeidas()"
+        *ngIf="cantidadNoLeidas > 0"
+      >
         <i class="bi bi-check-all"></i> Marcar todas como leídas
       </button>
       <button class="btn btn-outline-secondary" (click)="limpiarLeidas()">
@@ -19,14 +24,22 @@
   <div class="filtros-section mb-4">
     <div class="row">
       <div class="col-md-2">
-        <select class="form-select" [(ngModel)]="filtros.estado" (change)="aplicarFiltros()">
+        <select
+          class="form-select"
+          [(ngModel)]="filtros.estado"
+          (change)="aplicarFiltros()"
+        >
           <option value="todas">Todas</option>
           <option value="no_leidas">No leídas</option>
           <option value="leidas">Leídas</option>
         </select>
       </div>
       <div class="col-md-2">
-        <select class="form-select" [(ngModel)]="filtros.tipo" (change)="aplicarFiltros()">
+        <select
+          class="form-select"
+          [(ngModel)]="filtros.tipo"
+          (change)="aplicarFiltros()"
+        >
           <option value="todos">Todos los tipos</option>
           <option value="lead">Leads</option>
           <option value="propiedad">Propiedades</option>
@@ -36,30 +49,46 @@
         </select>
       </div>
       <div class="col-md-4">
-        <input type="text" class="form-control" placeholder="Buscar en notificaciones..."
-               [(ngModel)]="filtros.busqueda" (input)="aplicarFiltros()">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Buscar en notificaciones..."
+          [(ngModel)]="filtros.busqueda"
+          (input)="aplicarFiltros()"
+        />
       </div>
     </div>
   </div>
 
   <!-- Lista de Notificaciones -->
   <div class="notificaciones-lista">
-    <div class="notificacion-item" 
-         *ngFor="let notificacion of notificacionesFiltradas"
-         [class.no-leida]="!notificacion.leida"
-         (click)="navegarA(notificacion.enlace, notificacion.id)">
+    <div
+      class="notificacion-item"
+      *ngFor="let notificacion of notificacionesFiltradas"
+      [class.no-leida]="!notificacion.leida"
+      (click)="navegarA(notificacion.enlace, notificacion.id)"
+    >
       <div class="d-flex">
         <div class="notificacion-icono me-3">
-          <i [class]="notificacion.icono" [style.color]="notificacion.color"></i>
+          <i
+            [class]="notificacion.icono"
+            [style.color]="notificacion.color"
+          ></i>
         </div>
         <div class="notificacion-contenido flex-grow-1">
           <h6 class="notificacion-titulo mb-1">{{ notificacion.titulo }}</h6>
           <p class="notificacion-mensaje mb-1">{{ notificacion.mensaje }}</p>
-          <small class="text-muted">{{ obtenerTiempoRelativo(notificacion.fecha) }}</small>
+          <small class="text-muted">{{
+            obtenerTiempoRelativo(notificacion.fecha)
+          }}</small>
         </div>
         <div class="notificacion-acciones">
-          <button class="btn btn-sm btn-outline-secondary" 
-                  (click)="eliminarNotificacion(notificacion.id); $event.stopPropagation()">
+          <button
+            class="btn btn-sm btn-outline-secondary"
+            (click)="
+              eliminarNotificacion(notificacion.id); $event.stopPropagation()
+            "
+          >
             <i class="bi bi-x"></i>
           </button>
         </div>
@@ -81,45 +110,83 @@
       <div class="col-md-4">
         <h6>Email</h6>
         <div class="form-check">
-          <input class="form-check-input" type="checkbox" 
-                 [(ngModel)]="preferencias.email.nuevosLeads" id="emailLeads">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            [(ngModel)]="preferencias.email.nuevosLeads"
+            id="emailLeads"
+          />
           <label class="form-check-label" for="emailLeads">Nuevos leads</label>
         </div>
         <div class="form-check">
-          <input class="form-check-input" type="checkbox" 
-                 [(ngModel)]="preferencias.email.visitasConfirmadas" id="emailVisitas">
-          <label class="form-check-label" for="emailVisitas">Visitas confirmadas</label>
+          <input
+            class="form-check-input"
+            type="checkbox"
+            [(ngModel)]="preferencias.email.visitasConfirmadas"
+            id="emailVisitas"
+          />
+          <label class="form-check-label" for="emailVisitas"
+            >Visitas confirmadas</label
+          >
         </div>
         <div class="form-check">
-          <input class="form-check-input" type="checkbox" 
-                 [(ngModel)]="preferencias.email.operacionesCerradas" id="emailOperaciones">
-          <label class="form-check-label" for="emailOperaciones">Operaciones cerradas</label>
+          <input
+            class="form-check-input"
+            type="checkbox"
+            [(ngModel)]="preferencias.email.operacionesCerradas"
+            id="emailOperaciones"
+          />
+          <label class="form-check-label" for="emailOperaciones"
+            >Operaciones cerradas</label
+          >
         </div>
       </div>
       <div class="col-md-4">
         <h6>Push</h6>
         <div class="form-check">
-          <input class="form-check-input" type="checkbox" 
-                 [(ngModel)]="preferencias.push.nuevosLeads" id="pushLeads">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            [(ngModel)]="preferencias.push.nuevosLeads"
+            id="pushLeads"
+          />
           <label class="form-check-label" for="pushLeads">Nuevos leads</label>
         </div>
         <div class="form-check">
-          <input class="form-check-input" type="checkbox" 
-                 [(ngModel)]="preferencias.push.visitasConfirmadas" id="pushVisitas">
-          <label class="form-check-label" for="pushVisitas">Visitas confirmadas</label>
+          <input
+            class="form-check-input"
+            type="checkbox"
+            [(ngModel)]="preferencias.push.visitasConfirmadas"
+            id="pushVisitas"
+          />
+          <label class="form-check-label" for="pushVisitas"
+            >Visitas confirmadas</label
+          >
         </div>
         <div class="form-check">
-          <input class="form-check-input" type="checkbox" 
-                 [(ngModel)]="preferencias.push.recordatorios" id="pushRecordatorios">
-          <label class="form-check-label" for="pushRecordatorios">Recordatorios</label>
+          <input
+            class="form-check-input"
+            type="checkbox"
+            [(ngModel)]="preferencias.push.recordatorios"
+            id="pushRecordatorios"
+          />
+          <label class="form-check-label" for="pushRecordatorios"
+            >Recordatorios</label
+          >
         </div>
       </div>
       <div class="col-md-4">
         <h6>WhatsApp</h6>
         <div class="form-check">
-          <input class="form-check-input" type="checkbox" 
-                 [(ngModel)]="preferencias.whatsapp.visitasConfirmadas" id="whatsappVisitas">
-          <label class="form-check-label" for="whatsappVisitas">Visitas confirmadas</label>
+          <input
+            class="form-check-input"
+            type="checkbox"
+            [(ngModel)]="preferencias.whatsapp.visitasConfirmadas"
+            id="whatsappVisitas"
+          />
+          <label class="form-check-label" for="whatsappVisitas"
+            >Visitas confirmadas</label
+          >
         </div>
       </div>
     </div>

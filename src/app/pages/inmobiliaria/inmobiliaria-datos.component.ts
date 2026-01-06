@@ -7,7 +7,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './inmobiliaria-datos.component.html',
-  styleUrls: ['./inmobiliaria-datos.component.css']
+  // styleUrls: ['./inmobiliaria-datos.component.css']
 })
 export class InmobiliariaDatosComponent implements OnInit {
   datosForm: FormGroup;
@@ -60,7 +60,7 @@ export class InmobiliariaDatosComponent implements OnInit {
     const file = event.target.files[0];
     if (file) {
       this.logoFile = file;
-      
+
       const reader = new FileReader();
       reader.onload = (e: any) => {
         this.logoPreview = e.target.result;
@@ -73,11 +73,11 @@ export class InmobiliariaDatosComponent implements OnInit {
     if (this.datosForm.valid) {
       const formData = this.datosForm.value;
       console.log('Guardando datos de la inmobiliaria:', formData);
-      
+
       if (this.logoFile) {
         console.log('Subiendo nuevo logo:', this.logoFile);
       }
-      
+
       // Aquí iría la lógica para enviar al backend
       alert('Datos guardados correctamente');
     } else {

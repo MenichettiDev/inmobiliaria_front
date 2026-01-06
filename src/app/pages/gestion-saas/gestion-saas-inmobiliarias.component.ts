@@ -6,8 +6,8 @@ import { FormsModule } from '@angular/forms';
   selector: 'app-gestion-saas-inmobiliarias',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './gestion-saas-inmobiliarias.component.html',
-  styleUrls: ['./gestion-saas-inmobiliarias.component.css']
+  template: '',
+  // styleUrls: ['./gestion-saas-inmobiliarias.component.css']
 })
 export class GestionSaasInmobiliariasComponent implements OnInit {
   // Filtros
@@ -116,7 +116,7 @@ export class GestionSaasInmobiliariasComponent implements OnInit {
 
     if (this.filtros.busqueda) {
       const termino = this.filtros.busqueda.toLowerCase();
-      filtradas = filtradas.filter(i => 
+      filtradas = filtradas.filter(i =>
         i.nombre.toLowerCase().includes(termino) ||
         i.email.toLowerCase().includes(termino) ||
         i.subdominio.toLowerCase().includes(termino)

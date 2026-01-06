@@ -16,7 +16,8 @@ export class NotificacionesComponent implements OnInit {
     estado: 'todas', // todas, leidas, no_leidas
     tipo: 'todos', // todos, lead, propiedad, visita, operacion
     fechaDesde: '',
-    fechaHasta: ''
+    fechaHasta: '',
+    busqueda: ''
   };
 
   // Notificaciones
@@ -170,7 +171,8 @@ export class NotificacionesComponent implements OnInit {
       estado: 'todas',
       tipo: 'todos',
       fechaDesde: '',
-      fechaHasta: ''
+      fechaHasta: '',
+      busqueda: ''
     };
   }
 

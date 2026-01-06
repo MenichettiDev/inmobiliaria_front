@@ -67,6 +67,10 @@ export class LeadsListadoComponent implements OnInit {
     // Implementar navegación o modal
   }
 
+  cambiarVista(vista: string): void {
+    this.vistaActual = vista;
+  }
+
   obtenerEstadoNombre(estadoId: number): string {
     const estado = this.estadosLead.find(e => e.id === estadoId);
     return estado ? estado.nombre : 'Sin estado';

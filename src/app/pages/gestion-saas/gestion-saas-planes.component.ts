@@ -6,8 +6,8 @@ import { FormsModule } from '@angular/forms';
   selector: 'app-gestion-saas-planes',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './gestion-saas-planes.component.html',
-  styleUrls: ['./gestion-saas-planes.component.css']
+  template: '',
+  // styleUrls: ['./gestion-saas-planes.component.css']
 })
 export class GestionSaasPlanesComponent implements OnInit {
   // Planes del sistema
@@ -126,7 +126,7 @@ export class GestionSaasPlanesComponent implements OnInit {
   }
 
   obtenerPlanMasPopular(): string {
-    const planPopular = this.planes.reduce((max, plan) => 
+    const planPopular = this.planes.reduce((max, plan) =>
       plan.suscripciones > max.suscripciones ? plan : max
     );
     return planPopular.nombre;

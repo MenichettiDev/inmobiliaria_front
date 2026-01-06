@@ -4,50 +4,50 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 export interface Propiedad {
-  id: number;
-  titulo: string;
-  tipo: string;
-  precio: number;
-  estadoAdministrativo: string;
-  estadoComercial: string;
-  agente: string;
-  fechaCreacion: string;
-  imagen: string;
+    id: number;
+    titulo: string;
+    tipo: string;
+    precio: number;
+    estadoAdministrativo: string;
+    estadoComercial: string;
+    agente: string;
+    fechaCreacion: string;
+    imagen: string;
 }
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
 export class PropiedadesService {
-  private apiUrl = environment.apiUrl + '/propiedades';
+    private apiUrl = environment.apiUrl + '/propiedades';
 
-  constructor(private http: HttpClient) { }
+    constructor(private http: HttpClient) { }
 
-  obtenerPropiedades(): Observable<Propiedad[]> {
-    return this.http.get<Propiedad[]>(`${this.apiUrl}`);
-  }
+    obtenerPropiedades(): Observable<Propiedad[]> {
+        return this.http.get<Propiedad[]>(`${this.apiUrl}`);
+    }
 
-  obtenerPropiedad(id: number): Observable<Propiedad> {
-    return this.http.get<Propiedad>(`${this.apiUrl}/${id}`);
-  }
+    obtenerPropiedad(id: number): Observable<Propiedad> {
+        return this.http.get<Propiedad>(`${this.apiUrl}/${id}`);
+    }
 
-  crearPropiedad(propiedad: any): Observable<Propiedad> {
-    return this.http.post<Propiedad>(`${this.apiUrl}`, propiedad);
-  }
+    crearPropiedad(propiedad: any): Observable<Propiedad> {
+        return this.http.post<Propiedad>(`${this.apiUrl}`, propiedad);
+    }
 
-  actualizarPropiedad(id: number, propiedad: any): Observable<Propiedad> {
-    return this.http.put<Propiedad>(`${this.apiUrl}/${id}`, propiedad);
-  }
+    actualizarPropiedad(id: number, propiedad: any): Observable<Propiedad> {
+        return this.http.put<Propiedad>(`${this.apiUrl}/${id}`, propiedad);
+    }
 
-  eliminarPropiedad(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`);
-  }
+    eliminarPropiedad(id: number): Observable<any> {
+        return this.http.delete(`${this.apiUrl}/${id}`);
+    }
 
-  cambiarEstado(id: number, estado: string): Observable<any> {
-    return this.http.patch(`${this.apiUrl}/${id}/estado`, { estado });
-  }
+    cambiarEstado(id: number, estado: string): Observable<any> {
+        return this.http.patch(`${this.apiUrl}/${id}/estado`, { estado });
+    }
 
-  publicarPropiedad(id: number): Observable<any> {
-    return this.http.patch(`${this.apiUrl}/${id}/publicar`, {});
-  }
+    publicarPropiedad(id: number): Observable<any> {
+        return this.http.patch(`${this.apiUrl}/${id}/publicar`, {});
+    }
 }

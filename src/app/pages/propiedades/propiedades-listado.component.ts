@@ -128,14 +128,8 @@ export class PropiedadesListadoComponent implements OnInit {
     // Implementar navegación o modal
   }
 
-  obtenerColorEstado(estado: string): string {
-    const colores = {
-      'Disponible': 'success',
-      'Reservada': 'warning',
-      'Vendida': 'danger',
-      'En mantenimiento': 'secondary'
-    };
-    return colores[estado as keyof typeof colores] || 'secondary';
+  editarPropiedad(id: number): void {
+    console.log('Editar propiedad:', id);
   }
 
   cambiarEstado(id: number): void {
@@ -144,5 +138,15 @@ export class PropiedadesListadoComponent implements OnInit {
 
   publicarPropiedad(id: number): void {
     console.log('Publicar propiedad:', id);
+  }
+
+  obtenerColorEstado(estado: string): string {
+    const colores = {
+      'Disponible': 'success',
+      'Reservada': 'warning',
+      'Vendida': 'danger',
+      'En mantenimiento': 'secondary'
+    };
+    return colores[estado as keyof typeof colores] || 'secondary';
   }
 }

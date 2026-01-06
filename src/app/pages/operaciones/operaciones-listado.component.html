@@ -1,5 +1,7 @@
 <div class="operaciones-container">
-  <div class="page-header d-flex justify-content-between align-items-center mb-4">
+  <div
+    class="page-header d-flex justify-content-between align-items-center mb-4"
+  >
     <h1><i class="bi bi-briefcase"></i> Operaciones</h1>
     <button class="btn btn-primary" (click)="crearOperacion()">
       <i class="bi bi-plus-circle"></i> Nueva Operación
@@ -53,7 +55,11 @@
     <div class="row">
       <div class="col-md-2">
         <label class="form-label">Tipo</label>
-        <select class="form-select" [(ngModel)]="filtros.tipo" (change)="aplicarFiltros()">
+        <select
+          class="form-select"
+          [(ngModel)]="filtros.tipo"
+          (change)="aplicarFiltros()"
+        >
           <option value="">Todos</option>
           <option *ngFor="let tipo of tiposOperacion" [value]="tipo.id">
             {{ tipo.nombre }}
@@ -62,7 +68,11 @@
       </div>
       <div class="col-md-2">
         <label class="form-label">Estado</label>
-        <select class="form-select" [(ngModel)]="filtros.estado" (change)="aplicarFiltros()">
+        <select
+          class="form-select"
+          [(ngModel)]="filtros.estado"
+          (change)="aplicarFiltros()"
+        >
           <option value="">Todos</option>
           <option *ngFor="let estado of estadosOperacion" [value]="estado.id">
             {{ estado.nombre }}
@@ -71,7 +81,11 @@
       </div>
       <div class="col-md-2">
         <label class="form-label">Agente</label>
-        <select class="form-select" [(ngModel)]="filtros.agente" (change)="aplicarFiltros()">
+        <select
+          class="form-select"
+          [(ngModel)]="filtros.agente"
+          (change)="aplicarFiltros()"
+        >
           <option value="">Todos</option>
           <option value="María González">María González</option>
           <option value="Carlos López">Carlos López</option>
@@ -79,11 +93,21 @@
       </div>
       <div class="col-md-2">
         <label class="form-label">Desde</label>
-        <input type="date" class="form-control" [(ngModel)]="filtros.fechaDesde" (change)="aplicarFiltros()">
+        <input
+          type="date"
+          class="form-control"
+          [(ngModel)]="filtros.fechaDesde"
+          (change)="aplicarFiltros()"
+        />
       </div>
       <div class="col-md-2">
         <label class="form-label">Hasta</label>
-        <input type="date" class="form-control" [(ngModel)]="filtros.fechaHasta" (change)="aplicarFiltros()">
+        <input
+          type="date"
+          class="form-control"
+          [(ngModel)]="filtros.fechaHasta"
+          (change)="aplicarFiltros()"
+        />
       </div>
       <div class="col-md-2 d-flex align-items-end">
         <button class="btn btn-secondary" (click)="limpiarFiltros()">
@@ -113,9 +137,13 @@
         </thead>
         <tbody>
           <tr *ngFor="let operacion of operacionesFiltradas">
-            <td><strong>#{{ operacion.id }}</strong></td>
             <td>
-              <span class="badge bg-primary">{{ obtenerTipoNombre(operacion.tipo) }}</span>
+              <strong>#{{ operacion.id }}</strong>
+            </td>
+            <td>
+              <span class="badge bg-primary">{{
+                obtenerTipoNombre(operacion.tipo)
+              }}</span>
             </td>
             <td>{{ operacion.propiedad }}</td>
             <td>{{ operacion.cliente }}</td>
@@ -124,33 +152,54 @@
               <strong>${{ operacion.monto | number }}</strong>
             </td>
             <td>
-              <strong class="text-success">${{ operacion.comision | number }}</strong>
+              <strong class="text-success"
+                >${{ operacion.comision | number }}</strong
+              >
             </td>
             <td>
-              <span class="badge" [style.background-color]="obtenerColorEstado(operacion.estado)">
+              <span
+                class="badge"
+                [style.background-color]="obtenerColorEstado(operacion.estado)"
+              >
                 {{ obtenerEstadoNombre(operacion.estado) }}
               </span>
             </td>
             <td>
               <div>
-                <small>Inicio: {{ operacion.fechaInicio | date:'short' }}</small>
-                <br>
-                <small>Est: {{ operacion.fechaEstimada | date:'short' }}</small>
+                <small
+                  >Inicio: {{ operacion.fechaInicio | date : "short" }}</small
+                >
+                <br />
+                <small
+                  >Est: {{ operacion.fechaEstimada | date : "short" }}</small
+                >
               </div>
             </td>
             <td>
               <div class="btn-group btn-group-sm">
-                <button class="btn btn-outline-primary" (click)="editarOperacion(operacion.id)">
+                <button
+                  class="btn btn-outline-primary"
+                  (click)="editarOperacion(operacion.id)"
+                >
                   <i class="bi bi-pencil"></i>
                 </button>
-                <button class="btn btn-outline-warning" (click)="cambiarEstado(operacion.id)">
+                <button
+                  class="btn btn-outline-warning"
+                  (click)="cambiarEstado(operacion.id)"
+                >
                   <i class="bi bi-arrow-repeat"></i>
                 </button>
-                <button class="btn btn-outline-info" (click)="verDocumentacion(operacion.id)">
+                <button
+                  class="btn btn-outline-info"
+                  (click)="verDocumentacion(operacion.id)"
+                >
                   <i class="bi bi-file-earmark-text"></i>
                 </button>
-                <button class="btn btn-outline-success" (click)="marcarFinalizada(operacion.id)"
-                        *ngIf="operacion.estado !== 3">
+                <button
+                  class="btn btn-outline-success"
+                  (click)="marcarFinalizada(operacion.id)"
+                  *ngIf="operacion.estado !== 3"
+                >
                   <i class="bi bi-check-circle"></i>
                 </button>
               </div>
@@ -165,6 +214,8 @@
   <div *ngIf="operacionesFiltradas.length === 0" class="text-center py-5">
     <i class="bi bi-briefcase display-1 text-muted"></i>
     <h3 class="text-muted">No hay operaciones</h3>
-    <p class="text-muted">Crea tu primera operación para comenzar a gestionar ventas y alquileres.</p>
+    <p class="text-muted">
+      Crea tu primera operación para comenzar a gestionar ventas y alquileres.
+    </p>
   </div>
 </div>

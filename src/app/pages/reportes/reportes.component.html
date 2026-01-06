@@ -1,0 +1,253 @@
+<div class="reportes-container">
+  <div class="page-header mb-4">
+    <h1><i class="bi bi-bar-chart"></i> Reportes</h1>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filtros-section mb-4">
+    <div class="row">
+      <div class="col-md-2">
+        <label class="form-label">Tipo de Reporte</label>
+        <select
+          class="form-select"
+          [(ngModel)]="filtros.tipoReporte"
+          (change)="generarReporte()"
+        >
+          <option *ngFor="let tipo of tiposReporte" [value]="tipo.id">
+            {{ tipo.nombre }}
+          </option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Desde</label>
+        <input
+          type="date"
+          class="form-control"
+          [(ngModel)]="filtros.fechaDesde"
+          (change)="generarReporte()"
+        />
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Hasta</label>
+        <input
+          type="date"
+          class="form-control"
+          [(ngModel)]="filtros.fechaHasta"
+          (change)="generarReporte()"
+        />
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Agente</label>
+        <select
+          class="form-select"
+          [(ngModel)]="filtros.agente"
+          (change)="generarReporte()"
+        >
+          <option *ngFor="let agente of agentes" [value]="agente.id">
+            {{ agente.nombre }}
+          </option>
+        </select>
+      </div>
+      <div class="col-md-2 d-flex align-items-end">
+        <button class="btn btn-secondary me-2" (click)="limpiarFiltros()">
+          <i class="bi bi-arrow-clockwise"></i>
+        </button>
+      </div>
+      <div class="col-md-2 d-flex align-items-end gap-2">
+        <div class="dropdown">
+          <button
+            class="btn btn-success dropdown-toggle"
+            type="button"
+            data-bs-toggle="dropdown"
+          >
+            <i class="bi bi-download"></i> Exportar
+          </button>
+          <ul class="dropdown-menu">
+            <li>
+              <a class="dropdown-item" (click)="exportarExcel()">Excel</a>
+            </li>
+            <li><a class="dropdown-item" (click)="exportarCSV()">CSV</a></li>
+            <li><a class="dropdown-item" (click)="exportarPDF()">PDF</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reporte General -->
+  <div *ngIf="filtros.tipoReporte === 'general'" class="reporte-general">
+    <div class="row mb-4">
+      <div class="col-md-2">
+        <div class="metric-card bg-primary text-white">
+          <div class="metric-content">
+            <h3>{{ reporteGeneral.leadsTotal }}</h3>
+            <p>Leads Total</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2">
+        <div class="metric-card bg-success text-white">
+          <div class="metric-content">
+            <h3>{{ reporteGeneral.leadsNuevos }}</h3>
+            <p>Leads Nuevos</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2">
+        <div class="metric-card bg-info text-white">
+          <div class="metric-content">
+            <h3>{{ reporteGeneral.conversionPromedio }}%</h3>
+            <p>Conversión</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2">
+        <div class="metric-card bg-warning text-white">
+          <div class="metric-content">
+            <h3>{{ reporteGeneral.propiedadesActivas }}</h3>
+            <p>Propiedades</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2">
+        <div class="metric-card bg-dark text-white">
+          <div class="metric-content">
+            <h3>{{ reporteGeneral.operacionesCerradas }}</h3>
+            <p>Operaciones</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2">
+        <div class="metric-card bg-secondary text-white">
+          <div class="metric-content">
+            <h3>${{ reporteGeneral.comisionesTotal | number }}</h3>
+            <p>Comisiones</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reporte Leads por Agente -->
+  <div *ngIf="filtros.tipoReporte === 'leads'" class="reporte-leads">
+    <div class="card">
+      <div class="card-header">
+        <h5><i class="bi bi-people"></i> Leads por Agente</h5>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Agente</th>
+                <th>Nuevos</th>
+                <th>Contactados</th>
+                <th>Cerrados</th>
+                <th>Conversión %</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of leadsPorAgente">
+                <td>{{ item.agente }}</td>
+                <td>{{ item.nuevos }}</td>
+                <td>{{ item.contactados }}</td>
+                <td>{{ item.cerrados }}</td>
+                <td>
+                  <span
+                    class="badge"
+                    [style.background-color]="
+                      obtenerColorConversion(item.conversion)
+                    "
+                  >
+                    {{ item.conversion }}%
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reporte Propiedades por Estado -->
+  <div
+    *ngIf="filtros.tipoReporte === 'propiedades'"
+    class="reporte-propiedades"
+  >
+    <div class="card">
+      <div class="card-header">
+        <h5><i class="bi bi-house-door"></i> Propiedades por Estado</h5>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Estado</th>
+                    <th>Cantidad</th>
+                    <th>Porcentaje</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of propiedadesPorEstado">
+                    <td>{{ item.estado }}</td>
+                    <td>{{ item.cantidad }}</td>
+                    <td>{{ item.porcentaje }}%</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="chart-placeholder">
+              <div class="text-center p-5 bg-light rounded">
+                <i class="bi bi-pie-chart display-3 text-muted"></i>
+                <p class="mt-2 text-muted">Gráfico de distribución</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reporte de Conversión -->
+  <div *ngIf="filtros.tipoReporte === 'conversion'" class="reporte-conversion">
+    <div class="card">
+      <div class="card-header">
+        <h5><i class="bi bi-graph-up"></i> Análisis de Conversión</h5>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="chart-placeholder">
+              <div class="text-center p-5 bg-light rounded">
+                <i class="bi bi-graph-up display-3 text-muted"></i>
+                <p class="mt-2 text-muted">
+                  Gráfico de evolución de conversión
+                </p>
+                <small class="text-muted"
+                  >Aquí se mostraría un gráfico de líneas con la evolución de la
+                  conversión en el tiempo</small
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Si no hay datos -->
+  <div
+    *ngIf="!reporteGeneral && filtros.tipoReporte === 'general'"
+    class="text-center py-5"
+  >
+    <i class="bi bi-bar-chart display-1 text-muted"></i>
+    <h3 class="text-muted">No hay datos para mostrar</h3>
+    <p class="text-muted">Ajusta los filtros para generar un reporte.</p>
+  </div>
+</div>

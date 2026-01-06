@@ -9,7 +9,6 @@ import { Roles } from '../../../shared/enums/roles';
 import { PaginatorComponent } from '../../../shared/components/paginator/paginator.component';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { CboRolUsuarioComponent } from '../../../shared/components/Cbo/cbo-rol-usuario/cbo-rol-usuario.component';
-import { CboEstadoComponent } from '../../../shared/components/Cbo/cbo-estado/cbo-estado.component';
 import { SpinnerComponent } from '../../../shared/components/spinner/spinner.component';
 import { AlertaService } from '../../../services/alerta.service';
 
@@ -66,8 +65,8 @@ interface ApiResponse {
     RouterModule,
     PaginatorComponent,
     NgbTooltipModule,
-    CboEstadoComponent,
     SpinnerComponent,
+    UsuariosModalComponent
   ],
   templateUrl: './visor-usuario.component.html',
   styleUrls: ['../../../../styles/visor-style.css'],

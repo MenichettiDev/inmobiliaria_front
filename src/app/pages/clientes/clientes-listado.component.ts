@@ -101,4 +101,9 @@ export class ClientesListadoComponent implements OnInit {
   exportarClientes(): void {
     console.log('Exportar clientes');
   }
+
+  obtenerTipoNombre(tipo: string): string {
+    const tipoObj = this.tiposCliente.find(t => t.id === tipo);
+    return tipoObj ? tipoObj.nombre : tipo;
+  }
 }

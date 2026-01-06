@@ -1,0 +1,249 @@
+<div class="ayuda-container">
+  <div class="page-header mb-4">
+    <h1><i class="bi bi-question-circle"></i> Ayuda & Soporte</h1>
+  </div>
+
+  <!-- Navegación de secciones -->
+  <ul class="nav nav-tabs mb-4">
+    <li class="nav-item">
+      <a
+        class="nav-link"
+        [class.active]="seccionActiva === 'faq'"
+        (click)="cambiarSeccion('faq')"
+      >
+        <i class="bi bi-question-square"></i> FAQ
+      </a>
+    </li>
+    <li class="nav-item">
+      <a
+        class="nav-link"
+        [class.active]="seccionActiva === 'articulos'"
+        (click)="cambiarSeccion('articulos')"
+      >
+        <i class="bi bi-file-earmark-text"></i> Artículos
+      </a>
+    </li>
+    <li class="nav-item">
+      <a
+        class="nav-link"
+        [class.active]="seccionActiva === 'tickets'"
+        (click)="cambiarSeccion('tickets')"
+      >
+        <i class="bi bi-ticket"></i> Soporte
+      </a>
+    </li>
+  </ul>
+
+  <!-- Búsqueda -->
+  <div class="search-section mb-4" *ngIf="seccionActiva !== 'tickets'">
+    <div class="input-group">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="¿Qué necesitas encontrar?"
+        [(ngModel)]="terminoBusqueda"
+      />
+      <button class="btn btn-outline-secondary" type="button">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Sección FAQ -->
+  <div *ngIf="seccionActiva === 'faq'" class="faq-section">
+    <div class="row">
+      <div class="col-md-8">
+        <div *ngFor="let categoria of faqsFiltradas" class="categoria-faq mb-4">
+          <h4><i class="bi bi-folder"></i> {{ categoria.categoria }}</h4>
+          <div class="accordion" [id]="'accordion' + categoria.categoria">
+            <div
+              class="accordion-item"
+              *ngFor="let pregunta of categoria.preguntas"
+            >
+              <h2 class="accordion-header" [id]="'heading' + pregunta.id">
+                <button
+                  class="accordion-button collapsed"
+                  type="button"
+                  [attr.data-bs-target]="'#collapse' + pregunta.id"
+                  [attr.aria-controls]="'collapse' + pregunta.id"
+                >
+                  {{ pregunta.pregunta }}
+                  <span class="badge bg-primary ms-2" *ngIf="pregunta.popular"
+                    >Popular</span
+                  >
+                </button>
+              </h2>
+              <div
+                [id]="'collapse' + pregunta.id"
+                class="accordion-collapse collapse"
+                [attr.aria-labelledby]="'heading' + pregunta.id"
+              >
+                <div class="accordion-body">
+                  {{ pregunta.respuesta }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-header">
+            <h5><i class="bi bi-star"></i> Preguntas Populares</h5>
+          </div>
+          <div class="card-body">
+            <div *ngFor="let pregunta of preguntasPopulares" class="mb-2">
+              <a href="#" class="text-decoration-none">{{
+                pregunta.pregunta
+              }}</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sección Artículos -->
+  <div *ngIf="seccionActiva === 'articulos'" class="articulos-section">
+    <div class="row">
+      <div class="col-md-4 mb-4" *ngFor="let articulo of articulosFiltrados">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">{{ articulo.titulo }}</h5>
+            <p class="card-text">{{ articulo.descripcion }}</p>
+            <div class="article-meta mb-3">
+              <span class="badge bg-secondary">{{ articulo.categoria }}</span>
+              <small class="text-muted ms-2">
+                <i class="bi bi-clock"></i> {{ articulo.tiempoLectura }}
+              </small>
+            </div>
+            <button
+              class="btn btn-outline-primary btn-sm"
+              (click)="leerArticulo(articulo.id)"
+            >
+              Leer artículo
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sección Soporte -->
+  <div *ngIf="seccionActiva === 'tickets'" class="soporte-section">
+    <div class="row">
+      <!-- Nuevo Ticket -->
+      <div class="col-md-6">
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5><i class="bi bi-plus-circle"></i> Crear Ticket</h5>
+          </div>
+          <div class="card-body">
+            <div class="mb-3">
+              <label class="form-label">Asunto</label>
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="nuevoTicket.asunto"
+                placeholder="Describe brevemente tu problema"
+              />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Categoría</label>
+              <select class="form-select" [(ngModel)]="nuevoTicket.categoria">
+                <option value="">Seleccionar categoría</option>
+                <option *ngFor="let cat of categoriasTicket" [value]="cat">
+                  {{ cat }}
+                </option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Prioridad</label>
+              <select class="form-select" [(ngModel)]="nuevoTicket.prioridad">
+                <option value="baja">Baja</option>
+                <option value="media">Media</option>
+                <option value="alta">Alta</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Descripción</label>
+              <textarea
+                class="form-control"
+                rows="4"
+                [(ngModel)]="nuevoTicket.descripcion"
+                placeholder="Describe detalladamente tu problema o consulta"
+              ></textarea>
+            </div>
+            <button class="btn btn-primary" (click)="crearTicket()">
+              <i class="bi bi-send"></i> Enviar Ticket
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lista de Tickets -->
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">
+            <h5><i class="bi bi-list"></i> Mis Tickets</h5>
+          </div>
+          <div class="card-body">
+            <div *ngFor="let ticket of tickets" class="ticket-item mb-3">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <h6>{{ ticket.asunto }}</h6>
+                  <small class="text-muted">
+                    Creado: {{ ticket.fechaCreacion | date : "short" }}
+                  </small>
+                </div>
+                <div class="text-end">
+                  <span
+                    class="badge"
+                    [style.background-color]="obtenerColorEstado(ticket.estado)"
+                  >
+                    {{ ticket.estado }}
+                  </span>
+                  <br />
+                  <span
+                    class="badge"
+                    [style.background-color]="
+                      obtenerColorPrioridad(ticket.prioridad)
+                    "
+                  >
+                    {{ ticket.prioridad }}
+                  </span>
+                </div>
+              </div>
+              <div class="ticket-actions mt-2">
+                <button
+                  class="btn btn-sm btn-outline-primary"
+                  (click)="verTicket(ticket.id)"
+                >
+                  Ver detalles
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contacto directo -->
+    <div class="row mt-4">
+      <div class="col-md-12">
+        <div class="card bg-light">
+          <div class="card-body text-center">
+            <h5>¿Necesitas ayuda inmediata?</h5>
+            <p>Contacta directamente con nuestro equipo de soporte</p>
+            <button class="btn btn-success me-2" (click)="contactarSoporte()">
+              <i class="bi bi-chat"></i> Chat en vivo
+            </button>
+            <button class="btn btn-info" (click)="programarLlamada()">
+              <i class="bi bi-telephone"></i> Programar llamada
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
