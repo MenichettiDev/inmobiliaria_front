@@ -1,0 +1,217 @@
+<div class="configuracion-container">
+  <div class="page-header mb-4">
+    <h1><i class="bi bi-gear"></i> Configuración</h1>
+    <p class="text-muted">Configura los ajustes operativos del sistema</p>
+  </div>
+
+  <!-- Navegación por pestañas -->
+  <ul class="nav nav-tabs mb-4">
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="seccionActiva === 'estados'" (click)="cambiarSeccion('estados')">
+        <i class="bi bi-tags"></i> Estados
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="seccionActiva === 'fuentes'" (click)="cambiarSeccion('fuentes')">
+        <i class="bi bi-funnel"></i> Fuentes de Leads
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="seccionActiva === 'etiquetas'" (click)="cambiarSeccion('etiquetas')">
+        <i class="bi bi-bookmark"></i> Etiquetas
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="seccionActiva === 'automatizaciones'" (click)="cambiarSeccion('automatizaciones')">
+        <i class="bi bi-robot"></i> Automatizaciones
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="seccionActiva === 'plantillas'" (click)="cambiarSeccion('plantillas')">
+        <i class="bi bi-file-earmark-text"></i> Plantillas
+      </a>
+    </li>
+  </ul>
+
+  <!-- Estados -->
+  <div *ngIf="seccionActiva === 'estados'" class="seccion-estados">
+    <h4>Estados de Propiedades</h4>
+    <div class="row">
+      <div class="col-md-8">
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Color</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let estado of estadosPropiedad">
+                <td>{{ estado.nombre }}</td>
+                <td>
+                  <span class="badge" [style.background-color]="estado.color">
+                    {{ estado.color }}
+                  </span>
+                </td>
+                <td>
+                  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" 
+                           [checked]="estado.activo"
+                           (change)="toggleEstadoPropiedad(estado.id)">
+                  </div>
+                </td>
+                <td>
+                  <button class="btn btn-sm btn-outline-danger" 
+                          (click)="eliminarEstadoPropiedad(estado.id)">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-header">Agregar Estado</div>
+          <div class="card-body">
+            <div class="mb-3">
+              <label class="form-label">Nombre</label>
+              <input type="text" class="form-control" [(ngModel)]="nuevoEstado.nombre">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Color</label>
+              <input type="color" class="form-control" [(ngModel)]="nuevoEstado.color">
+            </div>
+            <button class="btn btn-primary" (click)="agregarEstadoPropiedad()">
+              <i class="bi bi-plus"></i> Agregar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fuentes de Leads -->
+  <div *ngIf="seccionActiva === 'fuentes'" class="seccion-fuentes">
+    <h4>Fuentes de Leads</h4>
+    <div class="row">
+      <div class="col-md-8">
+        <div class="list-group">
+          <div class="list-group-item d-flex justify-content-between align-items-center" 
+               *ngFor="let fuente of fuentesLead">
+            <span>{{ fuente.nombre }}</span>
+            <div>
+              <div class="form-check form-switch d-inline-block me-2">
+                <input class="form-check-input" type="checkbox" 
+                       [checked]="fuente.activo"
+                       (change)="toggleFuente(fuente.id)">
+              </div>
+              <button class="btn btn-sm btn-outline-danger" 
+                      (click)="eliminarFuente(fuente.id)">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-header">Agregar Fuente</div>
+          <div class="card-body">
+            <div class="mb-3">
+              <label class="form-label">Nombre</label>
+              <input type="text" class="form-control" [(ngModel)]="nuevaFuente.nombre">
+            </div>
+            <button class="btn btn-primary" (click)="agregarFuente()">
+              <i class="bi bi-plus"></i> Agregar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Automatizaciones -->
+  <div *ngIf="seccionActiva === 'automatizaciones'" class="seccion-automatizaciones">
+    <h4>Reglas de Automatización</h4>
+    <div class="row">
+      <div class="col-md-12">
+        <div *ngFor="let auto of automatizaciones" class="card mb-3">
+          <div class="card-body">
+            <div class="d-flex justify-content-between">
+              <div>
+                <h5>{{ auto.nombre }}</h5>
+                <p class="text-muted">{{ auto.descripcion }}</p>
+                <span class="badge bg-secondary">{{ auto.tipo }}</span>
+              </div>
+              <div class="d-flex align-items-center">
+                <div class="form-check form-switch me-3">
+                  <input class="form-check-input" type="checkbox" 
+                         [checked]="auto.activa"
+                         (change)="toggleAutomatizacion(auto.id)">
+                </div>
+                <button class="btn btn-outline-primary" (click)="editarAutomatizacion(auto.id)">
+                  <i class="bi bi-pencil"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Plantillas -->
+  <div *ngIf="seccionActiva === 'plantillas'" class="seccion-plantillas">
+    <h4>Plantillas de Email/WhatsApp</h4>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Tipo</th>
+                <th>Asunto</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let plantilla of plantillas">
+                <td>{{ plantilla.nombre }}</td>
+                <td>
+                  <span class="badge" [ngClass]="plantilla.tipo === 'email' ? 'bg-primary' : 'bg-success'">
+                    {{ plantilla.tipo }}
+                  </span>
+                </td>
+                <td>{{ plantilla.asunto || '-' }}</td>
+                <td>
+                  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" 
+                           [checked]="plantilla.activa"
+                           (change)="togglePlantilla(plantilla.id)">
+                  </div>
+                </td>
+                <td>
+                  <div class="btn-group btn-group-sm">
+                    <button class="btn btn-outline-primary" (click)="editarPlantilla(plantilla.id)">
+                      <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn btn-outline-info" (click)="previsualizarPlantilla(plantilla.id)">
+                      <i class="bi bi-eye"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

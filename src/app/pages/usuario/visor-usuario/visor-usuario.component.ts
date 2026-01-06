@@ -2,17 +2,16 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { UsuarioService } from '../../../services/usuario.service';
+import { UsuarioService } from '../../../pages/usuario/usuario.service';
 import { UsuariosModalComponent } from '../modal-usuario/modal-usuario.component';
 import { Router } from '@angular/router';
-import { AlertaService } from '../../../services/alerta.service';
 import { Roles } from '../../../shared/enums/roles';
 import { PaginatorComponent } from '../../../shared/components/paginator/paginator.component';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
-import { PageTitleService } from '../../../services/page-title.service';
 import { CboRolUsuarioComponent } from '../../../shared/components/Cbo/cbo-rol-usuario/cbo-rol-usuario.component';
 import { CboEstadoComponent } from '../../../shared/components/Cbo/cbo-estado/cbo-estado.component';
 import { SpinnerComponent } from '../../../shared/components/spinner/spinner.component';
+import { AlertaService } from '../../../services/alerta.service';
 
 interface UserRaw {
   [key: string]: any;
@@ -43,17 +42,17 @@ interface PaginationData {
 // Nueva interfaz para la respuesta
 interface ApiResponse {
   data:
-    | any[]
-    | {
-        data: any[];
-        pagination?: PaginationData;
-        page?: number;
-        pageSize?: number;
-        totalRecords?: number;
-        totalPages?: number;
-        hasNextPage?: boolean;
-        hasPreviousPage?: boolean;
-      };
+  | any[]
+  | {
+    data: any[];
+    pagination?: PaginationData;
+    page?: number;
+    pageSize?: number;
+    totalRecords?: number;
+    totalPages?: number;
+    hasNextPage?: boolean;
+    hasPreviousPage?: boolean;
+  };
   total?: number;
   pagination?: PaginationData;
 }
@@ -67,8 +66,6 @@ interface ApiResponse {
     RouterModule,
     PaginatorComponent,
     NgbTooltipModule,
-    UsuariosModalComponent,
-    CboRolUsuarioComponent,
     CboEstadoComponent,
     SpinnerComponent,
   ],
@@ -107,12 +104,10 @@ export class VisorUsuariosComponent implements OnInit {
   constructor(
     private userService: UsuarioService,
     private router: Router,
-    private alertService: AlertaService,
-    private pageTitleService: PageTitleService
-  ) {}
+    private alertService: AlertaService
+  ) { }
 
   ngOnInit(): void {
-    this.pageTitleService.setTitle('Listado de Usuarios');
     this.fetchUsers();
   }
 

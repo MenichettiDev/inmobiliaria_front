@@ -1,0 +1,167 @@
+<div class="agenda-container">
+  <div class="page-header d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="bi bi-calendar"></i> Agenda</h1>
+    <div class="header-actions">
+      <div class="btn-group me-2" role="group">
+        <button type="button" class="btn btn-outline-primary" 
+                [class.active]="vistaCalendario === 'dia'"
+                (click)="cambiarVista('dia')">
+          Día
+        </button>
+        <button type="button" class="btn btn-outline-primary"
+                [class.active]="vistaCalendario === 'semana'"
+                (click)="cambiarVista('semana')">
+          Semana
+        </button>
+        <button type="button" class="btn btn-outline-primary"
+                [class.active]="vistaCalendario === 'mes'"
+                (click)="cambiarVista('mes')">
+          Mes
+        </button>
+      </div>
+      <button class="btn btn-primary" (click)="crearEvento()">
+        <i class="bi bi-plus-circle"></i> Nuevo Evento
+      </button>
+    </div>
+  </div>
+
+  <!-- Navegación de fecha -->
+  <div class="fecha-navegacion d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <button class="btn btn-outline-secondary me-2" (click)="fechaAnterior()">
+        <i class="bi bi-chevron-left"></i>
+      </button>
+      <button class="btn btn-outline-secondary me-2" (click)="fechaSiguiente()">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+      <button class="btn btn-outline-primary" (click)="irHoy()">
+        Hoy
+      </button>
+    </div>
+    <h3 class="mb-0">{{ obtenerTituloFecha() }}</h3>
+    <div></div>
+  </div>
+
+  <!-- Recordatorios -->
+  <div class="recordatorios-section mb-4" *ngIf="recordatorios.length > 0">
+    <h5><i class="bi bi-bell"></i> Recordatorios</h5>
+    <div class="row">
+      <div class="col-md-4" *ngFor="let recordatorio of recordatorios">
+        <div class="alert alert-info">
+          <strong>{{ recordatorio.mensaje }}</strong>
+          <br>
+          <small>En {{ recordatorio.tiempo }}</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vista del Calendario -->
+  <div class="calendario-vista">
+    <!-- Vista Día -->
+    <div *ngIf="vistaCalendario === 'dia'" class="vista-dia">
+      <div class="eventos-dia">
+        <div class="evento-item mb-3" *ngFor="let evento of obtenerEventosDelDia(fechaActual.toISOString().split('T')[0])">
+          <div class="card" [ngClass]="'border-' + obtenerColorTipoEvento(evento.tipo)">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <h6 class="card-title">{{ evento.titulo }}</h6>
+                  <p class="card-text">
+                    <i class="bi bi-clock"></i> {{ evento.hora }} ({{ evento.duracion }}min)
+                    <br>
+                    <i class="bi bi-person"></i> {{ evento.cliente }}
+                    <br>
+                    <i class="bi bi-geo-alt"></i> {{ evento.propiedad }}
+                  </p>
+                </div>
+                <div class="evento-actions">
+                  <div class="dropdown">
+                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                      Acciones
+                    </button>
+                    <ul class="dropdown-menu">
+                      <li><a class="dropdown-item" (click)="editarEvento(evento.id)">Editar</a></li>
+                      <li><a class="dropdown-item" (click)="marcarAsistencia(evento.id)">Marcar Asistencia</a></li>
+                      <li><a class="dropdown-item" (click)="reprogramarEvento(evento.id)">Reprogramar</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Vista Semana -->
+    <div *ngIf="vistaCalendario === 'semana'" class="vista-semana">
+      <div class="table-responsive">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Hora</th>
+              <th>Lunes</th>
+              <th>Martes</th>
+              <th>Miércoles</th>
+              <th>Jueves</th>
+              <th>Viernes</th>
+              <th>Sábado</th>
+              <th>Domingo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let hora of horariosDisponibles">
+              <td class="text-center"><strong>{{ hora }}</strong></td>
+              <td *ngFor="let dia of diasSemana" class="calendario-celda" (click)="crearEventoEnCelda(dia, hora)">
+                <div *ngFor="let evento of obtenerEventosPorDiaHora(dia, hora)" class="evento-mini">
+                  <small>{{ evento.titulo }}</small>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Vista Mes -->
+    <div *ngIf="vistaCalendario === 'mes'" class="vista-mes">
+      <div class="calendario-mes">
+        <div class="calendario-grid">
+          <div class="calendario-header">
+            <div class="dia-header">Dom</div>
+            <div class="dia-header">Lun</div>
+            <div class="dia-header">Mar</div>
+            <div class="dia-header">Mié</div>
+            <div class="dia-header">Jue</div>
+            <div class="dia-header">Vie</div>
+            <div class="dia-header">Sáb</div>
+          </div>
+          <div class="calendario-body">
+            <div *ngFor="let semana of obtenerSemanasDelMes()" class="calendario-semana">
+              <div *ngFor="let dia of semana" class="calendario-dia" 
+                   [class.otro-mes]="!esDiaDelMes(dia)"
+                   [class.hoy]="esHoy(dia)"
+                   (click)="seleccionarDia(dia)">
+                <div class="dia-numero">{{ dia.getDate() }}</div>
+                <div class="dia-eventos">
+                  <div *ngFor="let evento of obtenerEventosDelDia(dia.toISOString().split('T')[0])" 
+                       class="evento-mini" [ngClass]="'evento-' + evento.tipo">
+                    {{ evento.titulo }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Si no hay eventos -->
+  <div *ngIf="eventos.length === 0" class="text-center py-5">
+    <i class="bi bi-calendar-x display-1 text-muted"></i>
+    <h3 class="text-muted">No hay eventos programados</h3>
+    <p class="text-muted">Crea tu primer evento para comenzar a organizar tu agenda.</p>
+  </div>
+</div>

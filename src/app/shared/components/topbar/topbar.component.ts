@@ -125,7 +125,7 @@ export class TopbarComponent implements OnInit, OnDestroy {
     private alertaService: AlertaService,
     private router: Router,
     private sidebarService: SidebarService
-  ) {}
+  ) { }
 
   ngOnInit() {
     // Suscribirse a cambios en la metadata
@@ -253,8 +253,7 @@ export class TopbarComponent implements OnInit, OnDestroy {
 
     if (this.notifications.overdue > 0) {
       parts.push(
-        `${this.notifications.overdue} alerta${
-          this.notifications.overdue > 1 ? 's' : ''
+        `${this.notifications.overdue} alerta${this.notifications.overdue > 1 ? 's' : ''
         }`
       );
     }

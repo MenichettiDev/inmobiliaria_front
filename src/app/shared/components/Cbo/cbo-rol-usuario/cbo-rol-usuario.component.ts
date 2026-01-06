@@ -17,7 +17,7 @@ import {
 import {
   RolUsuarioService,
   RolDto,
-} from '../../../../services/rol-usuario.service';
+} from '../../../../pages/usuario/rol-usuario.service';
 import {
   debounceTime,
   distinctUntilChanged,
@@ -43,8 +43,7 @@ import {
   ],
 })
 export class CboRolUsuarioComponent
-  implements OnInit, OnDestroy, ControlValueAccessor
-{
+  implements OnInit, OnDestroy, ControlValueAccessor {
   // Inputs / outputs
   @Input() isLabel: string = '';
   @Input() isId: string = '';
@@ -66,10 +65,10 @@ export class CboRolUsuarioComponent
   private destroy$ = new Subject<void>();
 
   // ControlValueAccessor callbacks
-  private onChange = (value: any) => {};
-  private onTouched = () => {};
+  private onChange = (value: any) => { };
+  private onTouched = () => { };
 
-  constructor(private rolService: RolUsuarioService) {}
+  constructor(private rolService: RolUsuarioService) { }
 
   ngOnInit(): void {
     this.setupSearch();

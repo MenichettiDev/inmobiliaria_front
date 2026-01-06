@@ -1,0 +1,115 @@
+<div class="clientes-container">
+  <div class="page-header d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="bi bi-person-badge"></i> Clientes</h1>
+    <button class="btn btn-primary" (click)="crearCliente()">
+      <i class="bi bi-person-plus"></i> Nuevo Cliente
+    </button>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filtros-section mb-4">
+    <div class="row">
+      <div class="col-md-3">
+        <label class="form-label">Tipo de Cliente</label>
+        <select class="form-select" [(ngModel)]="filtroTipo" (change)="aplicarFiltros()">
+          <option value="">Todos</option>
+          <option *ngFor="let tipo of tiposCliente" [value]="tipo.id">
+            {{ tipo.nombre }}
+          </option>
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Buscar</label>
+        <input type="text" class="form-control" placeholder="Buscar por nombre, email o teléfono..."
+               [(ngModel)]="filtroBusqueda" (input)="aplicarFiltros()">
+      </div>
+      <div class="col-md-3 d-flex align-items-end">
+        <button class="btn btn-secondary me-2" (click)="limpiarFiltros()">
+          <i class="bi bi-arrow-clockwise"></i> Limpiar
+        </button>
+        <button class="btn btn-outline-primary" (click)="exportarClientes()">
+          <i class="bi bi-download"></i> Exportar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lista de Clientes -->
+  <div class="clientes-lista">
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Cliente</th>
+            <th>Tipo</th>
+            <th>Contacto</th>
+            <th>Propiedades</th>
+            <th>Operaciones</th>
+            <th>Última Interacción</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let cliente of clientesFiltrados">
+            <td>
+              <div class="cliente-info">
+                <strong>{{ cliente.nombre }}</strong>
+                <br>
+                <small class="text-muted">Reg: {{ cliente.fechaRegistro | date:'short' }}</small>
+              </div>
+            </td>
+            <td>
+              <span class="badge bg-primary">{{ obtenerTipoNombre(cliente.tipo) }}</span>
+            </td>
+            <td>
+              <div>
+                <i class="bi bi-envelope"></i> {{ cliente.email }}
+                <br>
+                <i class="bi bi-telephone"></i> {{ cliente.telefono }}
+              </div>
+            </td>
+            <td>
+              <div class="propiedades-asociadas">
+                <small *ngFor="let prop of cliente.propiedadesAsociadas" class="badge bg-light text-dark me-1">
+                  {{ prop }}
+                </small>
+              </div>
+            </td>
+            <td class="text-center">
+              <span class="badge bg-success">{{ cliente.operacionesRealizadas }}</span>
+            </td>
+            <td>
+              <small>{{ cliente.ultimaInteraccion | date:'short' }}</small>
+            </td>
+            <td>
+              <div class="btn-group btn-group-sm">
+                <button class="btn btn-outline-primary" (click)="editarCliente(cliente.id)" 
+                        [title]="'Editar cliente'">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn btn-outline-info" (click)="verHistorial(cliente.id)"
+                        [title]="'Ver historial'">
+                  <i class="bi bi-clock-history"></i>
+                </button>
+                <button class="btn btn-outline-warning" (click)="asociarPropiedad(cliente.id)"
+                        [title]="'Asociar propiedad'">
+                  <i class="bi bi-house-add"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Si no hay clientes -->
+  <div *ngIf="clientesFiltrados.length === 0" class="text-center py-5">
+    <i class="bi bi-people display-1 text-muted"></i>
+    <h3 class="text-muted">No se encontraron clientes</h3>
+    <p class="text-muted">Crea tu primer cliente para comenzar a gestionar relaciones.</p>
+    <button class="btn btn-primary" (click)="crearCliente()">
+      <i class="bi bi-person-plus"></i> Crear Primer Cliente
+    </button>
+  </div>
+</div>

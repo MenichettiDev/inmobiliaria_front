@@ -22,7 +22,7 @@ import {
   of,
   catchError,
 } from 'rxjs';
-import { UsuarioService } from '../../../../services/usuario.service';
+import { UsuarioService } from '../../../../pages/usuario/usuario.service';
 
 export interface UsuarioOption {
   id: number;
@@ -50,8 +50,7 @@ export interface UsuarioOption {
   ],
 })
 export class CboUsuarioComponent
-  implements OnInit, OnDestroy, ControlValueAccessor
-{
+  implements OnInit, OnDestroy, ControlValueAccessor {
   // Internal FormControl for search
   searchControl = new FormControl('');
   selectedControl = new FormControl<UsuarioOption | null>(null);
@@ -60,8 +59,8 @@ export class CboUsuarioComponent
   private subscriptions: Subscription[] = [];
 
   // ControlValueAccessor callbacks
-  private onChange = (value: any) => {};
-  private onTouched = () => {};
+  private onChange = (value: any) => { };
+  private onTouched = () => { };
 
   // Component inputs
   @Input() isLabel: string = '';
@@ -82,7 +81,7 @@ export class CboUsuarioComponent
   isOpen = false; // Start collapsed
   selectedUsuario: UsuarioOption | null = null;
 
-  constructor(private usuarioService: UsuarioService) {}
+  constructor(private usuarioService: UsuarioService) { }
 
   ngOnInit(): void {
     this.setupSearchSubscription();

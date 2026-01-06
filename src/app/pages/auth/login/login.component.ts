@@ -9,7 +9,7 @@ import { CommonModule } from '@angular/common';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { Router } from '@angular/router';
 import { AuthService } from '../../auth/auth.service';
-import { LoginService } from '../../../services/login.service';
+import { LoginService } from '../login.service';
 import { SpinnerComponent } from '../../../shared/components/spinner/spinner.component'; // nuevo import
 import { ToastModalComponent } from '../../../shared/components/toast-modal/toast-modal.component'; // nuevo import
 
