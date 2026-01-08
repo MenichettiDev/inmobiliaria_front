@@ -109,48 +109,6 @@
       </div>
     </div>
 
-    <!-- Sección de notificaciones unificada (REEMPLAZA la anterior) -->
-    <div class="topbar-alerts-section">
-      <div class="notifications-container">
-        <!-- Versión desktop: solo icono + badge numérico -->
-        <div
-          class="notifications-btn"
-          [class.empty]="getTotalNotifications() === 0"
-          [class.has-critical]="hasCriticalAlerts()"
-          (click)="onNotificationsClick()"
-          [ngbTooltip]="getTooltipMessage()"
-          container="body"
-        >
-          <!-- Icono principal -->
-          <div
-            class="notifications-icon"
-            [class.attention]="animateAlerts"
-            [class.shake]="animateShake"
-          >
-            <i class="bi bi-bell" aria-hidden="true"></i>
-            <!-- Badge numérico en la esquina superior derecha del icono -->
-            <div
-              *ngIf="getTotalNotifications() > 0"
-              class="critical-dot"
-              aria-live="polite"
-              aria-atomic="true"
-              title="{{ getTotalNotifications() + ' alertas vencidas' }}"
-            >
-              {{
-                getTotalNotifications() > 99 ? "99+" : getTotalNotifications()
-              }}
-            </div>
-          </div>
-
-          <!-- Texto oculto: mantenemos por accesibilidad pero escondido visualmente -->
-          <div class="notifications-content visually-hidden" aria-hidden="true">
-            <div class="notifications-title"></div>
-            <div class="notifications-subtitle"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- SECCIÓN DE USUARIO (Derecha) -->
     <div class="topbar-user-section" *ngIf="isLoggedIn">
       <!-- Botón de logout (icono) -->
