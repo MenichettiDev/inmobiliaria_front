@@ -84,7 +84,7 @@ export class SidebarComponent implements OnInit {
           id: 21,
           descripcion: 'Ver Listado',
           icono: 'bi bi-list-ul',
-          link: '/propiedades/listado',
+          link: '/propiedades/visor',
           roles: [1, 2, 3, 4, 6], // Todos pueden ver
         },
         {
@@ -172,7 +172,7 @@ export class SidebarComponent implements OnInit {
           id: 38,
           descripcion: 'Todos los Leads',
           icono: 'bi bi-people-fill',
-          link: '/leads/todos',
+          link: '/leads/visor',
           roles: [2, 3], // Solo Admin y Supervisor
         },
       ],
@@ -190,7 +190,7 @@ export class SidebarComponent implements OnInit {
           id: 41,
           descripcion: 'Ver Agenda',
           icono: 'bi bi-calendar-event',
-          link: '/agenda/ver',
+          link: '/agenda/visor',
           roles: [2, 3, 4, 6], // Todos excepto Programador
         },
         {
@@ -222,7 +222,7 @@ export class SidebarComponent implements OnInit {
           id: 51,
           descripcion: 'Ver / Crear Clientes',
           icono: 'bi bi-person-plus',
-          link: '/clientes/gestionar',
+          link: '/clientes/visor',
           roles: [2, 3, 4], // Admin, Supervisor y Agente
         },
         {
@@ -279,7 +279,7 @@ export class SidebarComponent implements OnInit {
           id: 71,
           descripcion: 'Alta / Baja Usuarios',
           icono: 'bi bi-person-plus',
-          link: '/equipo/usuarios',
+          link: '/equipo/visor',
           roles: [2], // Solo Administrador
         },
         {
@@ -311,7 +311,7 @@ export class SidebarComponent implements OnInit {
           id: 81,
           descripcion: 'Datos de la Inmobiliaria',
           icono: 'bi bi-info-circle',
-          link: '/inmobiliaria/datos',
+          link: '/inmobiliaria/visor',
           roles: [2], // Solo Administrador
         },
         {
@@ -343,7 +343,7 @@ export class SidebarComponent implements OnInit {
           id: 91,
           descripcion: 'Plan Actual',
           icono: 'bi bi-star',
-          link: '/plan-facturacion/plan',
+          link: '/plan-facturacion/visor',
           roles: [2], // Solo Administrador
         },
         {
@@ -375,7 +375,7 @@ export class SidebarComponent implements OnInit {
           id: 101,
           descripcion: 'Reportes Generales',
           icono: 'bi bi-graph-up',
-          link: '/reportes/generales',
+          link: '/reportes/visor',
           roles: [2, 3], // Admin y Supervisor
         },
         {
@@ -400,7 +400,7 @@ export class SidebarComponent implements OnInit {
           id: 111,
           descripcion: 'Estados',
           icono: 'bi bi-tags',
-          link: '/configuracion/estados',
+          link: '/configuracion/visor',
           roles: [2], // Solo Administrador
         },
         {

@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 
 export const agendaRoutes: Routes = [
   {
-    path: '',
+    path: 'visor',
     loadComponent: () => import('./visor-agenda/visor-agenda.component').then(m => m.VisorAgendaComponent)
   },
 ];

@@ -4,11 +4,11 @@ import { Roles } from '../../shared/enums/roles';
 export const userRoutes: Routes = [
   {
     path: '',
-    redirectTo: 'list',
+    redirectTo: 'visor',
     pathMatch: 'full',
   },
   {
-    path: 'list',
+    path: 'visor',
     loadComponent: () =>
       import('./visor-usuario/visor-usuario.component').then((m) => m.VisorUsuariosComponent),
     data: {

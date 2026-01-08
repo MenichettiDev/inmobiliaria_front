@@ -157,7 +157,7 @@ export class TopbarComponent implements OnInit, OnDestroy {
     this.alertsSubscription = this.alertaService
       .getAlertasActualizadas$()
       .subscribe(() => {
-        this.loadAlertas(); // Recargar alertas automáticamente
+        // this.loadAlertas(); // Recargar alertas automáticamente
       });
 
     // inicializar previousAlertCount con 0 (o con el valor que venga del primer fetch)
