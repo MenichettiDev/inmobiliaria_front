@@ -20,6 +20,15 @@ export class ResumenComponent implements OnInit {
     operacionesCerradas: 12
   };
 
+  kpisList = [
+    { icon: '👥', value: this.kpis.leadsNuevos, label: 'Leads Nuevos' },
+    { icon: '🔥', value: this.kpis.leadsActivos, label: 'Leads Activos' },
+    { icon: '🏠', value: this.kpis.propiedadesPublicadas, label: 'Propiedades' },
+    { icon: '📅', value: this.kpis.visitasHoy, label: 'Visitas Hoy' },
+    { icon: '📆', value: this.kpis.visitasSemana, label: 'Esta Semana' },
+    { icon: '💰', value: this.kpis.operacionesCerradas, label: 'Cerradas' }
+  ];
+
   // Alertas importantes
   alertas = [
     { tipo: 'warning', mensaje: 'Suscripción vence en 5 días' },

@@ -135,7 +135,7 @@ export class TopbarComponent implements OnInit, OnDestroy {
 
     // Cargar alertas inicial y configurar actualización periódica
     if (this.isLoggedIn) {
-      this.loadAlertas();
+      // this.loadAlertas();
       this.setupAlertsPolling();
     }
 

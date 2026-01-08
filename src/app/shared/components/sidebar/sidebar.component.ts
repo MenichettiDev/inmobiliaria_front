@@ -45,7 +45,7 @@ export class SidebarComponent implements OnInit {
       id: 1,
       descripcion: 'Dashboard',
       icono: 'bi bi-speedometer2',
-      link: '/dashboard',
+      link: '/dashboard/resumen',
       roles: [1, 2, 3, 4, 6], // Todos los roles
       submenus: [
         {
@@ -573,7 +573,7 @@ export class SidebarComponent implements OnInit {
   }
 
   navigateToHome(): void {
-    this.router.navigate(['/dashboard']);
+    this.router.navigate(['/dashboard/resumen']);
   }
 
   // Métodos requeridos por topbar
