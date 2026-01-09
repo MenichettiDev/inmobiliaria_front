@@ -20,15 +20,15 @@ import {
   FormGroup,
 } from '@angular/forms';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
-import { Roles } from '../../../shared/enums/roles';
-import { AlertaService } from '../../../services/alerta.service';
+import { Roles } from '../../../../shared/enums/roles';
+import { AlertaService } from '../../../../services/alerta.service';
 
 @Component({
   selector: 'app-usuarios-modal',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, NgbTooltipModule],
   templateUrl: './modal-usuario.component.html',
-  styleUrls: ['../../../../styles/modal-style.css'], // usar estilos consolidados globales (scoped al componente)
+  styleUrls: ['../../../../../styles/modal-style.css'], // usar estilos consolidados globales (scoped al componente)
 })
 export class UsuariosModalComponent implements OnInit, OnChanges {
   @Output() submit = new EventEmitter<{

@@ -1,8 +1,44 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { PropiedadesService } from './../propiedades.service';
+
+interface Propiedad {
+  id: number;
+  titulo: string;
+  descripcion: string;
+  precio: number;
+  direccion: string;
+  latitud: number;
+  longitud: number;
+  publicadaEn: string | null;
+  creadoEn: string;
+  actualizadoEn: string;
+  idInmobiliaria: number;
+  idAgenteResponsable: number | null;
+  agenteResponsableNombre: string | null;
+  idEstadoAdmin: number;
+  idEstadoOperativo: number;
+  estadoAdminNombre: string;
+  estadoOperativoNombre: string;
+}
+
+interface Filtros {
+  estadoAdministrativo: string;
+  estadoOperativo: string;
+  agente: string;
+  busqueda: string;
+}
+
+interface Paginacion {
+  page: number;
+  pageSize: number;
+  totalRecords: number;
+  totalPages: number;
+  hasPreviousPage: boolean;
+  hasNextPage: boolean;
+}
 
 @Component({
   selector: 'app-visor-propiedades',
@@ -11,141 +47,219 @@ import { PropiedadesService } from './../propiedades.service';
   styleUrl: './visor-propiedades.component.css'
 })
 export class VisorPropiedadesComponent implements OnInit {
-  // Filtros
-  filtros = {
+  propiedades: Propiedad[] = [];
+  propiedadesFiltradas: Propiedad[] = [];
+  loading: boolean = false;
+  error: string = '';
+
+  filtros: Filtros = {
     estadoAdministrativo: '',
-    estadoComercial: '',
-    tipo: '',
+    estadoOperativo: '',
     agente: '',
     busqueda: ''
   };
 
-  // Estados disponibles
+  paginacion: Paginacion = {
+    page: 1,
+    pageSize: 9,
+    totalRecords: 0,
+    totalPages: 1,
+    hasPreviousPage: false,
+    hasNextPage: false
+  };
+
   estadosAdministrativos = [
-    { id: 1, nombre: 'Activa' },
-    { id: 2, nombre: 'En revisión' },
-    { id: 3, nombre: 'Pausada' }
+    { id: 1, nombre: 'Activo' },
+    { id: 2, nombre: 'Inactivo' },
+    { id: 3, nombre: 'Pendiente' }
   ];
 
-  estadosComerciales = [
+  estadosOperativos = [
     { id: 1, nombre: 'Disponible' },
-    { id: 2, nombre: 'Reservada' },
-    { id: 3, nombre: 'Vendida' }
+    { id: 2, nombre: 'Vendido' },
+    { id: 3, nombre: 'Reservado' },
+    { id: 4, nombre: 'En Proceso' }
   ];
 
-  tipos = [
-    { id: 1, nombre: 'Casa' },
-    { id: 2, nombre: 'Departamento' },
-    { id: 3, nombre: 'Local' },
-    { id: 4, nombre: 'Oficina' }
-  ];
-
-  agentes = [
-    { id: 1, nombre: 'Juan Pérez' },
-    { id: 2, nombre: 'María González' },
-    { id: 3, nombre: 'Carlos López' }
-  ];
-
-  // Propiedades de ejemplo
-  propiedades = [
-    {
-      id: 1,
-      titulo: 'Casa en Palermo',
-      tipo: 'Casa',
-      precio: 350000,
-      estadoAdministrativo: 'Activa',
-      estadoComercial: 'Disponible',
-      agente: 'Juan Pérez',
-      fechaCreacion: '2024-01-10',
-      imagen: 'assets/images/propiedades/casa1.jpg'
-    },
-    {
-      id: 2,
-      titulo: 'Departamento en Recoleta',
-      tipo: 'Departamento',
-      precio: 280000,
-      estadoAdministrativo: 'Activa',
-      estadoComercial: 'Reservada',
-      agente: 'María González',
-      fechaCreacion: '2024-01-08',
-      imagen: 'assets/images/propiedades/depto1.jpg'
-    }
-  ];
-
-  constructor(private propiedadesService: PropiedadesService) { }
+  constructor(
+    private propiedadesService: PropiedadesService,
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
+    this.cargarPropiedades();
+  }
+
+  cargarPropiedades(): void {
+    this.loading = true;
+    this.error = '';
+
+    this.propiedadesService.obtenerPropiedades().subscribe({
+      next: (response) => {
+        if (response.success) {
+          // Adjust to handle nested data structure
+          this.propiedades = response.data.data || [];
+          this.paginacion = {
+            page: response.data.page,
+            pageSize: response.data.pageSize,
+            totalRecords: response.data.totalRecords,
+            totalPages: response.data.totalPages,
+            hasPreviousPage: response.data.hasPreviousPage,
+            hasNextPage: response.data.hasNextPage
+          };
+          this.aplicarFiltros();
+        } else {
+          this.error = response.message || 'Error desconocido al cargar las propiedades';
+        }
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Error al cargar propiedades:', error);
+        this.error = 'Error al cargar las propiedades';
+        this.loading = false;
+        this.propiedades = [];
+        this.propiedadesFiltradas = [];
+      }
+    });
   }
 
   aplicarFiltros(): void {
-    // Lógica para filtrar propiedades
-    console.log('Aplicando filtros:', this.filtros);
+    let propiedadesFiltradas = [...this.propiedades];
+
+    // Filtrar por estado administrativo
+    if (this.filtros.estadoAdministrativo) {
+      propiedadesFiltradas = propiedadesFiltradas.filter(
+        p => p.idEstadoAdmin.toString() === this.filtros.estadoAdministrativo
+      );
+    }
+
+    // Filtrar por estado operativo
+    if (this.filtros.estadoOperativo) {
+      propiedadesFiltradas = propiedadesFiltradas.filter(
+        p => p.idEstadoOperativo.toString() === this.filtros.estadoOperativo
+      );
+    }
+
+    // Filtrar por agente
+    if (this.filtros.agente) {
+      const agenteFilter = this.filtros.agente.toLowerCase();
+      propiedadesFiltradas = propiedadesFiltradas.filter(
+        p => p.agenteResponsableNombre?.toLowerCase().includes(agenteFilter)
+      );
+    }
+
+    // Filtrar por búsqueda general
+    if (this.filtros.busqueda) {
+      const busquedaFilter = this.filtros.busqueda.toLowerCase();
+      propiedadesFiltradas = propiedadesFiltradas.filter(p =>
+        p.titulo.toLowerCase().includes(busquedaFilter) ||
+        p.descripcion.toLowerCase().includes(busquedaFilter) ||
+        p.direccion.toLowerCase().includes(busquedaFilter)
+      );
+    }
+
+    this.actualizarPaginacion(propiedadesFiltradas);
+  }
+
+  actualizarPaginacion(propiedadesFiltradas: Propiedad[]): void {
+    this.paginacion.totalRecords = propiedadesFiltradas.length;
+    this.paginacion.totalPages = Math.ceil(this.paginacion.totalRecords / this.paginacion.pageSize);
+
+    // Ajustar página actual si es necesario
+    if (this.paginacion.page > this.paginacion.totalPages && this.paginacion.totalPages > 0) {
+      this.paginacion.page = this.paginacion.totalPages;
+    }
+
+    this.paginacion.hasPreviousPage = this.paginacion.page > 1;
+    this.paginacion.hasNextPage = this.paginacion.page < this.paginacion.totalPages;
+
+    // Aplicar paginación
+    const startIndex = (this.paginacion.page - 1) * this.paginacion.pageSize;
+    const endIndex = startIndex + this.paginacion.pageSize;
+    this.propiedadesFiltradas = propiedadesFiltradas.slice(startIndex, endIndex);
   }
 
   limpiarFiltros(): void {
     this.filtros = {
       estadoAdministrativo: '',
-      estadoComercial: '',
-      tipo: '',
+      estadoOperativo: '',
       agente: '',
       busqueda: ''
     };
+    this.paginacion.page = 1;
+    this.aplicarFiltros();
   }
 
-  get propiedadesFiltradas() {
-    let filtradas = [...this.propiedades];
-
-    if (this.filtros.estadoAdministrativo) {
-      filtradas = filtradas.filter(p => p.estadoAdministrativo === this.filtros.estadoAdministrativo);
+  paginaAnterior(): void {
+    if (this.paginacion.hasPreviousPage) {
+      this.paginacion.page--;
+      this.aplicarFiltros();
     }
+  }
 
-    if (this.filtros.estadoComercial) {
-      filtradas = filtradas.filter(p => p.estadoComercial === this.filtros.estadoComercial);
+  paginaSiguiente(): void {
+    if (this.paginacion.hasNextPage) {
+      this.paginacion.page++;
+      this.aplicarFiltros();
     }
-
-    if (this.filtros.tipo) {
-      filtradas = filtradas.filter(p => p.tipo === this.filtros.tipo);
-    }
-
-    if (this.filtros.agente) {
-      filtradas = filtradas.filter(p => p.agente === this.filtros.agente);
-    }
-
-    if (this.filtros.busqueda) {
-      const termino = this.filtros.busqueda.toLowerCase();
-      filtradas = filtradas.filter(p =>
-        p.titulo.toLowerCase().includes(termino) ||
-        p.tipo.toLowerCase().includes(termino)
-      );
-    }
-
-    return filtradas;
   }
 
   crearPropiedad(): void {
-    console.log('Crear nueva propiedad');
-    // Implementar navegación o modal
+    this.router.navigate(['/propiedades/create']);
   }
 
   editarPropiedad(id: number): void {
-    console.log('Editar propiedad:', id);
+    this.router.navigate(['/propiedades/editar', id]);
   }
 
   cambiarEstado(id: number): void {
-    console.log('Cambiar estado propiedad:', id);
+    const propiedad = this.propiedades.find(p => p.id === id);
+    if (propiedad) {
+      const nuevoEstado = propiedad.idEstadoOperativo === 1 ? 'vendido' : 'disponible';
+
+      this.propiedadesService.cambiarEstado(id, nuevoEstado).subscribe({
+        next: () => {
+          this.cargarPropiedades();
+        },
+        error: (error) => {
+          console.error('Error al cambiar estado:', error);
+        }
+      });
+    }
   }
 
   publicarPropiedad(id: number): void {
-    console.log('Publicar propiedad:', id);
+    this.propiedadesService.publicarPropiedad(id).subscribe({
+      next: () => {
+        this.cargarPropiedades();
+      },
+      error: (error) => {
+        console.error('Error al publicar propiedad:', error);
+      }
+    });
   }
 
   obtenerColorEstado(estado: string): string {
-    const colores = {
-      'Disponible': 'success',
-      'Reservada': 'warning',
-      'Vendida': 'danger',
-      'En mantenimiento': 'secondary'
-    };
-    return colores[estado as keyof typeof colores] || 'secondary';
+    switch (estado.toLowerCase()) {
+      case 'disponible':
+        return 'success';
+      case 'vendido':
+        return 'danger';
+      case 'reservado':
+        return 'warning';
+      case 'en proceso':
+        return 'info';
+      default:
+        return 'secondary';
+    }
+  }
+
+  formatearFecha(fecha: string): string {
+    const date = new Date(fecha);
+    return date.toLocaleDateString('es-ES', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
   }
 }

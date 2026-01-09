@@ -1,0 +1,184 @@
+<div class="container-fluid">
+  <div class="row justify-content-center">
+    <div class="col-lg-8 col-xl-6">
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+          <h2 class="card-title mb-0">
+            <i class="bi bi-house-add"></i> Nueva Propiedad
+          </h2>
+        </div>
+        <div class="card-body">
+          <!-- Error Alert -->
+          <div *ngIf="error" class="alert alert-danger" role="alert">
+            <i class="bi bi-exclamation-triangle"></i>
+            {{ error }}
+          </div>
+
+          <!-- Form -->
+          <form [formGroup]="propiedadForm" (ngSubmit)="onSubmit()" novalidate>
+            <!-- Título -->
+            <div class="mb-3">
+              <label for="titulo" class="form-label">
+                Título <span class="text-danger">*</span>
+              </label>
+              <input
+                type="text"
+                class="form-control"
+                id="titulo"
+                formControlName="titulo"
+                [class.is-invalid]="isFieldInvalid('titulo')"
+                placeholder="Ej: Casa 3 dormitorios en zona residencial"
+              />
+              <div *ngIf="isFieldInvalid('titulo')" class="invalid-feedback">
+                {{ getFieldError("titulo") }}
+              </div>
+            </div>
+
+            <!-- Descripción -->
+            <div class="mb-3">
+              <label for="descripcion" class="form-label">
+                Descripción <span class="text-danger">*</span>
+              </label>
+              <textarea
+                class="form-control"
+                id="descripcion"
+                formControlName="descripcion"
+                rows="4"
+                [class.is-invalid]="isFieldInvalid('descripcion')"
+                placeholder="Describe las características principales de la propiedad..."
+              ></textarea>
+              <div
+                *ngIf="isFieldInvalid('descripcion')"
+                class="invalid-feedback"
+              >
+                {{ getFieldError("descripcion") }}
+              </div>
+            </div>
+
+            <!-- Precio y Dirección -->
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="precio" class="form-label">Precio</label>
+                  <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="precio"
+                      formControlName="precio"
+                      [class.is-invalid]="isFieldInvalid('precio')"
+                      placeholder="0.00"
+                      step="0.01"
+                      min="0.01"
+                    />
+                  </div>
+                  <div
+                    *ngIf="isFieldInvalid('precio')"
+                    class="invalid-feedback"
+                  >
+                    {{ getFieldError("precio") }}
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="agente" class="form-label"
+                    >Agente Responsable</label
+                  >
+                  <app-cbo-usuarios-inmobiliaria
+                    placeholder="Seleccionar agente (opcional)"
+                    [showEmail]="true"
+                    [estadoId]="1"
+                    formControlName="idAgenteResponsable"
+                  >
+                  </app-cbo-usuarios-inmobiliaria>
+                </div>
+              </div>
+            </div>
+
+            <!-- Dirección -->
+            <div class="mb-3">
+              <label for="direccion" class="form-label">
+                Dirección <span class="text-danger">*</span>
+              </label>
+              <input
+                type="text"
+                class="form-control"
+                id="direccion"
+                formControlName="direccion"
+                [class.is-invalid]="isFieldInvalid('direccion')"
+                placeholder="Dirección completa de la propiedad"
+              />
+              <div *ngIf="isFieldInvalid('direccion')" class="invalid-feedback">
+                {{ getFieldError("direccion") }}
+              </div>
+            </div>
+
+            <!-- Coordenadas -->
+            <div class="mb-4">
+              <label class="form-label">Coordenadas (opcional)</label>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label for="latitud" class="form-label">Latitud</label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="latitud"
+                      formControlName="latitud"
+                      placeholder="-34.6118"
+                      step="0.00000001"
+                    />
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label for="longitud" class="form-label">Longitud</label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="longitud"
+                      formControlName="longitud"
+                      placeholder="-58.3960"
+                      step="0.00000001"
+                    />
+                  </div>
+                </div>
+              </div>
+              <small class="text-muted">
+                <i class="bi bi-info-circle"></i>
+                Las coordenadas ayudan a ubicar la propiedad en el mapa
+              </small>
+            </div>
+
+            <!-- Buttons -->
+            <div class="d-flex justify-content-between">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                (click)="onCancel()"
+                [disabled]="loading"
+              >
+                <i class="bi bi-x-circle"></i> Cancelar
+              </button>
+              <button
+                type="submit"
+                class="btn btn-primary"
+                [disabled]="loading || propiedadForm.invalid"
+              >
+                <span
+                  *ngIf="loading"
+                  class="spinner-border spinner-border-sm me-2"
+                  role="status"
+                ></span>
+                <i *ngIf="!loading" class="bi bi-check-circle"></i>
+                {{ loading ? "Creando..." : "Crear Propiedad" }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

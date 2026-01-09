@@ -3,36 +3,66 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
-export interface Propiedad {
+interface Propiedad {
     id: number;
     titulo: string;
-    tipo: string;
+    descripcion: string;
     precio: number;
-    estadoAdministrativo: string;
-    estadoComercial: string;
-    agente: string;
-    fechaCreacion: string;
-    imagen: string;
+    direccion: string;
+    latitud: number;
+    longitud: number;
+    publicadaEn: string | null;
+    creadoEn: string;
+    actualizadoEn: string;
+    idInmobiliaria: number;
+    idAgenteResponsable: number | null;
+    agenteResponsableNombre: string | null;
+    idEstadoAdmin: number;
+    idEstadoOperativo: number;
+    estadoAdminNombre: string;
+    estadoOperativoNombre: string;
+}
+
+interface PropiedadesResponse {
+    data: {
+        data: Propiedad[];
+        page: number;
+        pageSize: number;
+        totalRecords: number;
+        totalPages: number;
+        hasNextPage: boolean;
+        hasPreviousPage: boolean;
+    };
+    success: boolean;
+    message: string;
+    errors: any[];
+}
+
+interface CreatePropiedadResponse {
+    data: Propiedad | null;
+    success: boolean;
+    message: string;
+    errors: string[];
 }
 
 @Injectable({
     providedIn: 'root'
 })
 export class PropiedadesService {
-    private apiUrl = environment.apiUrl + '/propiedades';
+    private apiUrl = environment.apiUrl + '/propiedad';
 
     constructor(private http: HttpClient) { }
 
-    obtenerPropiedades(): Observable<Propiedad[]> {
-        return this.http.get<Propiedad[]>(`${this.apiUrl}`);
+    obtenerPropiedades(): Observable<PropiedadesResponse> {
+        return this.http.get<PropiedadesResponse>(`${this.apiUrl}`);
     }
 
     obtenerPropiedad(id: number): Observable<Propiedad> {
         return this.http.get<Propiedad>(`${this.apiUrl}/${id}`);
     }
 
-    crearPropiedad(propiedad: any): Observable<Propiedad> {
-        return this.http.post<Propiedad>(`${this.apiUrl}`, propiedad);
+    crearPropiedad(propiedad: any): Observable<CreatePropiedadResponse> {
+        return this.http.post<CreatePropiedadResponse>(`${this.apiUrl}`, propiedad);
     }
 
     actualizarPropiedad(id: number, propiedad: any): Observable<Propiedad> {

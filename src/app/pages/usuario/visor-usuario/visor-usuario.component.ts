@@ -3,12 +3,11 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { UsuarioService } from '../../../pages/usuario/usuario.service';
-import { UsuariosModalComponent } from '../modal-usuario/modal-usuario.component';
 import { Router } from '@angular/router';
 import { Roles } from '../../../shared/enums/roles';
 import { PaginatorComponent } from '../../../shared/components/paginator/paginator.component';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
-import { CboRolUsuarioComponent } from '../../../shared/components/Cbo/cbo-rol-usuario/cbo-rol-usuario.component';
+import { CboRolUsuarioComponent } from '../components/cbo-rol-usuario/cbo-rol-usuario.component';
 import { SpinnerComponent } from '../../../shared/components/spinner/spinner.component';
 import { AlertaService } from '../../../services/alerta.service';
 
@@ -66,7 +65,6 @@ interface ApiResponse {
     PaginatorComponent,
     NgbTooltipModule,
     SpinnerComponent,
-    UsuariosModalComponent
   ],
   templateUrl: './visor-usuario.component.html',
   styleUrls: ['../../../../styles/visor-style.css'],

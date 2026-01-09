@@ -17,7 +17,7 @@ import {
 import {
   RolUsuarioService,
   RolDto,
-} from '../../../../pages/usuario/rol-usuario.service';
+} from '../../rol-usuario.service';
 import {
   debounceTime,
   distinctUntilChanged,
