@@ -12,5 +12,9 @@ export const propiedadesRoutes: Routes = [
   {
     path: 'create',
     loadComponent: () => import('./form-create-propiedad/form-create-propiedad.component').then(m => m.FormCreatePropiedadComponent)
+  },
+  {
+    path: 'edit/:id',
+    loadComponent: () => import('./form-edit-propiedad/form-edit-propiedad.component').then(m => m.FormEditPropiedadComponent)
   }
 ];

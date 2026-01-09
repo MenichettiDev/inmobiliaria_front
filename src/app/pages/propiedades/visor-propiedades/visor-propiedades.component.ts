@@ -209,7 +209,7 @@ export class VisorPropiedadesComponent implements OnInit {
   }
 
   editarPropiedad(id: number): void {
-    this.router.navigate(['/propiedades/editar', id]);
+    this.router.navigate(['/propiedades/edit', id]);
   }
 
   cambiarEstado(id: number): void {

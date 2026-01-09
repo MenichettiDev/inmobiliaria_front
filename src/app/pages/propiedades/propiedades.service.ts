@@ -45,6 +45,20 @@ interface CreatePropiedadResponse {
     errors: string[];
 }
 
+interface UpdatePropiedadResponse {
+    data: Propiedad | null;
+    success: boolean;
+    message: string;
+    errors: string[];
+}
+
+interface PropiedadResponse {
+    data: Propiedad;
+    success: boolean;
+    message: string;
+    errors: any[];
+}
+
 @Injectable({
     providedIn: 'root'
 })
@@ -57,16 +71,16 @@ export class PropiedadesService {
         return this.http.get<PropiedadesResponse>(`${this.apiUrl}`);
     }
 
-    obtenerPropiedad(id: number): Observable<Propiedad> {
-        return this.http.get<Propiedad>(`${this.apiUrl}/${id}`);
+    obtenerPropiedad(id: number): Observable<PropiedadResponse> {
+        return this.http.get<PropiedadResponse>(`${this.apiUrl}/${id}`);
     }
 
     crearPropiedad(propiedad: any): Observable<CreatePropiedadResponse> {
         return this.http.post<CreatePropiedadResponse>(`${this.apiUrl}`, propiedad);
     }
 
-    actualizarPropiedad(id: number, propiedad: any): Observable<Propiedad> {
-        return this.http.put<Propiedad>(`${this.apiUrl}/${id}`, propiedad);
+    actualizarPropiedad(id: number, propiedad: any): Observable<UpdatePropiedadResponse> {
+        return this.http.put<UpdatePropiedadResponse>(`${this.apiUrl}/${id}`, propiedad);
     }
 
     eliminarPropiedad(id: number): Observable<any> {
