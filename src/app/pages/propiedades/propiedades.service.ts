@@ -79,12 +79,18 @@ export class PropiedadesService {
         return this.http.post<CreatePropiedadResponse>(`${this.apiUrl}`, propiedad);
     }
 
+
     actualizarPropiedad(id: number, propiedad: any): Observable<UpdatePropiedadResponse> {
         return this.http.put<UpdatePropiedadResponse>(`${this.apiUrl}/${id}`, propiedad);
     }
 
     eliminarPropiedad(id: number): Observable<any> {
-        return this.http.delete(`${this.apiUrl}/${id}`);
+        // Endpoint DELETE {id} que elimina (desactiva) la propiedad
+        return this.http.delete<any>(`${this.apiUrl}/${id}`);
+    }
+
+    reactivarPropiedad(id: number): Observable<any> {
+        return this.http.post<any>(`${this.apiUrl}/${id}/reactivar`, {});
     }
 
     cambiarEstado(id: number, estado: string): Observable<any> {

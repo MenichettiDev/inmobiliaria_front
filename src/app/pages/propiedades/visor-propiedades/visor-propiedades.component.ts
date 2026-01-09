@@ -3,6 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { PropiedadesService } from './../propiedades.service';
+import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/confirm-modal.component';
+import { ToastModalComponent } from '../../../shared/components/toast-modal/toast-modal.component';
+import { take } from 'rxjs/operators';
 
 interface Propiedad {
   id: number;
@@ -42,7 +45,7 @@ interface Paginacion {
 
 @Component({
   selector: 'app-visor-propiedades',
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, ConfirmModalComponent, ToastModalComponent],
   templateUrl: './visor-propiedades.component.html',
   styleUrl: './visor-propiedades.component.css'
 })
@@ -80,6 +83,14 @@ export class VisorPropiedadesComponent implements OnInit {
     { id: 3, nombre: 'Reservado' },
     { id: 4, nombre: 'En Proceso' }
   ];
+
+  // NUEVO: confirmación y toast
+  confirmVisible: boolean = false;
+  confirmTargetId: number | null = null;
+
+  toastMessage: string = '';
+  toastVisible: boolean = false;
+  toastType: 'success' | 'error' | 'warning' = 'success';
 
   constructor(
     private propiedadesService: PropiedadesService,
@@ -237,6 +248,81 @@ export class VisorPropiedadesComponent implements OnInit {
         console.error('Error al publicar propiedad:', error);
       }
     });
+  }
+
+  solicitarEliminar(id: number): void {
+    this.confirmTargetId = id;
+    this.confirmVisible = true;
+  }
+
+  // NUEVO: reactivar propiedad
+  reactivarPropiedad(id: number): void {
+    this.loading = true;
+    this.propiedadesService.reactivarPropiedad(id).pipe(take(1)).subscribe({
+      next: (res: any) => {
+        const msg = res?.message || 'Respuesta desconocida del servidor';
+        if (res && res.success === true) {
+          this.showToast(msg, 'success');
+          this.cargarPropiedades();
+        } else {
+          this.showToast(msg, 'error');
+          this.loading = false;
+        }
+      },
+      error: (err) => {
+        console.error('Error al reactivar propiedad:', err);
+        const msg = err?.error?.message || err?.message || 'Error al reactivar la propiedad';
+        this.showToast(msg, 'error');
+        this.loading = false;
+      }
+    });
+  }
+
+  onConfirmDelete(): void {
+    if (!this.confirmTargetId) {
+      this.confirmVisible = false;
+      return;
+    }
+
+    const id = this.confirmTargetId;
+    this.confirmVisible = false;
+    this.confirmTargetId = null;
+    this.loading = true;
+
+    this.propiedadesService.eliminarPropiedad(id).pipe(take(1)).subscribe({
+      next: (res: any) => {
+        // Verificar el flag `success` de la respuesta del servidor
+        const msg = res?.message || 'Respuesta desconocida del servidor';
+        if (res && res.success === true) {
+          this.showToast(msg, 'success');
+          // recargar visor solo si fue exitoso
+          this.cargarPropiedades();
+        } else {
+          // Si success es false (aunque HTTP 200), mostrar error y no recargar
+          this.showToast(msg, 'error');
+          this.loading = false;
+        }
+      },
+      error: (err) => {
+        console.error('Error al eliminar propiedad:', err);
+        const msg = err?.error?.message || err?.message || 'Error al eliminar la propiedad';
+        this.showToast(msg, 'error');
+        this.loading = false;
+      }
+    });
+  }
+
+  onCancelDelete(): void {
+    this.confirmTargetId = null;
+    this.confirmVisible = false;
+  }
+
+  private showToast(message: string, type: 'success' | 'error' | 'warning' = 'success') {
+    this.toastMessage = message;
+    this.toastType = type;
+    this.toastVisible = true;
+    // ocultar automáticamente tras 2s
+    setTimeout(() => (this.toastVisible = false), 2000);
   }
 
   obtenerColorEstado(estado: string): string {

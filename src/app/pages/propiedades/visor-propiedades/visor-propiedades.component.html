@@ -159,6 +159,26 @@
               >
                 <i class="bi bi-broadcast"></i> Publicar
               </button>
+
+              <!-- Cambios: mostrar Eliminar solo si idEstadoAdmin !== 0, si es 0 mostrar Reactivar -->
+              <ng-container
+                *ngIf="propiedad.idEstadoAdmin !== 0; else reactivarBtn"
+              >
+                <button
+                  class="btn btn-sm btn-outline-danger ms-2"
+                  (click)="solicitarEliminar(propiedad.id)"
+                >
+                  <i class="bi bi-trash"></i> Eliminar
+                </button>
+              </ng-container>
+              <ng-template #reactivarBtn>
+                <button
+                  class="btn btn-sm btn-outline-success ms-2"
+                  (click)="reactivarPropiedad(propiedad.id)"
+                >
+                  <i class="bi bi-arrow-clockwise"></i> Reactivar
+                </button>
+              </ng-template>
             </div>
           </div>
         </div>
@@ -211,4 +231,20 @@
     Mostrando {{ propiedadesFiltradas.length }} de {{ paginacion.totalRecords }}
     propiedades
   </div>
+
+  <!-- Componente de confirmación y toast -->
+  <app-modal-confirm
+    [visible]="confirmVisible"
+    title="Confirmar eliminación"
+    message="¿Estás seguro que deseas eliminar esta propiedad?"
+    (confirm)="onConfirmDelete()"
+    (cancel)="onCancelDelete()"
+  ></app-modal-confirm>
+
+  <app-modal-toast
+    [message]="toastMessage"
+    [isVisible]="toastVisible"
+    [type]="toastType"
+    [animationPreset]="'preset-1'"
+  ></app-modal-toast>
 </div>
