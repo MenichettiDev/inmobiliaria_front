@@ -9,6 +9,7 @@ interface LoginResponse {
   token: string;
   usuario: {
     Id: number;
+    IdInmobiliaria: number;
     Nombre: string;
     Email: string;
     Dni: string;

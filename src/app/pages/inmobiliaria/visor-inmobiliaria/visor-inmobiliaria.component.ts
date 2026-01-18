@@ -79,11 +79,45 @@ export class VisorInmobiliariaComponent implements OnInit {
 
   private loadUserRole(): void {
     const user = this.authService.getUser();
+    console.log('Loaded user data from AuthService:', user); // Log user data for debugging
     if (user) {
       this.userRole = user.id_acceso || 0;
       this.isProgrammer = this.userRole === 1;
       this.isAdmin = this.userRole === 2;
+      console.log(`User role loaded: ${this.userRole} (Programmer: ${this.isProgrammer}, Admin: ${this.isAdmin})`);
+      // If the user is an admin, load their inmobiliaria
+      if (this.isAdmin) {
+        const inmobiliariaId = user.idInmobiliaria || user.id_inmobiliaria; // Ensure compatibility with different property names
+        if (inmobiliariaId) {
+          console.log('Admin user has inmobiliaria ID:', inmobiliariaId); // Log inmobiliaria ID
+          this.loadMyInmobiliaria(inmobiliariaId);
+        } else {
+          console.error('Admin user does not have an assigned inmobiliaria. User data:', user);
+          this.handleError(new Error('No tienes una inmobiliaria asignada.'));
+        }
+      }
+    } else {
+      console.error('No user data found in AuthService.');
+      this.handleError(new Error('No se pudo cargar la información del usuario.'));
     }
+  }
+
+  private loadMyInmobiliaria(id: number): void {
+    this.isLoading = true;
+    this.hasError = false;
+    this.errorMessage = '';
+
+    console.log('Calling getMyInmobiliaria with ID:', id); // Log the ID being used
+    this.inmobiliariaService.getMyInmobiliaria(id).subscribe({
+      next: (response) => {
+        console.log('Response from getMyInmobiliaria:', response); // Log the response
+        this.handleSingleResponse(response);
+      },
+      error: (error) => {
+        console.error('Error fetching inmobiliaria:', error); // Log the error
+        this.handleError(error);
+      }
+    });
   }
 
   loadInmobiliarias(): void {
@@ -105,18 +139,25 @@ export class VisorInmobiliariaComponent implements OnInit {
     });
 
     if (this.isProgrammer) {
-      // Programador ve todas las inmobiliarias
+      // Programmer sees all inmobiliarias
+      console.log('User is a programmer. Fetching all inmobiliarias with filters:', filters);
       this.inmobiliariaService.getInmobiliarias(filters).subscribe({
         next: (response) => this.handlePaginatedResponse(response),
         error: (error) => this.handleError(error)
       });
     } else if (this.isAdmin) {
-      // Administrador ve solo su inmobiliaria
-      this.inmobiliariaService.getMyInmobiliaria().subscribe({
-        next: (response) => this.handleSingleResponse(response),
-        error: (error) => this.handleError(error)
-      });
+      // Admin sees only their inmobiliaria
+      const user = this.authService.getUser();
+      console.log('User is an admin. User data:', user);
+      if (user?.id_inmobiliaria) {
+        console.log('Fetching inmobiliaria for admin with ID:', user.id_inmobiliaria);
+        this.loadMyInmobiliaria(user.id_inmobiliaria); // Correctly call loadMyInmobiliaria with the ID
+      } else {
+        console.error('Admin user does not have an assigned inmobiliaria. User data:', user);
+        this.handleError(new Error('No tienes una inmobiliaria asignada.'));
+      }
     } else {
+      console.error('User does not have permissions to view this information. User role:', this.userRole);
       this.handleError(new Error('No tienes permisos para ver esta información'));
     }
   }
@@ -130,6 +171,7 @@ export class VisorInmobiliariaComponent implements OnInit {
       this.hasNextPage = response.data.hasNextPage;
       this.hasPreviousPage = response.data.hasPreviousPage;
 
+      this.hasError = false; // Reset the error flag
       this.calculateSummaryStats();
     } else {
       this.handleError(new Error(response.message || 'Error al cargar las inmobiliarias'));
@@ -146,6 +188,7 @@ export class VisorInmobiliariaComponent implements OnInit {
       this.hasNextPage = false;
       this.hasPreviousPage = false;
 
+      this.hasError = false; // Reset the error flag
       this.calculateSummaryStats();
     } else {
       this.handleError(new Error(response.message || 'Error al cargar la inmobiliaria'));

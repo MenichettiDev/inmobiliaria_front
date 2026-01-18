@@ -116,10 +116,14 @@ export class InmobiliariaService {
 
     /**
      * Obtiene la inmobiliaria actual del usuario autenticado
-     * Para rol Administrador (perfil 2) - obtiene solo su inmobiliaria
+     * Requiere rol de Programador
      */
-    getMyInmobiliaria(): Observable<ApiResponse<Inmobiliaria>> {
-        return this.http.get<ApiResponse<Inmobiliaria>>(`${this.apiUrl}/my`);
+    getMyInmobiliaria(id: number): Observable<ApiResponse<Inmobiliaria>> {
+        if (id <= 0) {
+            throw new Error('El ID debe ser mayor a 0');
+        }
+
+        return this.http.get<ApiResponse<Inmobiliaria>>(`${this.apiUrl}/${id}`);
     }
 
     /**

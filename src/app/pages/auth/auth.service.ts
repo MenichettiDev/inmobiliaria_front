@@ -24,6 +24,7 @@ export class AuthService {
     // Normalizar shape: mapear la nueva estructura de respuesta
     const normalized = {
       id: user.id || null,
+      idInmobiliaria: user.idInmobiliaria || user.id_inmobiliaria || null, // Asegurar compatibilidad con diferentes nombres de propiedad
       nombre: user.nombre || '',
       apellido: '', // No viene en la respuesta, mantener vacío
       email: user.email || '',
