@@ -1,8 +1,22 @@
 <div class="visor-container">
   <!-- Header -->
   <div class="header">
-    <h1>{{ getDisplayTitle() }}</h1>
-    <p>{{ getDisplaySubtitle() }}</p>
+    <div class="header-content">
+      <div>
+        <h1>{{ getDisplayTitle() }}</h1>
+        <p>{{ getDisplaySubtitle() }}</p>
+      </div>
+      <div *ngIf="canCreateInmobiliaria()" class="header-actions">
+        <button
+          type="button"
+          class="btn btn-success"
+          (click)="createInmobiliaria()"
+        >
+          <i class="bi bi-plus-circle me-2"></i>
+          Nueva Inmobiliaria
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- Search Form (solo para programadores) -->
@@ -30,7 +44,7 @@
           <option value="">Todos los estados</option>
           <option value="1">Operativa</option>
           <option value="2">Suspendida</option>
-          <option value="3">Cancelada</option>
+          <option value="3">De baja</option>
           <option value="4">Pendiente de validación</option>
         </select>
       </div>
@@ -120,6 +134,7 @@
             {{ inmobiliaria.subdominio }}.inmobiliaria.com
           </div>
           <div *ngIf="inmobiliaria.dominioPersonalizado" class="custom-domain">
+            <i class="bi bi-globe me-1"></i>
             {{ inmobiliaria.dominioPersonalizado }}
           </div>
         </div>
@@ -137,6 +152,7 @@
           class="plan-badge"
           [ngClass]="getPlanClass(inmobiliaria.planNombre)"
         >
+          <i class="bi bi-star-fill me-1"></i>
           Plan {{ inmobiliaria.planNombre }}
         </div>
       </div>
@@ -144,14 +160,17 @@
       <!-- Metrics -->
       <div class="metrics">
         <div class="metric">
+          <i class="bi bi-people"></i>
           <span class="metric-value">{{ inmobiliaria.totalUsuarios }}</span>
           <div class="metric-label">Usuarios</div>
         </div>
         <div class="metric">
+          <i class="bi bi-house-door"></i>
           <span class="metric-value">{{ inmobiliaria.totalPropiedades }}</span>
           <div class="metric-label">Propiedades</div>
         </div>
         <div class="metric">
+          <i class="bi bi-person-plus"></i>
           <span class="metric-value">{{ inmobiliaria.totalLeads }}</span>
           <div class="metric-label">Leads</div>
         </div>
@@ -159,25 +178,98 @@
 
       <!-- Card Footer -->
       <div class="card-footer">
-        <div>
-          <div>Creado: {{ formatDate(inmobiliaria.creadoEn) }}</div>
-          <div>Actualizado: {{ formatDate(inmobiliaria.actualizadoEn) }}</div>
+        <div class="footer-info">
+          <small>
+            <i class="bi bi-calendar-plus me-1"></i>
+            Creado: {{ formatDate(inmobiliaria.creadoEn) }}
+          </small>
+          <small>
+            <i class="bi bi-clock-history me-1"></i>
+            Actualizado: {{ formatDate(inmobiliaria.actualizadoEn) }}
+          </small>
         </div>
-        <div>
+
+        <!-- Actions -->
+        <div class="footer-actions">
+          <!-- Ver Detalles -->
           <button
             type="button"
-            class="btn btn-sm btn-outline-primary me-2"
+            class="btn btn-primary btn-sm"
             (click)="viewDetails(inmobiliaria)"
+            title="Ver detalles"
           >
-            Ver detalles
+            <i class="bi bi-eye me-1"></i>
+            Ver Detalles
           </button>
-          <button
-            type="button"
-            class="btn btn-sm btn-primary"
-            (click)="editInmobiliaria(inmobiliaria)"
-          >
-            Editar
-          </button>
+
+          <!-- Dropdown para acciones administrativas (solo programadores) -->
+          <div *ngIf="canChangeState(inmobiliaria)" class="dropdown">
+            <button
+              type="button"
+              class="btn btn-outline-secondary btn-sm dropdown-toggle"
+              data-bs-toggle="dropdown"
+              title="Más acciones"
+            >
+              <i class="bi bi-three-dots"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <!-- Cambios de estado -->
+              <li *ngIf="canChangeState(inmobiliaria)">
+                <h6 class="dropdown-header">Cambiar Estado</h6>
+              </li>
+              <li
+                *ngIf="
+                  canChangeState(inmobiliaria) &&
+                  getStateActions(inmobiliaria).includes('activate')
+                "
+              >
+                <a
+                  class="dropdown-item"
+                  href="#"
+                  (click)="
+                    activateInmobiliaria(inmobiliaria); $event.preventDefault()
+                  "
+                >
+                  <i class="bi bi-check-circle text-success me-2"></i>
+                  Activar
+                </a>
+              </li>
+              <li
+                *ngIf="
+                  canChangeState(inmobiliaria) &&
+                  getStateActions(inmobiliaria).includes('suspend')
+                "
+              >
+                <a
+                  class="dropdown-item"
+                  href="#"
+                  (click)="
+                    suspendInmobiliaria(inmobiliaria); $event.preventDefault()
+                  "
+                >
+                  <i class="bi bi-pause-circle text-warning me-2"></i>
+                  Suspender
+                </a>
+              </li>
+              <li
+                *ngIf="
+                  canChangeState(inmobiliaria) &&
+                  getStateActions(inmobiliaria).includes('cancel')
+                "
+              >
+                <a
+                  class="dropdown-item"
+                  href="#"
+                  (click)="
+                    cancelInmobiliaria(inmobiliaria); $event.preventDefault()
+                  "
+                >
+                  <i class="bi bi-x-circle text-danger me-2"></i>
+                  Dar de Baja
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
@@ -198,9 +290,7 @@
     </button>
 
     <span class="current-page">
-      Página {{ currentPage }} de {{ totalPages }} ({{
-        totalRecords
-      }}
+      Página {{ currentPage }} de {{ totalPages }} ({{ totalRecords }}
       registros)
     </span>
 
@@ -213,4 +303,36 @@
       Siguiente
     </button>
   </div>
+
+  <!-- Details/Edit Modal -->
+  <app-modal-details-edit
+    *ngIf="showDetailsEditModal"
+    [show]="showDetailsEditModal"
+    [inmobiliaria]="selectedInmobiliaria"
+    [isEditMode]="isEditMode"
+    [isCreateMode]="false"
+    [isLoading]="isUpdating"
+    (close)="onDetailsEditModalClose()"
+    (save)="onDetailsEditModalSave($event)"
+  >
+  </app-modal-details-edit>
+
+  <!-- Create Modal -->
+  <app-modal-create
+    *ngIf="showCreateModal"
+    [isLoading]="isCreating"
+    (close)="onCreateModalClose()"
+    (save)="onCreateModalSave($event)"
+  >
+  </app-modal-create>
+
+  <!-- Confirm Modal -->
+  <app-modal-confirm
+    [visible]="showConfirmModal"
+    [title]="confirmModalTitle"
+    [message]="confirmModalMessage"
+    (confirm)="onConfirmModalConfirm()"
+    (cancel)="onConfirmModalCancel()"
+  >
+  </app-modal-confirm>
 </div>

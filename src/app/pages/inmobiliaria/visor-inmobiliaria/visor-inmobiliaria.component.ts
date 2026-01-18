@@ -1,14 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { InmobiliariaService, Inmobiliaria, InmobiliariaFilters, PaginatedResponse, ApiResponse } from '../inmobiliaria.service';
+import { InmobiliariaService, Inmobiliaria, InmobiliariaFilters, PaginatedResponse, ApiResponse, CreateInmobiliariaDto, UpdateInmobiliariaDto } from '../inmobiliaria.service';
 import { AuthService } from '../../auth/auth.service';
+import { ModalDetailsEditComponent } from '../components/modal-details-edit/modal-details-edit.component';
+import { ModalCreateComponent } from '../components/modal-create/modal-create.component';
+import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/confirm-modal.component';
 
 @Component({
   selector: 'app-visor-inmobiliaria',
-  imports: [CommonModule, ReactiveFormsModule],
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, ModalDetailsEditComponent, ModalCreateComponent, ConfirmModalComponent],
   templateUrl: './visor-inmobiliaria.component.html',
-  styleUrl: './visor-inmobiliaria.component.css'
+  styleUrls: ['./visor-inmobiliaria.component.css']
 })
 export class VisorInmobiliariaComponent implements OnInit {
   inmobiliarias: Inmobiliaria[] = [];
@@ -37,6 +41,24 @@ export class VisorInmobiliariaComponent implements OnInit {
   // Error handling
   errorMessage = '';
   hasError = false;
+
+  // Modal management
+  showDetailsEditModal = false;
+  showCreateModal = false;
+  showConfirmModal = false;
+  confirmModalTitle = '';
+  confirmModalMessage = '';
+  confirmModalAction: (() => void) | null = null;
+
+  // Current item being edited/viewed
+  selectedInmobiliaria: Inmobiliaria | null = null;
+  isEditMode = false;
+  isCreateMode = false;
+
+  // CRUD operation states
+  isCreating = false;
+  isUpdating = false;
+  isDeleting = false;
 
   constructor(
     private fb: FormBuilder,
@@ -194,14 +216,151 @@ export class VisorInmobiliariaComponent implements OnInit {
     return inmobiliaria.dominioPersonalizado || `${inmobiliaria.subdominio}.inmobiliaria.com`;
   }
 
-  viewDetails(inmobiliaria: Inmobiliaria): void {
-    console.log('Ver detalles de:', inmobiliaria.nombre);
-    // TODO: Implement navigation to detail view
+  // CRUD Operations
+
+  createInmobiliaria(): void {
+    this.showCreateModal = true;
   }
 
-  editInmobiliaria(inmobiliaria: Inmobiliaria): void {
-    console.log('Editar inmobiliaria:', inmobiliaria.nombre);
-    // TODO: Implement navigation to edit view
+  viewDetails(inmobiliaria: Inmobiliaria): void {
+    this.selectedInmobiliaria = inmobiliaria;
+    this.isEditMode = false;
+    this.isCreateMode = false;
+    this.showDetailsEditModal = true;
+  }
+
+  // Modal management
+  onCreateModalClose(): void {
+    this.showCreateModal = false;
+  }
+
+  onCreateModalSave(data: CreateInmobiliariaDto): void {
+    this.handleCreate(data);
+  }
+
+  onDetailsEditModalClose(): void {
+    this.showDetailsEditModal = false;
+    this.selectedInmobiliaria = null;
+    this.isEditMode = false;
+    this.isCreateMode = false;
+  }
+
+  onDetailsEditModalSave(data: CreateInmobiliariaDto | UpdateInmobiliariaDto): void {
+    this.handleUpdate(data as UpdateInmobiliariaDto);
+  }
+
+  onConfirmModalConfirm(): void {
+    if (this.confirmModalAction) {
+      this.confirmModalAction();
+    }
+    this.showConfirmModal = false;
+    this.confirmModalAction = null;
+  }
+
+  onConfirmModalCancel(): void {
+    this.showConfirmModal = false;
+    this.confirmModalAction = null;
+  }
+
+  private handleCreate(data: CreateInmobiliariaDto): void {
+    this.isCreating = true;
+
+    this.inmobiliariaService.createInmobiliaria(data).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.loadInmobiliarias();
+          this.showCreateModal = false;
+          console.log('Inmobiliaria creada correctamente');
+        } else {
+          this.handleError(new Error(response.message || 'Error al crear la inmobiliaria'));
+        }
+        this.isCreating = false;
+      },
+      error: (error) => {
+        this.handleError(error);
+        this.isCreating = false;
+      }
+    });
+  }
+
+  private handleUpdate(data: UpdateInmobiliariaDto): void {
+    if (!this.selectedInmobiliaria) return;
+
+    this.isUpdating = true;
+
+    this.inmobiliariaService.updateInmobiliaria(this.selectedInmobiliaria.id, data).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.loadInmobiliarias();
+          this.showDetailsEditModal = false;
+          console.log('Inmobiliaria actualizada correctamente');
+        } else {
+          this.handleError(new Error(response.message || 'Error al actualizar la inmobiliaria'));
+        }
+        this.isUpdating = false;
+      },
+      error: (error) => {
+        this.handleError(error);
+        this.isUpdating = false;
+      }
+    });
+  }
+
+  // State management methods
+  activateInmobiliaria(inmobiliaria: Inmobiliaria): void {
+    this.confirmModalTitle = 'Activar Inmobiliaria';
+    this.confirmModalMessage = `¿Confirma que desea activar la inmobiliaria "${inmobiliaria.nombre}"?`;
+    this.confirmModalAction = () => this.executeStateChange(inmobiliaria.id, 1, 'activar');
+    this.showConfirmModal = true;
+  }
+
+  suspendInmobiliaria(inmobiliaria: Inmobiliaria): void {
+    this.confirmModalTitle = 'Suspender Inmobiliaria';
+    this.confirmModalMessage = `¿Confirma que desea suspender la inmobiliaria "${inmobiliaria.nombre}"? Los usuarios no podrán acceder temporalmente.`;
+    this.confirmModalAction = () => this.executeStateChange(inmobiliaria.id, 2, 'suspender');
+    this.showConfirmModal = true;
+  }
+
+  cancelInmobiliaria(inmobiliaria: Inmobiliaria): void {
+    this.confirmModalTitle = 'Dar de baja Inmobiliaria';
+    this.confirmModalMessage = `¿Confirma que desea dar de baja la inmobiliaria "${inmobiliaria.nombre}"? Esta acción deshabilitará permanentemente la cuenta.`;
+    this.confirmModalAction = () => this.executeStateChange(inmobiliaria.id, 3, 'dar de baja');
+    this.showConfirmModal = true;
+  }
+
+  private executeStateChange(id: number, newState: number, action: string): void {
+    this.inmobiliariaService.changeInmobiliariaState(id, newState).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.loadInmobiliarias();
+          console.log(`Inmobiliaria ${action}da correctamente`);
+        } else {
+          this.handleError(new Error(response.message || `Error al ${action} la inmobiliaria`));
+        }
+      },
+      error: (error) => {
+        this.handleError(error);
+      }
+    });
+  }
+
+  // Helper methods for template
+  canCreateInmobiliaria(): boolean {
+    return this.isProgrammer;
+  }
+
+  canChangeState(inmobiliaria: Inmobiliaria): boolean {
+    return this.isProgrammer;
+  }
+
+  getStateActions(inmobiliaria: Inmobiliaria): string[] {
+    const actions: string[] = [];
+
+    if (inmobiliaria.idEstado !== 1) actions.push('activate');
+    if (inmobiliaria.idEstado !== 2) actions.push('suspend');
+    if (inmobiliaria.idEstado !== 3) actions.push('cancel');
+
+    return actions;
   }
 
   previousPage(): void {
@@ -216,17 +375,6 @@ export class VisorInmobiliariaComponent implements OnInit {
       this.currentPage++;
       this.loadInmobiliarias();
     }
-  }
-
-  // Helper methods for template
-  canEditInmobiliaria(inmobiliaria: Inmobiliaria): boolean {
-    if (this.isProgrammer) return true;
-    if (this.isAdmin) return true; // Admin can edit their own inmobiliaria
-    return false;
-  }
-
-  canViewAllInmobiliarias(): boolean {
-    return this.isProgrammer;
   }
 
   getDisplayTitle(): string {
@@ -246,4 +394,5 @@ export class VisorInmobiliariaComponent implements OnInit {
     }
     return '';
   }
+
 }

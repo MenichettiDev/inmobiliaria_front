@@ -1,0 +1,184 @@
+<div class="modal show" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <!-- Modal Header -->
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title">
+          <i class="bi bi-plus-circle me-2"></i>
+          Crear Nueva Inmobiliaria
+        </h5>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          (click)="onClose()"
+        ></button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body">
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+          <div class="row g-3">
+            <!-- Información Básica -->
+            <div class="col-12">
+              <h6 class="section-title text-success">
+                <i class="bi bi-info-circle me-1"></i>
+                Información Básica
+              </h6>
+            </div>
+
+            <div class="col-md-6">
+              <label for="nombre" class="form-label">
+                Nombre de la Inmobiliaria *
+              </label>
+              <input
+                type="text"
+                id="nombre"
+                class="form-control"
+                formControlName="nombre"
+                [class.is-invalid]="isFieldInvalid('nombre')"
+                placeholder="Ej: Inmobiliaria Los Alpes"
+                autocomplete="organization"
+              />
+              <div class="invalid-feedback">{{ getFieldError("nombre") }}</div>
+            </div>
+
+            <div class="col-md-6">
+              <label for="subdominio" class="form-label"> Subdominio * </label>
+              <div class="input-group">
+                <input
+                  type="text"
+                  id="subdominio"
+                  class="form-control"
+                  formControlName="subdominio"
+                  [class.is-invalid]="isFieldInvalid('subdominio')"
+                  placeholder="losalpes"
+                  (input)="onSubdominioChange()"
+                />
+                <span class="input-group-text">.inmobiliaria.com</span>
+              </div>
+              <div class="invalid-feedback">
+                {{ getFieldError("subdominio") }}
+              </div>
+              <small class="form-text text-muted">
+                <i class="bi bi-info-circle me-1"></i>
+                Solo letras minúsculas, números y guiones. Sin espacios.
+              </small>
+            </div>
+
+            <div class="col-12">
+              <label for="dominioPersonalizado" class="form-label">
+                Dominio Personalizado (Opcional)
+              </label>
+              <input
+                type="url"
+                id="dominioPersonalizado"
+                class="form-control"
+                formControlName="dominioPersonalizado"
+                placeholder="https://www.inmobiliaria-losalpes.com"
+              />
+              <small class="form-text text-muted">
+                <i class="bi bi-globe me-1"></i>
+                Dominio propio del cliente (si lo tiene)
+              </small>
+            </div>
+
+            <!-- Selección de Plan -->
+            <div class="col-12 mt-4">
+              <h6 class="section-title text-success">
+                <i class="bi bi-star me-1"></i>
+                Selección de Plan
+              </h6>
+            </div>
+
+            <div class="col-12">
+              <label for="idPlan" class="form-label">
+                Plan de Suscripción *
+              </label>
+              <select
+                id="idPlan"
+                class="form-select"
+                formControlName="idPlan"
+                [class.is-invalid]="isFieldInvalid('idPlan')"
+              >
+                <option value="">Seleccionar plan...</option>
+                <option *ngFor="let plan of planOptions" [value]="plan.id">
+                  {{ plan.nombre }} - {{ plan.descripcion }}
+                </option>
+              </select>
+              <div class="invalid-feedback">{{ getFieldError("idPlan") }}</div>
+
+              <!-- Plan description -->
+              <div *ngIf="form.get('idPlan')?.value" class="mt-2">
+                <div class="alert alert-info">
+                  <i class="bi bi-info-circle me-1"></i>
+                  {{ getPlanDescription(form.get("idPlan")?.value) }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Preview -->
+            <div
+              class="col-12 mt-4"
+              *ngIf="form.get('nombre')?.value || form.get('subdominio')?.value"
+            >
+              <h6 class="section-title text-success">
+                <i class="bi bi-eye me-1"></i>
+                Vista Previa
+              </h6>
+              <div class="card bg-light">
+                <div class="card-body">
+                  <h6 class="card-title mb-2">
+                    {{
+                      form.get("nombre")?.value || "Nombre de la inmobiliaria"
+                    }}
+                  </h6>
+                  <p class="card-text small mb-1">
+                    <strong>URL Principal:</strong>
+                    <span class="text-primary">
+                      {{
+                        form.get("subdominio")?.value || "subdominio"
+                      }}.inmobiliaria.com
+                    </span>
+                  </p>
+                  <p
+                    class="card-text small mb-0"
+                    *ngIf="form.get('dominioPersonalizado')?.value"
+                  >
+                    <strong>Dominio Personalizado:</strong>
+                    <span class="text-info">{{
+                      form.get("dominioPersonalizado")?.value
+                    }}</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="onClose()">
+          <i class="bi bi-x-lg me-1"></i>
+          Cancelar
+        </button>
+        <button
+          type="button"
+          class="btn btn-success"
+          [disabled]="form.invalid || isLoading"
+          (click)="onSubmit()"
+        >
+          <span
+            *ngIf="isLoading"
+            class="spinner-border spinner-border-sm me-2"
+          ></span>
+          <i *ngIf="!isLoading" class="bi bi-plus-circle me-1"></i>
+          Crear Inmobiliaria
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Backdrop -->
+<div class="modal-backdrop fade show"></div>

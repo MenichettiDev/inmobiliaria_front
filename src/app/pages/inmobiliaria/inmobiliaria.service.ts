@@ -177,6 +177,18 @@ export class InmobiliariaService {
     }
 
     /**
+     * Elimina una inmobiliaria
+     * Requiere rol de Programador
+     */
+    deleteInmobiliaria(id: number): Observable<ApiResponse<any>> {
+        if (id <= 0) {
+            throw new Error('ID no válido');
+        }
+
+        return this.http.delete<ApiResponse<any>>(`${this.apiUrl}/${id}`);
+    }
+
+    /**
      * Método de conveniencia para obtener inmobiliarias con paginación
      */
     getInmobiliariasPaginated(page: number = 1, pageSize: number = 10): Observable<PaginatedResponse<Inmobiliaria>> {

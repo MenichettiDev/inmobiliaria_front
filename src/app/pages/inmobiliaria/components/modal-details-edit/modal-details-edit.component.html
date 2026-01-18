@@ -1,0 +1,206 @@
+<div class="modal" [class.show]="show" tabindex="-1" *ngIf="show">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h5 class="modal-title">{{ modalTitle }}</h5>
+        <div class="header-actions">
+          <button
+            *ngIf="!isCreateMode && inmobiliaria"
+            type="button"
+            class="btn btn-sm"
+            [class.btn-outline-primary]="isViewMode"
+            [class.btn-outline-secondary]="!isViewMode"
+            (click)="toggleEditMode()"
+          >
+            <i [class]="isViewMode ? 'bi bi-pencil' : 'bi bi-eye'"></i>
+            {{ isViewMode ? "Editar" : "Solo Ver" }}
+          </button>
+          <button type="button" class="btn-close" (click)="onClose()"></button>
+        </div>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body">
+        <!-- Form -->
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+          <div class="row g-3">
+            <!-- Información Básica -->
+            <div class="col-12">
+              <h6 class="section-title">Información Básica</h6>
+            </div>
+
+            <div class="col-md-6">
+              <label for="nombre" class="form-label">Nombre *</label>
+              <input
+                type="text"
+                id="nombre"
+                class="form-control"
+                formControlName="nombre"
+                [class.is-invalid]="isFieldInvalid('nombre')"
+                placeholder="Nombre de la inmobiliaria"
+              />
+              <div class="invalid-feedback">{{ getFieldError("nombre") }}</div>
+            </div>
+
+            <div class="col-md-6">
+              <label for="subdominio" class="form-label">Subdominio *</label>
+              <div class="input-group">
+                <input
+                  type="text"
+                  id="subdominio"
+                  class="form-control"
+                  formControlName="subdominio"
+                  [class.is-invalid]="isFieldInvalid('subdominio')"
+                  placeholder="miinmobiliaria"
+                />
+                <span class="input-group-text">.inmobiliaria.com</span>
+              </div>
+              <div class="invalid-feedback">
+                {{ getFieldError("subdominio") }}
+              </div>
+              <small class="form-text text-muted"
+                >Solo letras minúsculas, números y guiones</small
+              >
+            </div>
+
+            <div class="col-md-6">
+              <label for="dominioPersonalizado" class="form-label"
+                >Dominio Personalizado</label
+              >
+              <input
+                type="text"
+                id="dominioPersonalizado"
+                class="form-control"
+                formControlName="dominioPersonalizado"
+                placeholder="www.miinmobiliaria.com"
+              />
+              <small class="form-text text-muted"
+                >Opcional - Dominio propio del cliente</small
+              >
+            </div>
+
+            <div class="col-md-6">
+              <label for="idPlan" class="form-label">Plan *</label>
+              <select
+                id="idPlan"
+                class="form-select"
+                formControlName="idPlan"
+                [class.is-invalid]="isFieldInvalid('idPlan')"
+              >
+                <option value="">Seleccionar plan</option>
+                <option *ngFor="let plan of planOptions" [value]="plan.id">
+                  {{ plan.nombre }}
+                </option>
+              </select>
+              <div class="invalid-feedback">{{ getFieldError("idPlan") }}</div>
+            </div>
+
+            <!-- Información Adicional (solo para ver/editar) -->
+            <div *ngIf="!isCreateMode && inmobiliaria" class="col-12 mt-4">
+              <h6 class="section-title">Información del Sistema</h6>
+            </div>
+
+            <div *ngIf="!isCreateMode && inmobiliaria" class="col-md-6">
+              <label class="form-label">ID</label>
+              <input
+                type="text"
+                class="form-control"
+                [value]="inmobiliaria.id"
+                readonly
+              />
+            </div>
+
+            <div *ngIf="!isCreateMode && inmobiliaria" class="col-md-6">
+              <label class="form-label">Estado</label>
+              <input
+                type="text"
+                class="form-control"
+                [value]="inmobiliaria.estadoDescripcion"
+                readonly
+              />
+            </div>
+
+            <div *ngIf="!isCreateMode && inmobiliaria" class="col-md-6">
+              <label class="form-label">Fecha de Creación</label>
+              <input
+                type="text"
+                class="form-control"
+                [value]="formatDate(inmobiliaria.creadoEn)"
+                readonly
+              />
+            </div>
+
+            <div *ngIf="!isCreateMode && inmobiliaria" class="col-md-6">
+              <label class="form-label">Última Actualización</label>
+              <input
+                type="text"
+                class="form-control"
+                [value]="formatDate(inmobiliaria.actualizadoEn)"
+                readonly
+              />
+            </div>
+
+            <!-- Métricas -->
+            <div *ngIf="!isCreateMode && inmobiliaria" class="col-12 mt-4">
+              <h6 class="section-title">Métricas</h6>
+            </div>
+
+            <div *ngIf="!isCreateMode && inmobiliaria" class="col-md-4">
+              <label class="form-label">Total Usuarios</label>
+              <input
+                type="text"
+                class="form-control"
+                [value]="inmobiliaria.totalUsuarios"
+                readonly
+              />
+            </div>
+
+            <div *ngIf="!isCreateMode && inmobiliaria" class="col-md-4">
+              <label class="form-label">Total Propiedades</label>
+              <input
+                type="text"
+                class="form-control"
+                [value]="inmobiliaria.totalPropiedades"
+                readonly
+              />
+            </div>
+
+            <div *ngIf="!isCreateMode && inmobiliaria" class="col-md-4">
+              <label class="form-label">Total Leads</label>
+              <input
+                type="text"
+                class="form-control"
+                [value]="inmobiliaria.totalLeads"
+                readonly
+              />
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="onClose()">
+          Cancelar
+        </button>
+        <button
+          *ngIf="!isViewMode"
+          type="button"
+          class="btn btn-primary"
+          [disabled]="form.invalid || isLoading"
+          (click)="onSubmit()"
+        >
+          <span
+            *ngIf="isLoading"
+            class="spinner-border spinner-border-sm me-2"
+          ></span>
+          {{ saveButtonText }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Backdrop -->
+<div *ngIf="show" class="modal-backdrop fade show"></div>
