@@ -1,0 +1,100 @@
+.lead-card {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid #e0e0e0;
+}
+
+.lead-card:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+}
+
+.modal {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1040;
+}
+
+.table-responsive {
+    border-radius: 8px;
+}
+
+.btn-group-sm .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+}
+
+.card-header {
+    font-weight: 600;
+}
+
+.pagination {
+    margin-top: 2rem;
+}
+
+.page-link {
+    cursor: pointer;
+}
+
+.badge {
+    font-size: 0.75rem;
+}
+
+.kanban-column {
+    min-height: 400px;
+}
+
+.lead-card .card-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.lead-card .card-text {
+    font-size: 0.8rem;
+    line-height: 1.2;
+}
+
+.spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+}
+
+.text-muted {
+    color: #6c757d !important;
+}
+
+.form-label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.alert {
+    border-radius: 8px;
+}
+
+.card {
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.btn {
+    border-radius: 6px;
+}
+
+@media (max-width: 768px) {
+    .kanban-column {
+        margin-bottom: 1rem;
+    }
+
+    .btn-group-sm .btn {
+        padding: 0.2rem 0.4rem;
+    }
+}

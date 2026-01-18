@@ -121,9 +121,9 @@ export class SidebarComponent implements OnInit {
       submenus: [
         {
           id: 31,
-          descripcion: 'Crear / Recibir Leads',
+          descripcion: 'Visor Leads',
           icono: 'bi bi-person-plus',
-          link: '/leads/crear',
+          link: '/leads/visor',
           roles: [2, 3, 4], // Solo Admin, Supervisor y Agente
         },
         {

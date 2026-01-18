@@ -1,54 +1,150 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { map } from 'rxjs/operators';
 
 export interface Lead {
     id: number;
-    nombre: string;
-    telefono: string;
-    email: string;
-    estado: number;
-    propiedadInteres: string;
-    agente: string;
+    nombreCompleto: string;
+    email?: string;
+    telefono?: string;
+    idEstado: number;
+    estadoNombre?: string;
+    idFuente: number;
+    fuenteNombre?: string;
+    idUsuarioAsignado?: number;
+    usuarioAsignadoNombre?: string;
+    idPropiedad?: number;
+    propiedadDireccion?: string;
+    observaciones?: string;
     fechaCreacion: string;
-    ultimaActividad: string;
-    notas: string;
+    fechaUltimaActividad?: string;
+    activo: boolean;
+}
+
+export interface CreateLeadDto {
+    nombreCompleto: string;
+    email?: string;
+    telefono?: string;
+    idFuente: number;
+    idUsuarioAsignado?: number;
+    idPropiedad?: number;
+    observaciones?: string;
+}
+
+export interface UpdateLeadDto {
+    id: number;
+    nombreCompleto: string;
+    email?: string;
+    telefono?: string;
+    idFuente: number;
+    idUsuarioAsignado?: number;
+    idPropiedad?: number;
+    observaciones?: string;
+    activo: boolean;
+}
+
+export interface CambiarEstadoLeadDto {
+    idLead: number;
+    idEstadoNuevo: number;
+    observaciones?: string;
+}
+
+export interface AsignarLeadDto {
+    idLead: number;
+    idUsuarioAsignado: number;
+    observaciones?: string;
+}
+
+export interface PaginatedResponse<T> {
+    success: boolean;
+    message?: string;
+    data: {
+        items: T[];
+        totalItems: number;
+        totalPages: number;
+        currentPage: number;
+        pageSize: number;
+    };
+}
+
+export interface ApiResponse<T> {
+    success: boolean;
+    message?: string;
+    data?: T;
+    errors?: string[];
 }
 
 @Injectable({
     providedIn: 'root'
 })
 export class LeadsService {
-    private apiUrl = environment.apiUrl + '/leads';
+    private apiUrl = environment.apiUrl + '/lead';
 
     constructor(private http: HttpClient) { }
 
-    obtenerLeads(): Observable<Lead[]> {
-        return this.http.get<Lead[]>(`${this.apiUrl}`);
+    obtenerLeads(
+        page: number = 1,
+        pageSize: number = 10,
+        nombre?: string,
+        estadoId?: number,
+        fuenteId?: number,
+        usuarioAsignadoId?: number,
+        propiedadId?: number,
+        activo?: boolean
+    ): Observable<PaginatedResponse<Lead>> {
+        let params = new HttpParams()
+            .set('page', page.toString())
+            .set('pageSize', pageSize.toString());
+
+        if (nombre) params = params.set('nombre', nombre);
+        if (estadoId) params = params.set('estadoId', estadoId.toString());
+        if (fuenteId) params = params.set('fuenteId', fuenteId.toString());
+        if (usuarioAsignadoId) params = params.set('usuarioAsignadoId', usuarioAsignadoId.toString());
+        if (propiedadId) params = params.set('propiedadId', propiedadId.toString());
+        if (activo !== undefined) params = params.set('activo', activo.toString());
+
+        return this.http.get<PaginatedResponse<Lead>>(`${this.apiUrl}`, { params }).pipe(
+            // Map the response to extract the nested data
+            map((response: any) => {
+                return {
+                    success: response.success,
+                    message: response.message,
+                    data: {
+                        items: response.data.data, // Extract the nested data array
+                        totalItems: response.data.totalRecords,
+                        totalPages: response.data.totalPages,
+                        currentPage: response.data.page,
+                        pageSize: response.data.pageSize
+                    },
+                    errors: response.errors
+                };
+            })
+        );
     }
 
-    obtenerLead(id: number): Observable<Lead> {
-        return this.http.get<Lead>(`${this.apiUrl}/${id}`);
+    obtenerLead(id: number): Observable<ApiResponse<Lead>> {
+        return this.http.get<ApiResponse<Lead>>(`${this.apiUrl}/${id}`);
     }
 
-    crearLead(lead: any): Observable<Lead> {
-        return this.http.post<Lead>(`${this.apiUrl}`, lead);
+    crearLead(lead: CreateLeadDto): Observable<ApiResponse<Lead>> {
+        return this.http.post<ApiResponse<Lead>>(`${this.apiUrl}`, lead);
     }
 
-    actualizarLead(id: number, lead: any): Observable<Lead> {
-        return this.http.put<Lead>(`${this.apiUrl}/${id}`, lead);
+    actualizarLead(id: number, lead: UpdateLeadDto): Observable<ApiResponse<Lead>> {
+        return this.http.put<ApiResponse<Lead>>(`${this.apiUrl}/${id}`, lead);
     }
 
-    cambiarEstado(id: number, estado: number): Observable<any> {
-        return this.http.patch(`${this.apiUrl}/${id}/estado`, { estado });
+    eliminarLead(id: number): Observable<ApiResponse<any>> {
+        return this.http.delete<ApiResponse<any>>(`${this.apiUrl}/${id}`);
     }
 
-    asignarAgente(id: number, agenteId: number): Observable<any> {
-        return this.http.patch(`${this.apiUrl}/${id}/agente`, { agenteId });
+    cambiarEstado(cambioDto: CambiarEstadoLeadDto): Observable<ApiResponse<any>> {
+        return this.http.post<ApiResponse<any>>(`${this.apiUrl}/${cambioDto.idLead}/cambiar-estado`, cambioDto);
     }
 
-    registrarActividad(id: number, actividad: any): Observable<any> {
-        return this.http.post(`${this.apiUrl}/${id}/actividades`, actividad);
+    asignarUsuario(asignacionDto: AsignarLeadDto): Observable<ApiResponse<any>> {
+        return this.http.post<ApiResponse<any>>(`${this.apiUrl}/${asignacionDto.idLead}/asignar`, asignacionDto);
     }
 }

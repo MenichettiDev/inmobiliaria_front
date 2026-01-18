@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { LeadsService } from './../leads.service';
+import { LeadsService, Lead, CreateLeadDto, UpdateLeadDto, CambiarEstadoLeadDto, AsignarLeadDto, PaginatedResponse } from '../leads.service';
+import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'app-visor-leads',
@@ -21,55 +22,252 @@ export class VisorLeadsComponent implements OnInit {
     { id: 6, nombre: 'Cerrado', color: '#28a745' }
   ];
 
-  // Leads de ejemplo
-  leads = [
-    {
-      id: 1,
-      nombre: 'Juan Pérez',
-      telefono: '+54 11 1234-5678',
-      email: 'juan.perez@email.com',
-      estado: 1,
-      propiedadInteres: 'Casa en Palermo',
-      agente: 'María González',
-      fechaCreacion: '2024-01-15',
-      ultimaActividad: '2024-01-15 10:30',
-      notas: 'Interesado en mudarse pronto'
-    },
-    {
-      id: 2,
-      nombre: 'Ana Rodríguez',
-      telefono: '+54 11 8765-4321',
-      email: 'ana.rodriguez@email.com',
-      estado: 3,
-      propiedadInteres: 'Departamento en Recoleta',
-      agente: 'Carlos López',
-      fechaCreacion: '2024-01-12',
-      ultimaActividad: '2024-01-14 16:45',
-      notas: 'Solicita visita para el fin de semana'
-    }
-  ];
+  // Datos
+  leads: Lead[] = [];
+  loading = false;
+  error = '';
 
-  // Vista actual (lista o kanban)
+  // Paginación
+  currentPage = 1;
+  pageSize = 10;
+  totalItems = 0;
+  totalPages = 0;
+
+  // Filtros
+  filtros = {
+    nombre: '',
+    estadoId: null as number | null,
+    fuenteId: null as number | null,
+    usuarioAsignadoId: null as number | null,
+    propiedadId: null as number | null,
+    activo: null as boolean | null
+  };
+
+  // Vista actual
   vistaActual = 'lista';
 
-  constructor(private leadsService: LeadsService) { }
+  // Modales
+  mostrarModalCrear = false;
+  mostrarModalEditar = false;
+  mostrarModalEliminar = false;
+  leadSeleccionado: Lead | null = null;
+
+  // Formularios
+  nuevoLead: CreateLeadDto = {
+    nombreCompleto: '',
+    email: '',
+    telefono: '',
+    idFuente: 1,
+    observaciones: ''
+  };
+
+  leadEdicion: UpdateLeadDto = {
+    id: 0,
+    nombreCompleto: '',
+    email: '',
+    telefono: '',
+    idFuente: 1,
+    observaciones: '',
+    activo: true
+  };
+
+  // Usuario actual
+  usuarioActual: any = null;
+  puedeEliminar = false;
+  puedeAsignar = false;
+
+  constructor(
+    private leadsService: LeadsService,
+    private authService: AuthService
+  ) { }
 
   ngOnInit(): void {
+    this.usuarioActual = this.authService.getUser();
+    this.verificarPermisos();
+    this.cargarLeads();
   }
 
-  get leadsFiltrados() {
-    return this.leads; // Por ahora sin filtros, se puede expandir
+  verificarPermisos(): void {
+    const rol = this.authService.getUserRole();
+    this.puedeEliminar = rol === 'Administrador' || rol === 'Supervisor';
+    this.puedeAsignar = rol === 'Administrador' || rol === 'Supervisor';
   }
 
-  crearLead(): void {
-    console.log('Crear nuevo lead');
-    // Implementar navegación o modal
+  cargarLeads(): void {
+    this.loading = true;
+    this.error = '';
+
+    this.leadsService.obtenerLeads(
+      this.currentPage,
+      this.pageSize,
+      this.filtros.nombre || undefined,
+      this.filtros.estadoId || undefined,
+      this.filtros.fuenteId || undefined,
+      this.filtros.usuarioAsignadoId || undefined,
+      this.filtros.propiedadId || undefined,
+      this.filtros.activo === null ? undefined : this.filtros.activo // Convert null to undefined
+    ).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.leads = response.data.items;
+          this.totalItems = response.data.totalItems;
+          this.totalPages = response.data.totalPages;
+          this.currentPage = response.data.currentPage;
+        } else {
+          this.error = response.message || 'Error al cargar leads';
+        }
+        this.loading = false;
+      },
+      error: (err) => {
+        this.error = 'Error de conexión';
+        this.loading = false;
+        console.error('Error:', err);
+      }
+    });
+  }
+
+  aplicarFiltros(): void {
+    this.currentPage = 1;
+    this.cargarLeads();
+  }
+
+  limpiarFiltros(): void {
+    this.filtros = {
+      nombre: '',
+      estadoId: null,
+      fuenteId: null,
+      usuarioAsignadoId: null,
+      propiedadId: null,
+      activo: null
+    };
+    this.aplicarFiltros();
+  }
+
+  cambiarPagina(pagina: number): void {
+    this.currentPage = pagina;
+    this.cargarLeads();
   }
 
   cambiarVista(vista: string): void {
     this.vistaActual = vista;
   }
 
+  // CRUD Operations
+  abrirModalCrear(): void {
+    this.nuevoLead = {
+      nombreCompleto: '',
+      email: '',
+      telefono: '',
+      idFuente: 1,
+      observaciones: ''
+    };
+    this.mostrarModalCrear = true;
+  }
+
+  crearLead(): void {
+    this.loading = true;
+    this.leadsService.crearLead(this.nuevoLead).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.mostrarModalCrear = false;
+          this.cargarLeads();
+        } else {
+          this.error = response.message || 'Error al crear lead';
+        }
+        this.loading = false;
+      },
+      error: (err) => {
+        this.error = 'Error al crear lead';
+        this.loading = false;
+        console.error('Error:', err);
+      }
+    });
+  }
+
+  abrirModalEditar(lead: Lead): void {
+    this.leadEdicion = {
+      id: lead.id,
+      nombreCompleto: lead.nombreCompleto,
+      email: lead.email || '',
+      telefono: lead.telefono || '',
+      idFuente: lead.idFuente,
+      idUsuarioAsignado: lead.idUsuarioAsignado,
+      idPropiedad: lead.idPropiedad,
+      observaciones: lead.observaciones || '',
+      activo: lead.activo
+    };
+    this.mostrarModalEditar = true;
+  }
+
+  actualizarLead(): void {
+    this.loading = true;
+    this.leadsService.actualizarLead(this.leadEdicion.id, this.leadEdicion).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.mostrarModalEditar = false;
+          this.cargarLeads();
+        } else {
+          this.error = response.message || 'Error al actualizar lead';
+        }
+        this.loading = false;
+      },
+      error: (err) => {
+        this.error = 'Error al actualizar lead';
+        this.loading = false;
+        console.error('Error:', err);
+      }
+    });
+  }
+
+  abrirModalEliminar(lead: Lead): void {
+    this.leadSeleccionado = lead;
+    this.mostrarModalEliminar = true;
+  }
+
+  eliminarLead(): void {
+    if (!this.leadSeleccionado) return;
+
+    this.loading = true;
+    this.leadsService.eliminarLead(this.leadSeleccionado.id).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.mostrarModalEliminar = false;
+          this.cargarLeads();
+        } else {
+          this.error = response.message || 'Error al eliminar lead';
+        }
+        this.loading = false;
+      },
+      error: (err) => {
+        this.error = 'Error al eliminar lead';
+        this.loading = false;
+        console.error('Error:', err);
+      }
+    });
+  }
+
+  cambiarEstadoLead(lead: Lead, nuevoEstadoId: number): void {
+    const cambioDto: CambiarEstadoLeadDto = {
+      idLead: lead.id,
+      idEstadoNuevo: nuevoEstadoId
+    };
+
+    this.leadsService.cambiarEstado(cambioDto).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.cargarLeads();
+        } else {
+          this.error = response.message || 'Error al cambiar estado';
+        }
+      },
+      error: (err) => {
+        this.error = 'Error al cambiar estado';
+        console.error('Error:', err);
+      }
+    });
+  }
+
+  // Utility methods
   obtenerEstadoNombre(estadoId: number): string {
     const estado = this.estadosLead.find(e => e.id === estadoId);
     return estado ? estado.nombre : 'Sin estado';
@@ -80,22 +278,18 @@ export class VisorLeadsComponent implements OnInit {
     return estado ? estado.color : '#6c757d';
   }
 
-  obtenerLeadsPorEstado(estadoId: number) {
-    return this.leads.filter(lead => lead.estado === estadoId);
+  obtenerLeadsPorEstado(estadoId: number): Lead[] {
+    return this.leads.filter(lead => lead.idEstado === estadoId) || []; // Ensure it always returns an array
   }
 
-  editarLead(id: number): void {
-    console.log('Editar lead:', id);
+  cerrarModal(): void {
+    this.mostrarModalCrear = false;
+    this.mostrarModalEditar = false;
+    this.mostrarModalEliminar = false;
+    this.error = '';
   }
 
-  cambiarEstadoLead(leadId: number, nuevoEstado: number): void {
-    const lead = this.leads.find(l => l.id === leadId);
-    if (lead) {
-      lead.estado = nuevoEstado;
-    }
-  }
-
-  registrarActividad(id: number): void {
-    console.log('Registrar actividad para lead:', id);
+  get paginasArray(): number[] {
+    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
   }
 }
