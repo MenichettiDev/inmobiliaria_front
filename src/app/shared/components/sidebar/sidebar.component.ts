@@ -45,14 +45,14 @@ export class SidebarComponent implements OnInit {
       id: 1,
       descripcion: 'Dashboard',
       icono: 'bi bi-speedometer2',
-      link: '/dashboard/resumen',
+      link: '/dashboard/',
       roles: [1, 2, 3, 4, 6], // Todos los roles
       submenus: [
         {
           id: 11,
           descripcion: 'KPIs Generales',
           icono: 'bi bi-graph-up',
-          link: '/dashboard/kpis',
+          link: '/dashboard/resumen',
           roles: [1, 2, 3], // Solo Admin, Programador y Supervisor
         },
         {
@@ -305,28 +305,28 @@ export class SidebarComponent implements OnInit {
       descripcion: 'Inmobiliaria',
       icono: 'bi bi-building',
       link: '/inmobiliaria',
-      roles: [2], // Solo Administrador
+      roles: [1, 2], // Solo Administrador
       submenus: [
         {
           id: 81,
-          descripcion: 'Datos de la Inmobiliaria',
+          descripcion: 'Datos Inmobiliarias',
           icono: 'bi bi-info-circle',
           link: '/inmobiliaria/visor',
-          roles: [2], // Solo Administrador
+          roles: [1, 2], // Solo Administrador
         },
         {
           id: 82,
           descripcion: 'Marca / Subdominio',
           icono: 'bi bi-globe',
           link: '/inmobiliaria/marca',
-          roles: [2], // Solo Administrador
+          roles: [1, 2], // Solo Administrador
         },
         {
           id: 83,
           descripcion: 'Integraciones',
           icono: 'bi bi-plug',
           link: '/inmobiliaria/integraciones',
-          roles: [2], // Solo Administrador
+          roles: [1, 2], // Solo Administrador
         },
       ],
     },
