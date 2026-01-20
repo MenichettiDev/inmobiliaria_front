@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { PropiedadesService } from '../propiedades.service';
-import { CboUsuriosInmobiliariaComponent } from '../../usuario/components/cbo-usurios-inmobiliaria/cbo-usurios-inmobiliaria.component';
+import { CboUsuarioComponent } from '../../usuario/components/cbo-usuario/cbo-usuario.component';
 
 interface UpdatePropiedadDto {
   id: number;
@@ -21,7 +21,7 @@ interface UpdatePropiedadDto {
 
 @Component({
   selector: 'app-form-edit-propiedad',
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, CboUsuriosInmobiliariaComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, CboUsuarioComponent],
   templateUrl: './form-edit-propiedad.component.html',
   styleUrl: './form-edit-propiedad.component.css'
 })
@@ -173,5 +173,11 @@ export class FormEditPropiedadComponent implements OnInit {
   isFieldInvalid(fieldName: string): boolean {
     const field = this.propiedadForm.get(fieldName);
     return !!(field?.touched && field?.errors);
+  }
+
+  onUsuarioAsignadoChange(userId: number | null): void {
+    this.propiedadForm.patchValue({
+      idAgenteResponsable: userId
+    });
   }
 }

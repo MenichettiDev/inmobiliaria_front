@@ -98,13 +98,12 @@
                   <label for="agente" class="form-label"
                     >Agente Responsable</label
                   >
-                  <app-cbo-usuarios-inmobiliaria
+                  <app-cbo-usuario
+                    [ngModel]="propiedadForm.get('idAgenteResponsable')?.value"
+                    (ngModelChange)="onUsuarioAsignadoChange($event)"
                     placeholder="Seleccionar agente (opcional)"
-                    [showEmail]="true"
-                    [estadoId]="1"
-                    formControlName="idAgenteResponsable"
-                  >
-                  </app-cbo-usuarios-inmobiliaria>
+                    [showOnlyActive]="true"
+                  ></app-cbo-usuario>
                 </div>
               </div>
             </div>
