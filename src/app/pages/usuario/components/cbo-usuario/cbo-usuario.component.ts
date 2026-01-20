@@ -22,7 +22,7 @@ import {
   of,
   catchError,
 } from 'rxjs';
-import { UsuarioService } from '../../usuario.service';
+import { UsuarioService } from '../../services/usuario.service';
 
 export interface UsuarioOption {
   id: number;
@@ -196,7 +196,7 @@ export class CboUsuarioComponent
   }
 
   private mapUsuariosToOptions(usuarios: any[]): UsuarioOption[] {
-    return usuarios.map((u) => ({
+    return usuarios.map((u: any) => ({
       id: u.id,
       nombre: u.nombre || '',
       email: u.email || '',

@@ -1,9 +1,9 @@
-<div class="cbo-roles-wrapper position-relative">
+<div class="cbo-propiedades-wrapper position-relative">
   <div class="input-group">
     <input
       type="text"
       class="form-control"
-      [value]="selectedRolName()"
+      [value]="selectedPropiedadName()"
       [placeholder]="placeholder"
       [disabled]="disabled"
       readonly
@@ -24,7 +24,7 @@
       ></i>
     </button>
     <button
-      *ngIf="selectedRolId"
+      *ngIf="selectedPropiedadId"
       type="button"
       class="btn btn-outline-secondary"
       [disabled]="disabled"
@@ -46,7 +46,7 @@
       <input
         type="text"
         class="form-control form-control-sm"
-        placeholder="Buscar rol..."
+        placeholder="Buscar propiedad..."
         [formControl]="searchControl"
         (click)="$event.stopPropagation()"
       />
@@ -57,32 +57,40 @@
       <div class="spinner-border spinner-border-sm" role="status">
         <span class="visually-hidden">Cargando...</span>
       </div>
-      <small class="d-block mt-1 text-muted">Cargando roles...</small>
+      <small class="d-block mt-1 text-muted">Cargando propiedades...</small>
     </div>
 
     <!-- No results -->
-    <div *ngIf="!isLoading && roles.length === 0" class="px-3 py-2 text-muted">
+    <div
+      *ngIf="!isLoading && propiedades.length === 0"
+      class="px-3 py-2 text-muted"
+    >
       <i class="fas fa-info-circle me-1"></i>
-      No se encontraron roles
+      No se encontraron propiedades
     </div>
 
-    <!-- Role options -->
-    <ng-container *ngIf="!isLoading && roles.length > 0">
+    <!-- Property options -->
+    <ng-container *ngIf="!isLoading && propiedades.length > 0">
       <button
-        *ngFor="let rol of roles; trackBy: trackByRol"
+        *ngFor="let propiedad of propiedades; trackBy: trackByPropiedad"
         type="button"
         class="dropdown-item d-flex align-items-center"
-        [class.active]="rol.idRol === selectedRolId"
-        (click)="onOptionClick(rol)"
+        [class.active]="propiedad.id === selectedPropiedadId"
+        (click)="onOptionClick(propiedad)"
       >
         <div class="flex-grow-1">
-          <div class="fw-medium">{{ rol.nombreRol }}</div>
-          <small class="text-muted" *ngIf="rol.descripcion">
-            {{ rol.descripcion }}
+          <div class="fw-medium">{{ propiedad.titulo }}</div>
+          <small class="text-muted">
+            <i class="fas fa-map-marker-alt me-1"></i>
+            {{ propiedad.direccion }}
           </small>
+          <div *ngIf="propiedad.precio" class="small text-success">
+            <i class="fas fa-dollar-sign me-1"></i>
+            {{ propiedad.precio | currency: "USD" : "symbol" : "1.0-0" }}
+          </div>
         </div>
         <i
-          *ngIf="rol.idRol === selectedRolId"
+          *ngIf="propiedad.id === selectedPropiedadId"
           class="fas fa-check text-primary ms-2"
         ></i>
       </button>

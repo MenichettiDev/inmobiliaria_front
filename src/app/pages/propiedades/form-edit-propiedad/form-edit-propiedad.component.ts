@@ -21,6 +21,7 @@ interface UpdatePropiedadDto {
 
 @Component({
   selector: 'app-form-edit-propiedad',
+  standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule, CboUsuarioComponent],
   templateUrl: './form-edit-propiedad.component.html',
   styleUrl: './form-edit-propiedad.component.css'

@@ -5,7 +5,7 @@
       <i class="fas fa-users me-2"></i>
       Gestión de Leads
     </h2>
-    <button class="btn btn-primary" (click)="abrirModalCrear()">
+    <button class="btn btn-primary" (click)="abrirModalCreacion()">
       <i class="fas fa-plus me-1"></i>
       Nuevo Lead
     </button>
@@ -136,7 +136,7 @@
         los visitantes se registren o cuando agregues leads manualmente.
       </p>
       <div>
-        <button class="btn btn-primary me-2" (click)="abrirModalCrear()">
+        <button class="btn btn-primary me-2" (click)="abrirModalCreacion()">
           <i class="fas fa-plus me-1"></i>
           Agregar Lead Manualmente
         </button>
@@ -300,7 +300,7 @@
         gestionar tu proceso de ventas de manera efectiva.
       </p>
       <div>
-        <button class="btn btn-primary me-2" (click)="abrirModalCrear()">
+        <button class="btn btn-primary me-2" (click)="abrirModalCreacion()">
           <i class="fas fa-plus me-1"></i>
           Crear Primer Lead
         </button>
@@ -398,7 +398,13 @@
     </ul>
   </nav>
 
-  <!-- Modal Details Component -->
+  <!-- Modal Components -->
+  <app-modal-create-lead
+    [mostrar]="mostrarModalCreacion"
+    (cerrado)="cerrarModalCreacion()"
+    (leadCreado)="onLeadCreado($event)"
+  ></app-modal-create-lead>
+
   <app-modal-details-lead
     [lead]="leadSeleccionado"
     [mostrar]="mostrarModalDetalle"
@@ -411,7 +417,6 @@
   >
   </app-modal-details-lead>
 
-  <!-- Modal Edit Lead Component -->
   <app-modal-edit-lead
     [lead]="leadSeleccionado"
     [mostrar]="mostrarModalEditar"
@@ -419,104 +424,6 @@
     (guardar)="onGuardarEdicionLead($event)"
   >
   </app-modal-edit-lead>
-
-  <!-- Modal Crear Lead -->
-  <div
-    class="modal fade"
-    [class.show]="mostrarModalCrear"
-    [style.display]="mostrarModalCrear ? 'block' : 'none'"
-    tabindex="-1"
-  >
-    <div class="modal-backdrop fade show" *ngIf="mostrarModalCrear"></div>
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Nuevo Lead</h5>
-          <button
-            type="button"
-            class="btn-close"
-            (click)="cerrarModal()"
-          ></button>
-        </div>
-        <div class="modal-body">
-          <form (ngSubmit)="crearLead()">
-            <div class="mb-3">
-              <label class="form-label">Nombre Completo *</label>
-              <input
-                type="text"
-                class="form-control"
-                [(ngModel)]="nuevoLead.nombreCompleto"
-                name="nombre"
-                required
-              />
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Email</label>
-              <input
-                type="email"
-                class="form-control"
-                [(ngModel)]="nuevoLead.email"
-                name="email"
-              />
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Teléfono</label>
-              <input
-                type="tel"
-                class="form-control"
-                [(ngModel)]="nuevoLead.telefono"
-                name="telefono"
-              />
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Fuente *</label>
-              <select
-                class="form-select"
-                [(ngModel)]="nuevoLead.idFuente"
-                name="fuente"
-                required
-              >
-                <option value="1">Página Web</option>
-                <option value="2">Redes Sociales</option>
-                <option value="3">Referido</option>
-                <option value="4">Llamada Directa</option>
-              </select>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Observaciones</label>
-              <textarea
-                class="form-control"
-                [(ngModel)]="nuevoLead.observaciones"
-                name="observaciones"
-                rows="3"
-              ></textarea>
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button
-            type="button"
-            class="btn btn-secondary"
-            (click)="cerrarModal()"
-          >
-            Cancelar
-          </button>
-          <button
-            type="button"
-            class="btn btn-primary"
-            (click)="crearLead()"
-            [disabled]="loading"
-          >
-            <span
-              *ngIf="loading"
-              class="spinner-border spinner-border-sm me-1"
-            ></span>
-            Crear Lead
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <!-- Modal Eliminar Lead -->
   <div

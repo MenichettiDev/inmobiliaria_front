@@ -100,4 +100,8 @@ export class PropiedadesService {
     publicarPropiedad(id: number): Observable<any> {
         return this.http.patch(`${this.apiUrl}/${id}/publicar`, {});
     }
+
+    getPropiedadesCombo(): Observable<any> {
+        return this.http.get<any>(`${this.apiUrl}/combo`);
+    }
 }

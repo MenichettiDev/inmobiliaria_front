@@ -18,6 +18,7 @@ interface CreatePropiedadDto {
 
 @Component({
   selector: 'app-form-create-propiedad',
+  standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule, CboUsuarioComponent],
   templateUrl: './form-create-propiedad.component.html',
   styleUrl: './form-create-propiedad.component.css'

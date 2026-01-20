@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { Lead, LeadsService } from '../../leads.service';
+import { Lead, LeadsService } from '../../service/leads.service';
 import { AuthService } from '../../../auth/auth.service';
 
 

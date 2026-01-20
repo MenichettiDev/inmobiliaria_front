@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Lead, UpdateLeadDto } from '../../leads.service';
+import { Lead, UpdateLeadDto } from '../../service/leads.service';
 import { AuthService } from '../../../auth/auth.service';
 import { CboUsuarioComponent } from '../../../usuario/components/cbo-usuario/cbo-usuario.component';
 
