@@ -1,5 +1,5 @@
 /* Importar estilos compartidos para combos (módulo movimientos/cbo) */
-@import "../cbo-movimientos.css";
+@import "./../../../../shared/cbo.component.css";
 
 /* Overrides locales (mínimos) */
 .cbo-usuario-wrapper {

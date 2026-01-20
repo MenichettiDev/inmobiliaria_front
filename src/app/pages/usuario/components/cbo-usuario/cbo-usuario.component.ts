@@ -22,16 +22,17 @@ import {
   of,
   catchError,
 } from 'rxjs';
-import { UsuarioService } from '../../../../pages/usuario/usuario.service';
+import { UsuarioService } from '../../usuario.service';
 
 export interface UsuarioOption {
   id: number;
-  legajo: string;
   nombre: string;
-  apellido: string;
-  dni: string;
+  email: string;
+  telefono?: string;
+  idInmobiliaria: number;
+  idRol: number;
+  idEstado: number;
   rolNombre: string;
-  activo: boolean;
   displayText: string;
 }
 
@@ -40,7 +41,7 @@ export interface UsuarioOption {
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './cbo-usuario.component.html',
-  // styleUrls: ['../cbo.component.css', '../cbo-movimientos.css'],
+  styleUrls: ['./cbo-usuario.component.css'],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -78,7 +79,7 @@ export class CboUsuarioComponent
   // Component state
   usuarios: UsuarioOption[] = [];
   isLoading = false;
-  isOpen = false; // Start collapsed
+  isOpen = false;
   selectedUsuario: UsuarioOption | null = null;
 
   constructor(private usuarioService: UsuarioService) { }
@@ -100,7 +101,6 @@ export class CboUsuarioComponent
         debounceTime(300),
         distinctUntilChanged(),
         switchMap((term) => {
-          // Only search when dropdown is open
           if (!this.isOpen) {
             return of([]);
           }
@@ -153,26 +153,20 @@ export class CboUsuarioComponent
     const filters: any = {};
 
     if (this.showOnlyActive) {
-      filters.estado = true;
+      filters.idEstado = 1;
     }
 
-    // Determine search type - could be legajo, nombre, or apellido
-    if (/^\d+$/.test(searchTerm)) {
-      // Numeric search - likely legajo or DNI
-      filters.legajo = searchTerm;
-    } else {
-      // Text search - try nombre first
-      filters.nombre = searchTerm;
-    }
+    // Search by name or email
+    filters.nombre = searchTerm;
 
     return this.usuarioService.getUsers(1, 20, filters).pipe(
       switchMap((response) => {
         let rawList = response.data || [];
 
-        // If no results with nombre, try apellido
-        if (rawList.length === 0 && !filters.legajo) {
+        // If no results with nombre, try email
+        if (rawList.length === 0) {
           delete filters.nombre;
-          filters.apellido = searchTerm;
+          filters.email = searchTerm;
 
           return this.usuarioService.getUsers(1, 20, filters).pipe(
             switchMap((secondResponse) => {
@@ -182,7 +176,7 @@ export class CboUsuarioComponent
               return of(usuarios);
             }),
             catchError((error) => {
-              console.error('Error searching usuarios by apellido:', error);
+              console.error('Error searching usuarios by email:', error);
               this.isLoading = false;
               return of([]);
             })
@@ -203,24 +197,23 @@ export class CboUsuarioComponent
 
   private mapUsuariosToOptions(usuarios: any[]): UsuarioOption[] {
     return usuarios.map((u) => ({
-      id: u.id || u.idUsuario,
-      legajo: u.legajo || '',
-      nombre: u.nombre || u.firstName || '',
-      apellido: u.apellido || u.lastName || '',
-      dni: u.dni || '',
-      rolNombre: u.rolNombre || u.rol || '',
-      activo: u.activo !== undefined ? u.activo : true,
+      id: u.id,
+      nombre: u.nombre || '',
+      email: u.email || '',
+      telefono: u.telefono,
+      idInmobiliaria: u.idInmobiliaria,
+      idRol: u.idRol,
+      idEstado: u.idEstado,
+      rolNombre: u.rolNombre || '',
       displayText: this.buildDisplayText(u),
     }));
   }
 
   private buildDisplayText(usuario: any): string {
-    const legajo = usuario.legajo || usuario.id;
-    const nombre = usuario.nombre || usuario.firstName;
-    const apellido = usuario.apellido || usuario.lastName;
-    const rol = usuario.rolNombre || usuario.rol;
+    const nombre = usuario.nombre;
+    const rol = usuario.rolNombre;
 
-    let text = `${legajo} - ${nombre} ${apellido}`;
+    let text = nombre;
     if (rol) {
       text += ` (${rol})`;
     }

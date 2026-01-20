@@ -1,6 +1,4 @@
 <div class="cbo-usuario-wrapper">
-  <!-- Label removed to unify titles externally -->
-
   <!-- Search input container -->
   <div
     class="search-container"
@@ -75,24 +73,20 @@
           (click)="onOptionClick(usuario)"
         >
           <div class="option-content">
-            <!-- Left side: legajo + nombre -->
+            <!-- Left side: nombre + email -->
             <div class="option-main">
-              <span class="option-codigo">{{ usuario.legajo }}</span>
-              <span
-                class="option-nombre"
-                [title]="usuario.nombre + ' ' + usuario.apellido"
-              >
-                {{ usuario.nombre }} {{ usuario.apellido }}
+              <span class="option-nombre" [title]="usuario.nombre">
+                {{ usuario.nombre }}
+              </span>
+              <span class="option-email" *ngIf="usuario.email">
+                {{ usuario.email }}
               </span>
             </div>
 
-            <!-- Right side: estado -->
+            <!-- Right side: rol -->
             <div class="option-details">
-              <span
-                class="option-disponibilidad"
-                [class.disponible]="usuario.activo"
-              >
-                {{ usuario.activo ? "Activo" : "Inactivo" }}
+              <span class="option-rol">
+                {{ usuario.rolNombre }}
               </span>
             </div>
           </div>

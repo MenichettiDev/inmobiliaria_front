@@ -20,7 +20,7 @@ interface Usuario {
   selector: 'app-cbo-usuarios-inmobiliaria',
   imports: [CommonModule, FormsModule],
   templateUrl: './cbo-usurios-inmobiliaria.component.html',
-  styleUrls: ['./cbo-usurios-inmobiliaria.component.css', '../../../cbo.component.css'],
+  styleUrls: ['./cbo-usurios-inmobiliaria.component.css', '../../../../shared/cbo.component.css'],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,

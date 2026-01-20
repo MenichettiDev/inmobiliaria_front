@@ -35,6 +35,7 @@ export interface CreateLeadDto {
 
 export interface UpdateLeadDto {
     id: number;
+    idEstado?: number;
     nombreCompleto: string;
     email?: string;
     telefono?: string;

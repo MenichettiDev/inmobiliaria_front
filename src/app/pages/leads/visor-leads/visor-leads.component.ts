@@ -4,10 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { LeadsService, Lead, CreateLeadDto, UpdateLeadDto, CambiarEstadoLeadDto, AsignarLeadDto, PaginatedResponse } from '../leads.service';
 import { AuthService } from '../../auth/auth.service';
+import { ModalDetailsLeadComponent } from '../components/modal-details-lead/modal-details-lead.component';
+import { ModalEditLeadComponent } from '../components/modal-edit-lead/modal-edit-lead.component';
 
 @Component({
   selector: 'app-visor-leads',
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, ModalDetailsLeadComponent, ModalEditLeadComponent],
   templateUrl: './visor-leads.component.html',
   styleUrl: './visor-leads.component.css'
 })
@@ -50,6 +52,11 @@ export class VisorLeadsComponent implements OnInit {
   mostrarModalCrear = false;
   mostrarModalEditar = false;
   mostrarModalEliminar = false;
+  mostrarModalCambiarEstado = false;
+  mostrarModalReasignar = false;
+  mostrarModalPerdido = false;
+  mostrarModalNota = false;
+  mostrarModalDetalle = false;
   leadSeleccionado: Lead | null = null;
 
   // Formularios
@@ -61,14 +68,25 @@ export class VisorLeadsComponent implements OnInit {
     observaciones: ''
   };
 
-  leadEdicion: UpdateLeadDto = {
-    id: 0,
-    nombreCompleto: '',
-    email: '',
-    telefono: '',
-    idFuente: 1,
-    observaciones: '',
-    activo: true
+  // Formularios para nuevas acciones
+  cambioEstado = {
+    nuevoEstadoId: 0,
+    motivo: ''
+  };
+
+  reasignacion = {
+    nuevoUsuarioId: 0,
+    motivo: ''
+  };
+
+  perdidoData = {
+    motivo: '',
+    observaciones: ''
+  };
+
+  notaRapida = {
+    contenido: '',
+    importante: false
   };
 
   // Usuario actual
@@ -185,26 +203,22 @@ export class VisorLeadsComponent implements OnInit {
   }
 
   abrirModalEditar(lead: Lead): void {
-    this.leadEdicion = {
-      id: lead.id,
-      nombreCompleto: lead.nombreCompleto,
-      email: lead.email || '',
-      telefono: lead.telefono || '',
-      idFuente: lead.idFuente,
-      idUsuarioAsignado: lead.idUsuarioAsignado,
-      idPropiedad: lead.idPropiedad,
-      observaciones: lead.observaciones || '',
-      activo: lead.activo
-    };
+    this.leadSeleccionado = lead;
     this.mostrarModalEditar = true;
   }
 
-  actualizarLead(): void {
+  cerrarModalEditar(): void {
+    this.mostrarModalEditar = false;
+    this.leadSeleccionado = null;
+  }
+
+  onGuardarEdicionLead(leadActualizado: UpdateLeadDto): void {
     this.loading = true;
-    this.leadsService.actualizarLead(this.leadEdicion.id, this.leadEdicion).subscribe({
+    this.leadsService.actualizarLead(leadActualizado.id, leadActualizado).subscribe({
       next: (response) => {
         if (response.success) {
           this.mostrarModalEditar = false;
+          this.leadSeleccionado = null;
           this.cargarLeads();
         } else {
           this.error = response.message || 'Error al actualizar lead';
@@ -246,50 +260,239 @@ export class VisorLeadsComponent implements OnInit {
     });
   }
 
-  cambiarEstadoLead(lead: Lead, nuevoEstadoId: number): void {
+  // Nuevos métodos para dropdown actions
+  abrirModalCambiarEstado(lead: Lead): void {
+    this.leadSeleccionado = lead;
+    this.cambioEstado = {
+      nuevoEstadoId: 0,
+      motivo: ''
+    };
+    this.mostrarModalCambiarEstado = true;
+  }
+
+  abrirModalReasignar(lead: Lead): void {
+    this.leadSeleccionado = lead;
+    this.reasignacion = {
+      nuevoUsuarioId: 0,
+      motivo: ''
+    };
+    this.mostrarModalReasignar = true;
+  }
+
+  abrirModalPerdido(lead: Lead): void {
+    this.leadSeleccionado = lead;
+    this.perdidoData = {
+      motivo: '',
+      observaciones: ''
+    };
+    this.mostrarModalPerdido = true;
+  }
+
+  abrirModalNota(lead: Lead): void {
+    this.leadSeleccionado = lead;
+    this.notaRapida = {
+      contenido: '',
+      importante: false
+    };
+    this.mostrarModalNota = true;
+  }
+
+  procesarCambioEstado(): void {
+    if (!this.leadSeleccionado || !this.cambioEstado.nuevoEstadoId) return;
+
+    this.loading = true;
     const cambioDto: CambiarEstadoLeadDto = {
-      idLead: lead.id,
-      idEstadoNuevo: nuevoEstadoId
+      idLead: this.leadSeleccionado.id,
+      idEstadoNuevo: this.cambioEstado.nuevoEstadoId
     };
 
     this.leadsService.cambiarEstado(cambioDto).subscribe({
       next: (response) => {
         if (response.success) {
+          this.mostrarModalCambiarEstado = false;
           this.cargarLeads();
         } else {
           this.error = response.message || 'Error al cambiar estado';
         }
+        this.loading = false;
       },
       error: (err) => {
         this.error = 'Error al cambiar estado';
+        this.loading = false;
         console.error('Error:', err);
       }
     });
   }
 
-  // Utility methods
-  obtenerEstadoNombre(estadoId: number): string {
-    const estado = this.estadosLead.find(e => e.id === estadoId);
-    return estado ? estado.nombre : 'Sin estado';
+  procesarReasignacion(): void {
+    if (!this.leadSeleccionado || !this.reasignacion.nuevoUsuarioId) return;
+
+    this.loading = true;
+    // Update lead with new assigned user
+    const updateDto: UpdateLeadDto = {
+      id: this.leadSeleccionado.id,
+      nombreCompleto: this.leadSeleccionado.nombreCompleto,
+      email: this.leadSeleccionado.email || '',
+      telefono: this.leadSeleccionado.telefono || '',
+      idFuente: this.leadSeleccionado.idFuente,
+      idUsuarioAsignado: this.reasignacion.nuevoUsuarioId,
+      idPropiedad: this.leadSeleccionado.idPropiedad,
+      observaciones: `${this.leadSeleccionado.observaciones || ''}\n\nReasignado: ${this.reasignacion.motivo}`,
+      activo: this.leadSeleccionado.activo
+    };
+
+    this.leadsService.actualizarLead(this.leadSeleccionado.id, updateDto).subscribe({
+      next: (response: any) => {
+        if (response.success) {
+          this.mostrarModalReasignar = false;
+          this.cargarLeads();
+        } else {
+          this.error = response.message || 'Error al reasignar lead';
+        }
+        this.loading = false;
+      },
+      error: (err: any) => {
+        this.error = 'Error al reasignar lead';
+        this.loading = false;
+        console.error('Error:', err);
+      }
+    });
   }
 
-  obtenerEstadoColor(estadoId: number): string {
-    const estado = this.estadosLead.find(e => e.id === estadoId);
-    return estado ? estado.color : '#6c757d';
+  marcarComoPerdido(): void {
+    if (!this.leadSeleccionado) return;
+
+    this.loading = true;
+    // Assuming we mark as lost by setting active to false and updating with observations
+    const updateDto: UpdateLeadDto = {
+      id: this.leadSeleccionado.id,
+      nombreCompleto: this.leadSeleccionado.nombreCompleto,
+      email: this.leadSeleccionado.email || '',
+      telefono: this.leadSeleccionado.telefono || '',
+      idFuente: this.leadSeleccionado.idFuente,
+      observaciones: `${this.leadSeleccionado.observaciones || ''}\n\nMarcado como PERDIDO: ${this.perdidoData.motivo}\n${this.perdidoData.observaciones}`,
+      activo: false
+    };
+
+    this.leadsService.actualizarLead(this.leadSeleccionado.id, updateDto).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.mostrarModalPerdido = false;
+          this.cargarLeads();
+        } else {
+          this.error = response.message || 'Error al marcar como perdido';
+        }
+        this.loading = false;
+      },
+      error: (err) => {
+        this.error = 'Error al marcar como perdido';
+        this.loading = false;
+        console.error('Error:', err);
+      }
+    });
   }
 
-  obtenerLeadsPorEstado(estadoId: number): Lead[] {
-    return this.leads.filter(lead => lead.idEstado === estadoId) || []; // Ensure it always returns an array
+  agregarNotaRapida(): void {
+    if (!this.leadSeleccionado || !this.notaRapida.contenido.trim()) return;
+
+    this.loading = true;
+    const marcaImportante = this.notaRapida.importante ? '[IMPORTANTE] ' : '';
+    const fechaActual = new Date().toLocaleString();
+    const nuevaNota = `${marcaImportante}${fechaActual}: ${this.notaRapida.contenido}`;
+
+    const updateDto: UpdateLeadDto = {
+      id: this.leadSeleccionado.id,
+      nombreCompleto: this.leadSeleccionado.nombreCompleto,
+      email: this.leadSeleccionado.email || '',
+      telefono: this.leadSeleccionado.telefono || '',
+      idFuente: this.leadSeleccionado.idFuente,
+      observaciones: `${this.leadSeleccionado.observaciones || ''}\n\n${nuevaNota}`,
+      activo: this.leadSeleccionado.activo
+    };
+
+    this.leadsService.actualizarLead(this.leadSeleccionado.id, updateDto).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.mostrarModalNota = false;
+          this.cargarLeads();
+        } else {
+          this.error = response.message || 'Error al agregar nota';
+        }
+        this.loading = false;
+      },
+      error: (err) => {
+        this.error = 'Error al agregar nota';
+        this.loading = false;
+        console.error('Error:', err);
+      }
+    });
+  }
+
+  // Modal Details Handlers
+  abrirModalDetalle(lead: Lead): void {
+    this.leadSeleccionado = lead;
+    this.mostrarModalDetalle = true;
+  }
+
+  cerrarModalDetalle(): void {
+    this.mostrarModalDetalle = false;
+    this.leadSeleccionado = null;
+  }
+
+  onModalDetalleEditar(lead: Lead): void {
+    this.mostrarModalDetalle = false;
+    this.abrirModalEditar(lead);
+  }
+
+  onModalDetalleCambiarEstado(lead: Lead): void {
+    this.mostrarModalDetalle = false;
+    this.abrirModalCambiarEstado(lead);
+  }
+
+  onModalDetalleReasignar(lead: Lead): void {
+    this.mostrarModalDetalle = false;
+    this.abrirModalReasignar(lead);
+  }
+
+  onModalDetalleMarcarPerdido(lead: Lead): void {
+    this.mostrarModalDetalle = false;
+    this.abrirModalPerdido(lead);
+  }
+
+  onModalDetalleAgregarNota(lead: Lead): void {
+    this.mostrarModalDetalle = false;
+    this.abrirModalNota(lead);
   }
 
   cerrarModal(): void {
     this.mostrarModalCrear = false;
-    this.mostrarModalEditar = false;
     this.mostrarModalEliminar = false;
+    this.mostrarModalCambiarEstado = false;
+    this.mostrarModalReasignar = false;
+    this.mostrarModalPerdido = false;
+    this.mostrarModalNota = false;
+    this.mostrarModalDetalle = false;
     this.error = '';
   }
 
   get paginasArray(): number[] {
     return Array.from({ length: this.totalPages }, (_, i) => i + 1);
+  }
+
+  obtenerEstadoNombre(estadoId: number | undefined | null): string {
+    if (!estadoId) return 'Sin estado';
+    const estado = this.estadosLead.find(e => e.id === estadoId);
+    return estado ? estado.nombre : 'Sin estado';
+  }
+
+  obtenerEstadoColor(estadoId: number | undefined | null): string {
+    if (!estadoId) return '#6c757d';
+    const estado = this.estadosLead.find(e => e.id === estadoId);
+    return estado ? estado.color : '#6c757d';
+  }
+
+  obtenerLeadsPorEstado(estadoId: number | undefined | null): Lead[] {
+    if (!estadoId) return [];
+    return this.leads.filter(lead => lead.idEstado === estadoId);
   }
 }

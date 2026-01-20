@@ -125,7 +125,30 @@
 
   <!-- Vista Lista -->
   <div *ngIf="vistaActual === 'lista' && !loading" class="card">
-    <div class="table-responsive">
+    <!-- Empty state for lista -->
+    <div *ngIf="leads.length === 0" class="empty-state">
+      <div class="empty-state-icon">
+        <i class="fas fa-users"></i>
+      </div>
+      <h3 class="empty-state-title">No hay leads disponibles</h3>
+      <p class="empty-state-text">
+        Aún no tienes leads en tu sistema. Los leads aparecerán aquí una vez que
+        los visitantes se registren o cuando agregues leads manualmente.
+      </p>
+      <div>
+        <button class="btn btn-primary me-2" (click)="abrirModalCrear()">
+          <i class="fas fa-plus me-1"></i>
+          Agregar Lead Manualmente
+        </button>
+        <a class="btn btn-outline-secondary" routerLink="/propiedades">
+          <i class="fas fa-home me-1"></i>
+          Ver Propiedades
+        </a>
+      </div>
+    </div>
+
+    <!-- Existing table -->
+    <div *ngIf="leads.length > 0" class="table-responsive">
       <table class="table table-hover mb-0">
         <thead class="table-light">
           <tr>
@@ -183,6 +206,13 @@
             <td>
               <div class="btn-group btn-group-sm">
                 <button
+                  class="btn btn-outline-info"
+                  (click)="abrirModalDetalle(lead)"
+                  title="Ver detalle"
+                >
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button
                   class="btn btn-outline-primary"
                   (click)="abrirModalEditar(lead)"
                   title="Editar"
@@ -194,35 +224,56 @@
                     class="btn btn-outline-secondary dropdown-toggle"
                     type="button"
                     data-bs-toggle="dropdown"
+                    aria-expanded="false"
                   >
-                    <i class="fas fa-exchange-alt"></i>
+                    <i class="fas fa-ellipsis-v"></i>
                   </button>
                   <ul class="dropdown-menu">
-                    <li *ngFor="let estado of estadosLead">
+                    <li>
                       <a
                         class="dropdown-item"
-                        [class.active]="estado.id === lead.idEstado"
-                        (click)="cambiarEstadoLead(lead, estado.id)"
+                        (click)="abrirModalCambiarEstado(lead)"
                       >
-                        <span
-                          class="badge rounded-pill me-2"
-                          [style.background-color]="estado.color"
-                        >
-                          &nbsp;
-                        </span>
-                        {{ estado.nombre }}
+                        <i class="fas fa-exchange-alt me-2"></i>
+                        Cambiar estado
+                      </a>
+                    </li>
+                    <li *ngIf="puedeAsignar">
+                      <a
+                        class="dropdown-item"
+                        (click)="abrirModalReasignar(lead)"
+                      >
+                        <i class="fas fa-user-cog me-2"></i>
+                        Reasignar agente
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        class="dropdown-item"
+                        (click)="abrirModalPerdido(lead)"
+                      >
+                        <i class="fas fa-times-circle me-2"></i>
+                        Marcar como perdido
+                      </a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" (click)="abrirModalNota(lead)">
+                        <i class="fas fa-sticky-note me-2"></i>
+                        Agregar nota rápida
+                      </a>
+                    </li>
+                    <li><hr class="dropdown-divider" /></li>
+                    <li *ngIf="puedeEliminar">
+                      <a
+                        class="dropdown-item text-danger"
+                        (click)="abrirModalEliminar(lead)"
+                      >
+                        <i class="fas fa-trash me-2"></i>
+                        Eliminar
                       </a>
                     </li>
                   </ul>
                 </div>
-                <button
-                  *ngIf="puedeEliminar"
-                  class="btn btn-outline-danger"
-                  (click)="abrirModalEliminar(lead)"
-                  title="Eliminar"
-                >
-                  <i class="fas fa-trash"></i>
-                </button>
               </div>
             </td>
           </tr>
@@ -237,52 +288,87 @@
   </div>
 
   <!-- Vista Kanban -->
-  <div *ngIf="vistaActual === 'kanban' && !loading" class="row">
-    <div *ngFor="let estado of estadosLead" class="col-md-2 mb-4">
-      <div class="card h-100">
-        <div
-          class="card-header text-center"
-          [style.background-color]="estado.color"
-          [style.color]="'white'"
-        >
-          <h6 class="mb-0">{{ estado.nombre }}</h6>
-          <small>({{ obtenerLeadsPorEstado(estado.id).length || 0 }})</small>
-        </div>
-        <div class="card-body p-2">
+  <div *ngIf="vistaActual === 'kanban' && !loading">
+    <!-- Empty state for kanban -->
+    <div *ngIf="leads.length === 0" class="empty-state">
+      <div class="empty-state-icon">
+        <i class="fas fa-columns"></i>
+      </div>
+      <h3 class="empty-state-title">Pipeline vacío</h3>
+      <p class="empty-state-text">
+        Tu pipeline de ventas está vacío. Comienza agregando leads para
+        gestionar tu proceso de ventas de manera efectiva.
+      </p>
+      <div>
+        <button class="btn btn-primary me-2" (click)="abrirModalCrear()">
+          <i class="fas fa-plus me-1"></i>
+          Crear Primer Lead
+        </button>
+        <a class="btn btn-outline-secondary" routerLink="/propiedades">
+          <i class="fas fa-external-link-alt me-1"></i>
+          Publicar Propiedades
+        </a>
+      </div>
+    </div>
+
+    <!-- Existing kanban -->
+    <div *ngIf="leads.length > 0" class="row">
+      <div *ngFor="let estado of estadosLead" class="col-md-2 mb-4">
+        <div class="card h-100">
           <div
-            *ngFor="let lead of obtenerLeadsPorEstado(estado.id)"
-            class="card mb-2 lead-card"
+            class="card-header text-center"
+            [style.background-color]="estado.color"
+            [style.color]="'white'"
           >
-            <div class="card-body p-2">
-              <h6 class="card-title mb-1">{{ lead.nombreCompleto }}</h6>
-              <p class="card-text small text-muted mb-1">
-                <i class="fas fa-envelope me-1" *ngIf="lead.email"></i
-                >{{ lead.email }}
-              </p>
-              <p class="card-text small text-muted mb-1">
-                <i class="fas fa-phone me-1" *ngIf="lead.telefono"></i
-                >{{ lead.telefono }}
-              </p>
-              <div class="d-flex justify-content-between align-items-center">
-                <small class="text-muted">{{
-                  lead.fechaCreacion | date: "dd/MM"
-                }}</small>
-                <div class="btn-group btn-group-sm">
-                  <button
-                    class="btn btn-outline-primary btn-sm"
-                    (click)="abrirModalEditar(lead)"
+            <h6 class="mb-0">{{ estado.nombre }}</h6>
+            <small>({{ obtenerLeadsPorEstado(estado.id).length || 0 }})</small>
+          </div>
+          <div
+            class="card-body p-2"
+            style="min-height: 200px; overflow-y: auto"
+          >
+            <div
+              *ngFor="let lead of obtenerLeadsPorEstado(estado.id)"
+              class="card mb-2 lead-card"
+              style="cursor: pointer"
+              (click)="abrirModalDetalle(lead)"
+            >
+              <div class="card-body p-2">
+                <h6 class="card-title mb-1">{{ lead.nombreCompleto }}</h6>
+                <p class="card-text small text-muted mb-1" *ngIf="lead.email">
+                  <i class="fas fa-envelope me-1"></i>{{ lead.email }}
+                </p>
+                <p
+                  class="card-text small text-muted mb-1"
+                  *ngIf="lead.telefono"
+                >
+                  <i class="fas fa-phone me-1"></i>{{ lead.telefono }}
+                </p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <small class="text-muted">{{
+                    lead.fechaCreacion | date: "dd/MM"
+                  }}</small>
+                  <div
+                    class="btn-group btn-group-sm"
+                    (click)="$event.stopPropagation()"
                   >
-                    <i class="fas fa-edit"></i>
-                  </button>
+                    <button
+                      class="btn btn-outline-primary btn-sm"
+                      (click)="abrirModalEditar(lead)"
+                      title="Editar"
+                    >
+                      <i class="fas fa-edit"></i>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div
-            *ngIf="obtenerLeadsPorEstado(estado.id).length === 0"
-            class="text-center text-muted py-3"
-          >
-            <small>No hay leads</small>
+            <div
+              *ngIf="obtenerLeadsPorEstado(estado.id).length === 0"
+              class="text-center text-muted py-3"
+            >
+              <small>No hay leads</small>
+            </div>
           </div>
         </div>
       </div>
@@ -311,249 +397,455 @@
       </li>
     </ul>
   </nav>
-</div>
 
-<!-- Modal Crear Lead -->
-<div
-  class="modal fade"
-  [class.show]="mostrarModalCrear"
-  [style.display]="mostrarModalCrear ? 'block' : 'none'"
-  tabindex="-1"
->
-  <div class="modal-backdrop fade show" *ngIf="mostrarModalCrear"></div>
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Nuevo Lead</h5>
-        <button
-          type="button"
-          class="btn-close"
-          (click)="cerrarModal()"
-        ></button>
-      </div>
-      <div class="modal-body">
-        <form (ngSubmit)="crearLead()">
-          <div class="mb-3">
-            <label class="form-label">Nombre Completo *</label>
-            <input
-              type="text"
-              class="form-control"
-              [(ngModel)]="nuevoLead.nombreCompleto"
-              name="nombre"
-              required
-            />
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Email</label>
-            <input
-              type="email"
-              class="form-control"
-              [(ngModel)]="nuevoLead.email"
-              name="email"
-            />
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Teléfono</label>
-            <input
-              type="tel"
-              class="form-control"
-              [(ngModel)]="nuevoLead.telefono"
-              name="telefono"
-            />
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Fuente *</label>
-            <select
-              class="form-select"
-              [(ngModel)]="nuevoLead.idFuente"
-              name="fuente"
-              required
-            >
-              <option value="1">Página Web</option>
-              <option value="2">Redes Sociales</option>
-              <option value="3">Referido</option>
-              <option value="4">Llamada Directa</option>
-            </select>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Observaciones</label>
-            <textarea
-              class="form-control"
-              [(ngModel)]="nuevoLead.observaciones"
-              name="observaciones"
-              rows="3"
-            ></textarea>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="cerrarModal()">
-          Cancelar
-        </button>
-        <button
-          type="button"
-          class="btn btn-primary"
-          (click)="crearLead()"
-          [disabled]="loading"
-        >
-          <span
-            *ngIf="loading"
-            class="spinner-border spinner-border-sm me-1"
-          ></span>
-          Crear Lead
-        </button>
+  <!-- Modal Details Component -->
+  <app-modal-details-lead
+    [lead]="leadSeleccionado"
+    [mostrar]="mostrarModalDetalle"
+    (cerrar)="cerrarModalDetalle()"
+    (editar)="onModalDetalleEditar($event)"
+    (cambiarEstado)="onModalDetalleCambiarEstado($event)"
+    (reasignar)="onModalDetalleReasignar($event)"
+    (marcarPerdido)="onModalDetalleMarcarPerdido($event)"
+    (agregarNota)="onModalDetalleAgregarNota($event)"
+  >
+  </app-modal-details-lead>
+
+  <!-- Modal Edit Lead Component -->
+  <app-modal-edit-lead
+    [lead]="leadSeleccionado"
+    [mostrar]="mostrarModalEditar"
+    (cerrar)="cerrarModalEditar()"
+    (guardar)="onGuardarEdicionLead($event)"
+  >
+  </app-modal-edit-lead>
+
+  <!-- Modal Crear Lead -->
+  <div
+    class="modal fade"
+    [class.show]="mostrarModalCrear"
+    [style.display]="mostrarModalCrear ? 'block' : 'none'"
+    tabindex="-1"
+  >
+    <div class="modal-backdrop fade show" *ngIf="mostrarModalCrear"></div>
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Nuevo Lead</h5>
+          <button
+            type="button"
+            class="btn-close"
+            (click)="cerrarModal()"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <form (ngSubmit)="crearLead()">
+            <div class="mb-3">
+              <label class="form-label">Nombre Completo *</label>
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="nuevoLead.nombreCompleto"
+                name="nombre"
+                required
+              />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Email</label>
+              <input
+                type="email"
+                class="form-control"
+                [(ngModel)]="nuevoLead.email"
+                name="email"
+              />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Teléfono</label>
+              <input
+                type="tel"
+                class="form-control"
+                [(ngModel)]="nuevoLead.telefono"
+                name="telefono"
+              />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Fuente *</label>
+              <select
+                class="form-select"
+                [(ngModel)]="nuevoLead.idFuente"
+                name="fuente"
+                required
+              >
+                <option value="1">Página Web</option>
+                <option value="2">Redes Sociales</option>
+                <option value="3">Referido</option>
+                <option value="4">Llamada Directa</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Observaciones</label>
+              <textarea
+                class="form-control"
+                [(ngModel)]="nuevoLead.observaciones"
+                name="observaciones"
+                rows="3"
+              ></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="cerrarModal()"
+          >
+            Cancelar
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary"
+            (click)="crearLead()"
+            [disabled]="loading"
+          >
+            <span
+              *ngIf="loading"
+              class="spinner-border spinner-border-sm me-1"
+            ></span>
+            Crear Lead
+          </button>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-<!-- Modal Editar Lead -->
-<div
-  class="modal fade"
-  [class.show]="mostrarModalEditar"
-  [style.display]="mostrarModalEditar ? 'block' : 'none'"
-  tabindex="-1"
->
-  <div class="modal-backdrop fade show" *ngIf="mostrarModalEditar"></div>
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Editar Lead</h5>
-        <button
-          type="button"
-          class="btn-close"
-          (click)="cerrarModal()"
-        ></button>
+  <!-- Modal Eliminar Lead -->
+  <div
+    class="modal fade"
+    [class.show]="mostrarModalEliminar"
+    [style.display]="mostrarModalEliminar ? 'block' : 'none'"
+    tabindex="-1"
+  >
+    <div class="modal-backdrop fade show" *ngIf="mostrarModalEliminar"></div>
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Eliminar Lead</h5>
+          <button
+            type="button"
+            class="btn-close"
+            (click)="cerrarModal()"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <p>
+            ¿Está seguro que desea eliminar el lead de
+            <strong>{{ leadSeleccionado?.nombreCompleto }}</strong
+            >?
+          </p>
+          <p class="text-muted">Esta acción no se puede deshacer.</p>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="cerrarModal()"
+          >
+            Cancelar
+          </button>
+          <button
+            type="button"
+            class="btn btn-danger"
+            (click)="eliminarLead()"
+            [disabled]="loading"
+          >
+            <span
+              *ngIf="loading"
+              class="spinner-border spinner-border-sm me-1"
+            ></span>
+            Eliminar
+          </button>
+        </div>
       </div>
-      <div class="modal-body">
-        <form (ngSubmit)="actualizarLead()">
+    </div>
+  </div>
+
+  <!-- Modal Cambiar Estado -->
+  <div
+    class="modal fade"
+    [class.show]="mostrarModalCambiarEstado"
+    [style.display]="mostrarModalCambiarEstado ? 'block' : 'none'"
+    tabindex="-1"
+  >
+    <div
+      class="modal-backdrop fade show"
+      *ngIf="mostrarModalCambiarEstado"
+    ></div>
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Cambiar Estado</h5>
+          <button
+            type="button"
+            class="btn-close"
+            (click)="cerrarModal()"
+          ></button>
+        </div>
+        <div class="modal-body">
           <div class="mb-3">
-            <label class="form-label">Nombre Completo *</label>
-            <input
-              type="text"
-              class="form-control"
-              [(ngModel)]="leadEdicion.nombreCompleto"
-              name="nombre"
-              required
-            />
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Email</label>
-            <input
-              type="email"
-              class="form-control"
-              [(ngModel)]="leadEdicion.email"
-              name="email"
-            />
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Teléfono</label>
-            <input
-              type="tel"
-              class="form-control"
-              [(ngModel)]="leadEdicion.telefono"
-              name="telefono"
-            />
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Fuente *</label>
+            <label class="form-label">Nuevo Estado *</label>
             <select
               class="form-select"
-              [(ngModel)]="leadEdicion.idFuente"
-              name="fuente"
+              [(ngModel)]="cambioEstado.nuevoEstadoId"
               required
             >
-              <option value="1">Página Web</option>
-              <option value="2">Redes Sociales</option>
-              <option value="3">Referido</option>
-              <option value="4">Llamada Directa</option>
+              <option value="0">Seleccionar estado</option>
+              <option *ngFor="let estado of estadosLead" [value]="estado.id">
+                {{ estado.nombre }}
+              </option>
             </select>
           </div>
           <div class="mb-3">
-            <label class="form-label">Observaciones</label>
+            <label class="form-label">Motivo del cambio</label>
             <textarea
               class="form-control"
-              [(ngModel)]="leadEdicion.observaciones"
-              name="observaciones"
+              [(ngModel)]="cambioEstado.motivo"
+              placeholder="Describe el motivo del cambio de estado..."
               rows="3"
-            ></textarea>
+            >
+            </textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="cerrarModal()"
+          >
+            Cancelar
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary"
+            (click)="procesarCambioEstado()"
+            [disabled]="loading || cambioEstado.nuevoEstadoId === 0"
+          >
+            <span
+              *ngIf="loading"
+              class="spinner-border spinner-border-sm me-1"
+            ></span>
+            Cambiar Estado
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Reasignar -->
+  <div
+    class="modal fade"
+    [class.show]="mostrarModalReasignar"
+    [style.display]="mostrarModalReasignar ? 'block' : 'none'"
+    tabindex="-1"
+  >
+    <div class="modal-backdrop fade show" *ngIf="mostrarModalReasignar"></div>
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Reasignar Agente</h5>
+          <button
+            type="button"
+            class="btn-close"
+            (click)="cerrarModal()"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Nuevo Agente *</label>
+            <select
+              class="form-select"
+              [(ngModel)]="reasignacion.nuevoUsuarioId"
+              required
+            >
+              <option value="0">Seleccionar agente</option>
+              <option value="1">Admin</option>
+              <option value="2">Agente 1</option>
+              <option value="3">Agente 2</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Motivo de la reasignación</label>
+            <textarea
+              class="form-control"
+              [(ngModel)]="reasignacion.motivo"
+              placeholder="Describe el motivo de la reasignación..."
+              rows="3"
+            >
+            </textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="cerrarModal()"
+          >
+            Cancelar
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary"
+            (click)="procesarReasignacion()"
+            [disabled]="loading || reasignacion.nuevoUsuarioId === 0"
+          >
+            <span
+              *ngIf="loading"
+              class="spinner-border spinner-border-sm me-1"
+            ></span>
+            Reasignar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Marcar como Perdido -->
+  <div
+    class="modal fade"
+    [class.show]="mostrarModalPerdido"
+    [style.display]="mostrarModalPerdido ? 'block' : 'none'"
+    tabindex="-1"
+  >
+    <div class="modal-backdrop fade show" *ngIf="mostrarModalPerdido"></div>
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Marcar como Perdido</h5>
+          <button
+            type="button"
+            class="btn-close"
+            (click)="cerrarModal()"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Motivo *</label>
+            <select
+              class="form-select"
+              [(ngModel)]="perdidoData.motivo"
+              required
+            >
+              <option value="">Seleccionar motivo</option>
+              <option value="No responde">No responde</option>
+              <option value="Sin interés">Sin interés</option>
+              <option value="Presupuesto insuficiente">
+                Presupuesto insuficiente
+              </option>
+              <option value="Encontró otra opción">Encontró otra opción</option>
+              <option value="Otros">Otros</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Observaciones adicionales</label>
+            <textarea
+              class="form-control"
+              [(ngModel)]="perdidoData.observaciones"
+              placeholder="Agrega detalles adicionales..."
+              rows="3"
+            >
+            </textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="cerrarModal()"
+          >
+            Cancelar
+          </button>
+          <button
+            type="button"
+            class="btn btn-danger"
+            (click)="marcarComoPerdido()"
+            [disabled]="loading || !perdidoData.motivo"
+          >
+            <span
+              *ngIf="loading"
+              class="spinner-border spinner-border-sm me-1"
+            ></span>
+            Marcar como Perdido
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Nota Rápida -->
+  <div
+    class="modal fade"
+    [class.show]="mostrarModalNota"
+    [style.display]="mostrarModalNota ? 'block' : 'none'"
+    tabindex="-1"
+  >
+    <div class="modal-backdrop fade show" *ngIf="mostrarModalNota"></div>
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Agregar Nota Rápida</h5>
+          <button
+            type="button"
+            class="btn-close"
+            (click)="cerrarModal()"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Nota *</label>
+            <textarea
+              class="form-control"
+              [(ngModel)]="notaRapida.contenido"
+              placeholder="Escribe tu nota aquí..."
+              rows="4"
+              required
+            >
+            </textarea>
           </div>
           <div class="mb-3">
             <div class="form-check">
               <input
                 class="form-check-input"
                 type="checkbox"
-                [(ngModel)]="leadEdicion.activo"
-                name="activo"
+                [(ngModel)]="notaRapida.importante"
+                id="notaImportante"
               />
-              <label class="form-check-label">Activo</label>
+              <label class="form-check-label" for="notaImportante">
+                <i class="fas fa-exclamation-triangle text-warning me-1"></i>
+                Marcar como importante
+              </label>
             </div>
           </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="cerrarModal()">
-          Cancelar
-        </button>
-        <button
-          type="button"
-          class="btn btn-primary"
-          (click)="actualizarLead()"
-          [disabled]="loading"
-        >
-          <span
-            *ngIf="loading"
-            class="spinner-border spinner-border-sm me-1"
-          ></span>
-          Guardar Cambios
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Modal Eliminar Lead -->
-<div
-  class="modal fade"
-  [class.show]="mostrarModalEliminar"
-  [style.display]="mostrarModalEliminar ? 'block' : 'none'"
-  tabindex="-1"
->
-  <div class="modal-backdrop fade show" *ngIf="mostrarModalEliminar"></div>
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Eliminar Lead</h5>
-        <button
-          type="button"
-          class="btn-close"
-          (click)="cerrarModal()"
-        ></button>
-      </div>
-      <div class="modal-body">
-        <p>
-          ¿Está seguro que desea eliminar el lead de
-          <strong>{{ leadSeleccionado?.nombreCompleto }}</strong
-          >?
-        </p>
-        <p class="text-muted">Esta acción no se puede deshacer.</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="cerrarModal()">
-          Cancelar
-        </button>
-        <button
-          type="button"
-          class="btn btn-danger"
-          (click)="eliminarLead()"
-          [disabled]="loading"
-        >
-          <span
-            *ngIf="loading"
-            class="spinner-border spinner-border-sm me-1"
-          ></span>
-          Eliminar
-        </button>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="cerrarModal()"
+          >
+            Cancelar
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary"
+            (click)="agregarNotaRapida()"
+            [disabled]="loading || !notaRapida.contenido.trim()"
+          >
+            <span
+              *ngIf="loading"
+              class="spinner-border spinner-border-sm me-1"
+            ></span>
+            Agregar Nota
+          </button>
+        </div>
       </div>
     </div>
   </div>

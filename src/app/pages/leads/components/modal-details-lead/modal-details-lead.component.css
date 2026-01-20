@@ -1,0 +1,261 @@
+/* Modal styling */
+.modal {
+    z-index: 1050;
+    background: rgba(0, 0, 0, 0.5);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.modal.fade {
+    transition: opacity 0.15s linear;
+    opacity: 0;
+}
+
+.modal.show {
+    opacity: 1;
+}
+
+.modal-xl .modal-dialog {
+    max-width: 1200px;
+    margin: 1.75rem auto;
+    position: relative;
+    z-index: 1055;
+}
+
+.modal-content {
+    position: relative;
+    background-color: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 0.375rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+/* Contact info styling */
+.contact-info p {
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #f1f3f4;
+}
+
+.contact-info p:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.contact-link {
+    color: #007bff;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.contact-link:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+/* Status badge */
+.status-badge {
+    font-size: 0.875rem;
+    padding: 0.5rem 0.75rem;
+    font-weight: 500;
+}
+
+/* Timeline styling */
+.timeline-card {
+    height: 600px;
+}
+
+.timeline-container {
+    height: 520px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.timeline {
+    position: relative;
+    padding-left: 0;
+}
+
+.timeline-item {
+    position: relative;
+    padding-left: 50px;
+    padding-bottom: 30px;
+}
+
+.timeline-item:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 35px;
+    height: calc(100% - 15px);
+    width: 2px;
+    background-color: #e9ecef;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: 10px;
+    top: 5px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    z-index: 1;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.timeline-content {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 12px;
+    border-left: 4px solid #dee2e6;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+}
+
+.timeline-content:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+}
+
+.timeline-title {
+    margin-bottom: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #495057;
+}
+
+.timeline-text {
+    margin-bottom: 10px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #6c757d;
+}
+
+.timeline-date {
+    color: #adb5bd;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* Empty timeline state */
+.empty-timeline {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+/* Timeline marker colors */
+.timeline-marker.bg-success {
+    background-color: #28a745 !important;
+}
+
+.timeline-marker.bg-info {
+    background-color: #17a2b8 !important;
+}
+
+.timeline-marker.bg-warning {
+    background-color: #ffc107 !important;
+    color: #212529 !important;
+}
+
+.timeline-marker.bg-danger {
+    background-color: #dc3545 !important;
+}
+
+.timeline-marker.bg-light {
+    background-color: #f8f9fa !important;
+    border: 2px solid #dee2e6;
+}
+
+/* Timeline content variants */
+.timeline-content[data-type="important"] {
+    border-left-color: #ffc107;
+    background: linear-gradient(135deg, #fff3cd 0%, #f8f9fa 100%);
+}
+
+.timeline-content[data-type="lost"] {
+    border-left-color: #dc3545;
+    background: linear-gradient(135deg, #f8d7da 0%, #f8f9fa 100%);
+}
+
+.timeline-content[data-type="reassign"] {
+    border-left-color: #17a2b8;
+    background: linear-gradient(135deg, #d1ecf1 0%, #f8f9fa 100%);
+}
+
+/* Card improvements */
+.card {
+    border: 1px solid #e3e6f0;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+}
+
+.card-header {
+    background-color: #f8f9fc;
+    border-bottom: 1px solid #e3e6f0;
+}
+
+/* Responsive design */
+@media (max-width: 992px) {
+    .modal-xl .modal-dialog {
+        max-width: 95%;
+        margin: 10px auto;
+    }
+
+    .timeline-container {
+        height: 400px;
+    }
+
+    .timeline-card {
+        height: 480px;
+    }
+}
+
+@media (max-width: 768px) {
+    .timeline-item {
+        padding-left: 35px;
+    }
+
+    .timeline-marker {
+        left: 5px;
+        width: 15px;
+        height: 15px;
+        font-size: 8px;
+    }
+
+    .timeline-item:not(:last-child)::before {
+        left: 12px;
+    }
+
+    .timeline-content {
+        padding: 15px;
+    }
+
+    .action-buttons .btn {
+        margin-bottom: 8px !important;
+    }
+}
+
+/* Scrollbar styling for timeline */
+.timeline-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.timeline-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.timeline-container::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.timeline-container::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
