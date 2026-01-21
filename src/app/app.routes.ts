@@ -10,12 +10,12 @@ export const routes: Routes = [
   {
     path: 'login',
     loadChildren: () =>
-      import('./pages/auth/login.routes').then((m) => m.loginRoutes),
+      import('./views/auth/login.routes').then((m) => m.loginRoutes),
   },
   {
     path: 'dashboard',
     loadChildren: () =>
-      import('./pages/dashboard/dashboard.routes').then(
+      import('./views/dashboard/dashboard.routes').then(
         (m) => m.dashboardRoutes
       ),
     canActivate: [authGuard],
@@ -23,7 +23,7 @@ export const routes: Routes = [
   {
     path: 'propiedades',
     loadChildren: () =>
-      import('./pages/propiedades/propiedades.routes').then(
+      import('./views/propiedades/propiedades.routes').then(
         (m) => m.propiedadesRoutes
       ),
     canActivate: [authGuard],
@@ -31,7 +31,7 @@ export const routes: Routes = [
   {
     path: 'leads',
     loadChildren: () =>
-      import('./pages/leads/leads.routes').then(
+      import('./views/leads/leads.routes').then(
         (m) => m.leadsRoutes
       ),
     canActivate: [authGuard],
@@ -39,7 +39,7 @@ export const routes: Routes = [
   {
     path: 'agenda',
     loadChildren: () =>
-      import('./pages/agenda/agenda.routes').then(
+      import('./views/agenda/agenda.routes').then(
         (m) => m.agendaRoutes
       ),
     canActivate: [authGuard],
@@ -47,7 +47,7 @@ export const routes: Routes = [
   {
     path: 'clientes',
     loadChildren: () =>
-      import('./pages/clientes/clientes.routes').then(
+      import('./views/clientes/clientes.routes').then(
         (m) => m.clientesRoutes
       ),
     canActivate: [authGuard],
@@ -55,7 +55,7 @@ export const routes: Routes = [
   {
     path: 'operaciones',
     loadChildren: () =>
-      import('./pages/operaciones/operaciones.routes').then(
+      import('./views/operaciones/operaciones.routes').then(
         (m) => m.operacionesRoutes
       ),
     canActivate: [authGuard],
@@ -63,7 +63,7 @@ export const routes: Routes = [
   {
     path: 'equipo',
     loadChildren: () =>
-      import('./pages/equipo/equipo.routes').then(
+      import('./views/equipo/equipo.routes').then(
         (m) => m.equipoRoutes
       ),
     canActivate: [authGuard],
@@ -71,7 +71,7 @@ export const routes: Routes = [
   {
     path: 'inmobiliaria',
     loadChildren: () =>
-      import('./pages/inmobiliaria/inmobiliaria.routes').then(
+      import('./views/inmobiliaria/inmobiliaria.routes').then(
         (m) => m.inmobiliariaRoutes
       ),
     canActivate: [authGuard],
@@ -79,7 +79,7 @@ export const routes: Routes = [
   {
     path: 'plan-facturacion',
     loadChildren: () =>
-      import('./pages/plan-facturacion/plan-facturacion.routes').then(
+      import('./views/plan-facturacion/plan-facturacion.routes').then(
         (m) => m.planFacturacionRoutes
       ),
     canActivate: [authGuard],
@@ -87,7 +87,7 @@ export const routes: Routes = [
   {
     path: 'reportes',
     loadChildren: () =>
-      import('./pages/reportes/reportes.routes').then(
+      import('./views/reportes/reportes.routes').then(
         (m) => m.reportesRoutes
       ),
     canActivate: [authGuard],
@@ -95,7 +95,7 @@ export const routes: Routes = [
   {
     path: 'configuracion',
     loadChildren: () =>
-      import('./pages/configuracion/configuracion.routes').then(
+      import('./views/configuracion/configuracion.routes').then(
         (m) => m.configuracionRoutes
       ),
     canActivate: [authGuard],
@@ -103,7 +103,7 @@ export const routes: Routes = [
   {
     path: 'notificaciones',
     loadChildren: () =>
-      import('./pages/notificaciones/notificaciones.routes').then(
+      import('./views/notificaciones/notificaciones.routes').then(
         (m) => m.notificacionesRoutes
       ),
     canActivate: [authGuard],
@@ -111,7 +111,7 @@ export const routes: Routes = [
   {
     path: 'integraciones',
     loadChildren: () =>
-      import('./pages/integraciones/integraciones.routes').then(
+      import('./views/integraciones/integraciones.routes').then(
         (m) => m.integracionesRoutes
       ),
     canActivate: [authGuard],

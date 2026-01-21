@@ -184,3 +184,13 @@
     </div>
   </div>
 </div>
+
+<!-- Spinner Component -->
+<app-spinner [isLoading]="loading"></app-spinner>
+
+<!-- Toast Modal Component -->
+<app-toast-modal
+  [visible]="mostrarToastGuardar"
+  [message]="'El lead ha sido editado correctamente.'"
+  [type]="'success'"
+></app-toast-modal>

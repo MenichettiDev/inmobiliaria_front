@@ -12,7 +12,7 @@ import {
 import { CommonModule, DOCUMENT } from '@angular/common';
 
 @Component({
-  selector: 'app-modal-toast',
+  selector: 'app-toast-modal',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './toast-modal.component.html',
@@ -20,7 +20,7 @@ import { CommonModule, DOCUMENT } from '@angular/common';
 })
 export class ToastModalComponent implements OnInit, OnDestroy, OnChanges {
   @Input() message: string = '';
-  @Input() isVisible: boolean = false;
+  @Input() visible: boolean = false;
   @Input() type: string = 'success';
 
   // Nuevo: elegir preset de animación: 'preset-1' (por defecto), 'preset-2', 'preset-3'
@@ -38,7 +38,7 @@ export class ToastModalComponent implements OnInit, OnDestroy, OnChanges {
     private el: ElementRef<HTMLElement>,
     private renderer: Renderer2,
     @Inject(DOCUMENT) private document: Document
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     // Mover el host del toast al <body> para evitar que quede dentro de contenedores transformados
@@ -70,8 +70,8 @@ export class ToastModalComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if ('isVisible' in changes) {
-      const next = changes['isVisible'].currentValue;
+    if ('visible' in changes) {
+      const next = changes['visible'].currentValue;
       if (next) {
         // mostrar y reproducir animación de entrada
         this.internalVisible = true;

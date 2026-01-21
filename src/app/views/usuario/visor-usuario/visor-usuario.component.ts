@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { UsuarioService } from '../../../pages/usuario/usuario.service';
+import { UsuarioService } from '../../../views/usuario/usuario.service';
 import { Router } from '@angular/router';
 import { Roles } from '../../../shared/enums/roles';
 import { PaginatorComponent } from '../../../shared/components/paginator/paginator.component';

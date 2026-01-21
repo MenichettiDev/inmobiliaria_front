@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
-import { AuthService } from '../../../pages/auth/auth.service';
+import { AuthService } from '../../../views/auth/auth.service';
 import { TopbarComponent } from "../topbar/topbar.component";
 
 interface MenuItem {

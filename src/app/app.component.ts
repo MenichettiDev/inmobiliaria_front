@@ -3,7 +3,7 @@ import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { SidebarComponent } from "./shared/components/sidebar/sidebar.component";
 import { Subscription } from 'rxjs';
-import { AuthService } from './../app/pages/auth/auth.service';
+import { AuthService } from './../app/views/auth/auth.service';
 import { SidebarService } from './services/sidebar.service';
 
 @Component({

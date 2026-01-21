@@ -4,10 +4,19 @@ import { FormsModule } from '@angular/forms';
 import { Lead, UpdateLeadDto } from '../../service/leads.service';
 import { AuthService } from '../../../auth/auth.service';
 import { CboUsuarioComponent } from '../../../usuario/components/cbo-usuario/cbo-usuario.component';
+import { SpinnerComponent } from '../../../../shared/components/spinner/spinner.component';
+import { ConfirmModalComponent } from '../../../../shared/components/confirm-modal/confirm-modal.component';
+import { ToastModalComponent } from '../../../../shared/components/toast-modal/toast-modal.component';
 
 @Component({
   selector: 'app-modal-edit-lead',
-  imports: [CommonModule, FormsModule, CboUsuarioComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    CboUsuarioComponent,
+    SpinnerComponent,
+    ToastModalComponent // Ensure ToastModalComponent is included here
+  ],
   templateUrl: './modal-edit-lead.component.html',
   styleUrl: './modal-edit-lead.component.css'
 })
@@ -20,6 +29,7 @@ export class ModalEditLeadComponent implements OnInit, OnChanges {
   leadOriginal: Lead | null = null;
   leadEdicion: UpdateLeadDto = this.getEmptyLead();
   loading = false;
+  mostrarToastGuardar = false; // Control for success toast
 
   // Permisos
   puedeAsignar = false;
@@ -93,11 +103,20 @@ export class ModalEditLeadComponent implements OnInit, OnChanges {
 
     // Emit the updated lead data
     this.guardar.emit(this.leadEdicion);
+
+    // Simulate a delay for the spinner
+    setTimeout(() => {
+      this.onGuardadoCompleto();
+    }, 1000); // Example delay
   }
 
   onGuardadoCompleto(): void {
     this.loading = false;
-    this.cerrarModal();
+    this.mostrarToastGuardar = true; // Show success toast
+    setTimeout(() => {
+      this.mostrarToastGuardar = false; // Hide toast after a delay
+      this.cerrarModal();
+    }, 3000); // Example duration for toast visibility
   }
 
   onErrorGuardado(): void {

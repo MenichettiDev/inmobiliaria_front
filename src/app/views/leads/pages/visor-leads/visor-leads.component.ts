@@ -2,11 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { LeadsService, Lead, CreateLeadDto, UpdateLeadDto, CambiarEstadoLeadDto, AsignarLeadDto, PaginatedResponse } from '../service/leads.service';
-import { AuthService } from '../../auth/auth.service';
-import { ModalDetailsLeadComponent } from '../components/modal-details-lead/modal-details-lead.component';
-import { ModalEditLeadComponent } from '../components/modal-edit-lead/modal-edit-lead.component';
-import { ModalCreateLeadComponent } from '../components/modal-create-lead/modal-create-lead.component';
+import { LeadsService, Lead, CreateLeadDto, UpdateLeadDto, CambiarEstadoLeadDto, AsignarLeadDto, PaginatedResponse } from '../../service/leads.service';
+import { AuthService } from '../../../auth/auth.service';
+import { ModalDetailsLeadComponent } from '../../components/modal-details-lead/modal-details-lead.component';
+import { ModalEditLeadComponent } from '../../components/modal-edit-lead/modal-edit-lead.component';
+import { ModalCreateLeadComponent } from '../../components/modal-create-lead/modal-create-lead.component';
 
 @Component({
   selector: 'app-visor-leads',
