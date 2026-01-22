@@ -1,0 +1,78 @@
+<div class="modal-header">
+  <h5 class="modal-title">
+    <i class="fas fa-exchange-alt me-2"></i>
+    Cambiar Estado del Lead - ID: {{ leadId }}
+  </h5>
+  <button
+    type="button"
+    class="btn-close"
+    (click)="cerrarModal()"
+    aria-label="Close"
+  ></button>
+</div>
+<div class="modal-body">
+  <p><strong>Nombre:</strong> {{ leadNombre }}</p>
+  <p><strong>Email:</strong> {{ leadEmail }}</p>
+  <p><strong>Teléfono:</strong> {{ leadTelefono }}</p>
+
+  <div class="mb-3">
+    <label class="form-label">Nuevo Estado *</label>
+    <select class="form-select" [(ngModel)]="nuevoEstadoId" required>
+      <option [value]="null">Seleccionar estado</option>
+      <option value="1">Nuevo</option>
+      <option value="2">Contactado</option>
+      <option value="3">Calificado</option>
+      <option value="4">Visita</option>
+      <option value="5">Negociación</option>
+      <option value="6">Cerrado</option>
+    </select>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Comentario *</label>
+    <textarea
+      class="form-control"
+      [(ngModel)]="comentario"
+      placeholder="Ingrese un comentario..."
+      rows="4"
+      required
+    ></textarea>
+  </div>
+</div>
+<div class="modal-footer">
+  <button
+    type="button"
+    class="btn btn-secondary"
+    (click)="cerrarModal()"
+    [disabled]="loading"
+  >
+    <i class="fas fa-times me-1"></i>
+    Cancelar
+  </button>
+  <button
+    type="button"
+    class="btn btn-primary"
+    (click)="confirmarCambioEstado()"
+    [disabled]="loading || !nuevoEstadoId || !comentario.trim()"
+  >
+    <span *ngIf="loading" class="spinner-border spinner-border-sm me-1"></span>
+    <i *ngIf="!loading" class="fas fa-save me-1"></i>
+    {{ loading ? "Guardando..." : "Confirmar" }}
+  </button>
+</div>
+
+<app-spinner [isLoading]="loading"></app-spinner>
+
+<app-toast-modal
+  [visible]="toastVisible"
+  [message]="toastMessage"
+  [type]="toastType"
+></app-toast-modal>
+
+<app-modal-confirm
+  [visible]="mostrarConfirm"
+  title="Confirmar cambio de estado"
+  message="¿Confirma que desea cambiar el estado del lead?"
+  (confirm)="ejecutarCambioEstado()"
+  (cancel)="mostrarConfirm = false"
+></app-modal-confirm>

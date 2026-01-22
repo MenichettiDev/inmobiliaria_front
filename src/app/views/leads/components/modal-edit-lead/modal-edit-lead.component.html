@@ -1,186 +1,177 @@
-<!-- Modal Editar Lead -->
+<!-- Modal backdrop -->
 <div
-  class="modal fade"
-  [class.show]="mostrar"
-  [style.display]="mostrar ? 'block' : 'none'"
-  tabindex="-1"
-  role="dialog"
->
-  <!-- Modal backdrop -->
-  <div
-    class="modal-backdrop fade show"
-    *ngIf="mostrar"
-    (click)="cerrarModal()"
-  ></div>
+  class="modal-backdrop fade show"
+  *ngIf="mostrar"
+  (click)="cerrarModal()"
+></div>
 
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">
-          <i class="fas fa-edit me-2"></i>
-          Editar Lead - {{ leadOriginal?.nombreCompleto }}
-        </h5>
-        <button
-          type="button"
-          class="btn-close"
-          (click)="cerrarModal()"
-          aria-label="Close"
-        ></button>
-      </div>
-      <div class="modal-body">
-        <form #leadForm="ngForm" (ngSubmit)="guardarCambios()">
-          <div class="mb-3">
-            <label class="form-label">
-              Nombre Completo <span class="text-danger">*</span>
+<div class="modal-dialog" role="document">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title">
+        <i class="fas fa-edit me-2"></i>
+        Editar Lead - {{ leadOriginal?.nombreCompleto }}
+      </h5>
+      <button
+        type="button"
+        class="btn-close"
+        (click)="cerrarModal()"
+        aria-label="Close"
+      ></button>
+    </div>
+    <div class="modal-body">
+      <form #leadForm="ngForm" (ngSubmit)="guardarCambios()">
+        <div class="mb-3">
+          <label class="form-label">
+            Nombre Completo <span class="text-danger">*</span>
+          </label>
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="leadEdicion.nombreCompleto"
+            name="nombreCompleto"
+            required
+            #nombreCompleto="ngModel"
+          />
+          <div
+            *ngIf="nombreCompleto.invalid && nombreCompleto.touched"
+            class="text-danger small mt-1"
+          >
+            El nombre completo es requerido
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Email</label>
+          <input
+            type="email"
+            class="form-control"
+            [(ngModel)]="leadEdicion.email"
+            name="email"
+            #email="ngModel"
+          />
+          <div
+            *ngIf="email.invalid && email.touched"
+            class="text-danger small mt-1"
+          >
+            Ingresa un email válido
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Teléfono</label>
+          <input
+            type="tel"
+            class="form-control"
+            [(ngModel)]="leadEdicion.telefono"
+            name="telefono"
+            placeholder="Ej: +54 9 11 1234-5678"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">
+            Fuente <span class="text-danger">*</span>
+          </label>
+          <select
+            class="form-select"
+            [(ngModel)]="leadEdicion.idFuente"
+            name="idFuente"
+            required
+          >
+            <option value="1">Página Web</option>
+            <option value="2">Redes Sociales</option>
+            <option value="3">Referido</option>
+            <option value="4">Llamada Directa</option>
+            <option value="5">WhatsApp</option>
+            <option value="6">Email Marketing</option>
+          </select>
+        </div>
+
+        <div class="mb-3" *ngIf="puedeAsignar">
+          <label class="form-label">Agente Asignado</label>
+          <app-cbo-usuario
+            [ngModel]="leadEdicion.idUsuarioAsignado"
+            (ngModelChange)="onUsuarioAsignadoChange($event)"
+            name="idUsuarioAsignado"
+            placeholder="Sin asignar"
+            [showOnlyActive]="true"
+          ></app-cbo-usuario>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Estado</label>
+          <select
+            class="form-select"
+            [(ngModel)]="leadEdicion.idEstado"
+            name="idEstado"
+          >
+            <option value="1">Nuevo</option>
+            <option value="2">Contactado</option>
+            <option value="3">Calificado</option>
+            <option value="4">Visita</option>
+            <option value="5">Negociación</option>
+            <option value="6">Cerrado</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Observaciones</label>
+          <textarea
+            class="form-control"
+            [(ngModel)]="leadEdicion.observaciones"
+            name="observaciones"
+            rows="4"
+            placeholder="Notas adicionales sobre el lead..."
+          ></textarea>
+          <div class="form-text">
+            Las observaciones anteriores se mantendrán. Agrega nuevas notas
+            aquí.
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              [(ngModel)]="leadEdicion.activo"
+              name="activo"
+              id="leadActivo"
+            />
+            <label class="form-check-label" for="leadActivo">
+              Lead activo
             </label>
-            <input
-              type="text"
-              class="form-control"
-              [(ngModel)]="leadEdicion.nombreCompleto"
-              name="nombreCompleto"
-              required
-              #nombreCompleto="ngModel"
-            />
-            <div
-              *ngIf="nombreCompleto.invalid && nombreCompleto.touched"
-              class="text-danger small mt-1"
-            >
-              El nombre completo es requerido
-            </div>
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">Email</label>
-            <input
-              type="email"
-              class="form-control"
-              [(ngModel)]="leadEdicion.email"
-              name="email"
-              #email="ngModel"
-            />
-            <div
-              *ngIf="email.invalid && email.touched"
-              class="text-danger small mt-1"
-            >
-              Ingresa un email válido
-            </div>
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">Teléfono</label>
-            <input
-              type="tel"
-              class="form-control"
-              [(ngModel)]="leadEdicion.telefono"
-              name="telefono"
-              placeholder="Ej: +54 9 11 1234-5678"
-            />
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">
-              Fuente <span class="text-danger">*</span>
-            </label>
-            <select
-              class="form-select"
-              [(ngModel)]="leadEdicion.idFuente"
-              name="idFuente"
-              required
-            >
-              <option value="1">Página Web</option>
-              <option value="2">Redes Sociales</option>
-              <option value="3">Referido</option>
-              <option value="4">Llamada Directa</option>
-              <option value="5">WhatsApp</option>
-              <option value="6">Email Marketing</option>
-            </select>
-          </div>
-
-          <div class="mb-3" *ngIf="puedeAsignar">
-            <label class="form-label">Agente Asignado</label>
-            <app-cbo-usuario
-              [ngModel]="leadEdicion.idUsuarioAsignado"
-              (ngModelChange)="onUsuarioAsignadoChange($event)"
-              name="idUsuarioAsignado"
-              placeholder="Sin asignar"
-              [showOnlyActive]="true"
-            ></app-cbo-usuario>
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">Estado</label>
-            <select
-              class="form-select"
-              [(ngModel)]="leadEdicion.idEstado"
-              name="idEstado"
-            >
-              <option value="1">Nuevo</option>
-              <option value="2">Contactado</option>
-              <option value="3">Calificado</option>
-              <option value="4">Visita</option>
-              <option value="5">Negociación</option>
-              <option value="6">Cerrado</option>
-            </select>
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">Observaciones</label>
-            <textarea
-              class="form-control"
-              [(ngModel)]="leadEdicion.observaciones"
-              name="observaciones"
-              rows="4"
-              placeholder="Notas adicionales sobre el lead..."
-            ></textarea>
             <div class="form-text">
-              Las observaciones anteriores se mantendrán. Agrega nuevas notas
-              aquí.
+              Los leads inactivos no aparecen en las búsquedas principales
             </div>
           </div>
-
-          <div class="mb-3">
-            <div class="form-check">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                [(ngModel)]="leadEdicion.activo"
-                name="activo"
-                id="leadActivo"
-              />
-              <label class="form-check-label" for="leadActivo">
-                Lead activo
-              </label>
-              <div class="form-text">
-                Los leads inactivos no aparecen en las búsquedas principales
-              </div>
-            </div>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button
-          type="button"
-          class="btn btn-secondary"
-          (click)="cerrarModal()"
-          [disabled]="loading"
-        >
-          <i class="fas fa-times me-1"></i>
-          Cancelar
-        </button>
-        <button
-          type="button"
-          class="btn btn-primary"
-          (click)="guardarCambios()"
-          [disabled]="loading || !leadForm.form.valid"
-        >
-          <span
-            *ngIf="loading"
-            class="spinner-border spinner-border-sm me-1"
-          ></span>
-          <i *ngIf="!loading" class="fas fa-save me-1"></i>
-          {{ loading ? "Guardando..." : "Guardar Cambios" }}
-        </button>
-      </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button
+        type="button"
+        class="btn btn-secondary"
+        (click)="cerrarModal()"
+        [disabled]="loading"
+      >
+        <i class="fas fa-times me-1"></i>
+        Cancelar
+      </button>
+      <button
+        type="button"
+        class="btn btn-primary"
+        (click)="guardarCambios()"
+        [disabled]="loading || !leadForm.form.valid"
+      >
+        <span
+          *ngIf="loading"
+          class="spinner-border spinner-border-sm me-1"
+        ></span>
+        <i *ngIf="!loading" class="fas fa-save me-1"></i>
+        {{ loading ? "Guardando..." : "Guardar Cambios" }}
+      </button>
     </div>
   </div>
 </div>

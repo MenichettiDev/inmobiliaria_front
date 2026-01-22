@@ -79,10 +79,10 @@
     <app-spinner [isLoading]="isLoading"></app-spinner>
 
     <!-- Toast-modal propio en lugar de SweetAlert2 -->
-    <app-modal-toast
+    <app-toast-modal
       [message]="toastMessage"
-      [isVisible]="toastVisible"
+      [visible]="toastVisible"
       [type]="toastType"
-    ></app-modal-toast>
+    ></app-toast-modal>
   </div>
 </div>

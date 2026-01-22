@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { LeadsService } from '../../../leads/service/leads.service';
 import { CboUsuarioComponent } from '../../../usuario/components/cbo-usuario/cbo-usuario.component';
 import { CboPropiedadesComponent } from '../../../propiedades/components/cbo-propiedades/cbo-propiedades.component';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 interface CreateLeadDto {
   nombreCompleto: string;
@@ -47,13 +48,10 @@ export class ModalCreateLeadComponent {
     { id: 6, nombre: 'Email Marketing' }
   ];
 
-  constructor(private leadsService: LeadsService) { }
+  constructor(private leadsService: LeadsService, public activeModal: NgbActiveModal) { }
 
   cerrarModal(): void {
-    if (!this.loading) {
-      this.resetForm();
-      this.cerrado.emit();
-    }
+    this.activeModal.dismiss();
   }
 
   crearLead(): void {
@@ -69,7 +67,7 @@ export class ModalCreateLeadComponent {
         this.loading = false;
         this.leadCreado.emit(response.data || response);
         this.resetForm();
-        this.cerrado.emit();
+        this.activeModal.close({ success: true });
       },
       error: (error) => {
         this.loading = false;

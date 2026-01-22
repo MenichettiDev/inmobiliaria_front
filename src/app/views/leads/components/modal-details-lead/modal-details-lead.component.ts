@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { Lead, LeadsService } from '../../service/leads.service';
 import { AuthService } from '../../../auth/auth.service';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { HistorialLeadsService, HistorialLead } from '../../service/historial-leads.service';
 
 
 @Component({
@@ -22,30 +24,50 @@ export class ModalDetailsLeadComponent implements OnInit {
   @Output() marcarPerdido = new EventEmitter<Lead>();
   @Output() agregarNota = new EventEmitter<Lead>();
 
+  historialLeads: HistorialLead[] = []; // Store the lead's history
+
   // Estados del pipeline
   estadosLead = [
     { id: 1, nombre: 'Nuevo', color: '#17a2b8' },
     { id: 2, nombre: 'Contactado', color: '#ffc107' },
-    { id: 3, nombre: 'Calificado', color: '#fd7e14' },
-    { id: 4, nombre: 'Visita', color: '#6f42c1' },
-    { id: 5, nombre: 'Negociación', color: '#e83e8c' },
-    { id: 6, nombre: 'Cerrado', color: '#28a745' }
+    { id: 3, nombre: 'Visita', color: '#fd7e14' },
+    { id: 4, nombre: 'Cerrado', color: '#6f42c1' },
+    { id: 5, nombre: 'Negociacion', color: '#28a745' },
+    { id: 6, nombre: 'Perdido', color: '#e83e8c' }
   ];
 
   // Permisos
   puedeAsignar = false;
 
   constructor(
-    private authService: AuthService
+    private authService: AuthService,
+    private historialLeadsService: HistorialLeadsService, // Inject HistorialLeadsService
+    public activeModal: NgbActiveModal
   ) { }
 
   ngOnInit(): void {
     this.verificarPermisos();
+    this.cargarHistorial(); // Fetch lead history when modal is initialized
   }
 
   verificarPermisos(): void {
     const rol = this.authService.getUserRole();
     this.puedeAsignar = rol === 'Administrador' || rol === 'Supervisor';
+  }
+
+  cargarHistorial(): void {
+    if (this.lead?.id) {
+      this.historialLeadsService.obtenerHistorialPorLead(this.lead.id).subscribe({
+        next: (response) => {
+          if (response.success && response.data) {
+            this.historialLeads = response.data;
+          }
+        },
+        error: (error) => {
+          console.error('Error fetching lead history:', error);
+        }
+      });
+    }
   }
 
   obtenerEstadoNombre(estadoId: number): string {
@@ -59,7 +81,7 @@ export class ModalDetailsLeadComponent implements OnInit {
   }
 
   cerrarModal(): void {
-    this.cerrar.emit();
+    this.activeModal.dismiss();
   }
 
   editarLead(): void {
@@ -105,51 +127,32 @@ export class ModalDetailsLeadComponent implements OnInit {
 
   // Parse observaciones to show as timeline items
   getTimelineItems(): any[] {
-    if (!this.lead?.observaciones) return [];
-
     const items: any[] = [];
-    const lines = this.lead.observaciones.split('\n\n');
 
-    lines.forEach((line, index) => {
-      if (line.trim()) {
-        if (line.includes('[IMPORTANTE]')) {
-          items.push({
-            type: 'important',
-            icon: 'exclamation-triangle',
-            color: 'warning',
-            title: 'Nota Importante',
-            content: line.replace('[IMPORTANTE]', '').trim(),
-            date: this.extractDateFromLine(line) || this.lead?.fechaCreacion
-          });
-        } else if (line.includes('Reasignado:')) {
-          items.push({
-            type: 'reassign',
-            icon: 'user-cog',
-            color: 'info',
-            title: 'Reasignación',
-            content: line,
-            date: this.extractDateFromLine(line) || this.lead?.fechaCreacion
-          });
-        } else if (line.includes('Marcado como PERDIDO:')) {
-          items.push({
-            type: 'lost',
-            icon: 'times-circle',
-            color: 'danger',
-            title: 'Marcado como Perdido',
-            content: line,
-            date: this.extractDateFromLine(line) || this.lead?.fechaCreacion
-          });
-        } else if (line.includes(':')) {
-          items.push({
-            type: 'note',
-            icon: 'sticky-note',
-            color: 'info',
-            title: 'Nota',
-            content: line,
-            date: this.extractDateFromLine(line) || this.lead?.fechaCreacion
-          });
-        }
-      }
+    // Add the lead creation as the first timeline item
+    if (this.lead) {
+      items.push({
+        type: 'created',
+        icon: 'plus-circle',
+        color: 'success',
+        title: 'Lead creado',
+        content: `Lead creado desde ${this.lead.fuenteNombre || 'fuente desconocida'}`,
+        date: this.lead.fechaCreacion
+      });
+    }
+
+    // Add history items from the backend
+    this.historialLeads.forEach(historial => {
+      items.push({
+        type: 'history',
+        icon: 'exchange-alt',
+        color: 'primary',
+        title: `${historial.estadoAnteriorNombre} → ${historial.estadoNuevoNombre}`,
+        content: historial.comentario
+          ? `${historial.comentario} (por ${historial.usuarioNombre})`
+          : `Cambio realizado por ${historial.usuarioNombre}`,
+        date: historial.fechaCambio || this.lead?.fechaCreacion // Use lead's creation date as fallback
+      });
     });
 
     return items.reverse(); // Show most recent first

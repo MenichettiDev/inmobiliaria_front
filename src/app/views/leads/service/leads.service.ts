@@ -49,7 +49,7 @@ export interface UpdateLeadDto {
 export interface CambiarEstadoLeadDto {
     idLead: number;
     idEstadoNuevo: number;
-    observaciones?: string;
+    comentario?: string;
 }
 
 export interface AsignarLeadDto {

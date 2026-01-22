@@ -9,10 +9,6 @@
     transform: translateY(-1px);
 }
 
-.modal {
-    background: rgba(0, 0, 0, 0.5);
-}
-
 .modal-backdrop {
     position: fixed;
     top: 0;
@@ -22,6 +18,20 @@
     height: 100vh;
     background-color: #000;
     opacity: 0.5;
+}
+
+/* Ensure global modal/dialog stacking doesn't block interaction */
+.modal {
+    background: transparent;
+    /* ensure modal container is transparent */
+    z-index: 1050;
+}
+
+.modal .modal-dialog {
+    position: relative;
+    z-index: 1060;
+    /* dialog above modal container/backdrop */
+    pointer-events: auto;
 }
 
 .table-responsive {

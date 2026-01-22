@@ -101,7 +101,7 @@
               [src]="'assets/images/backgrounds/vacia.jpg'"
               [alt]="propiedad.titulo"
               class="img-fluid"
-              onerror="this.src='assets/images/backgrounds/vacia.jpg'"
+              onerror="this.src = 'assets/images/backgrounds/vacia.jpg'"
             />
             <div class="propiedad-badges">
               <span class="badge bg-info">ID: {{ propiedad.id }}</span>
@@ -121,7 +121,7 @@
               {{ propiedad.descripcion }}
             </p>
             <p class="propiedad-precio mb-2">
-              <strong>${{ propiedad.precio | number : "1.2-2" }}</strong>
+              <strong>${{ propiedad.precio | number: "1.2-2" }}</strong>
             </p>
             <p class="propiedad-direccion mb-2">
               <i class="bi bi-geo-alt"></i> {{ propiedad.direccion }}
@@ -241,10 +241,11 @@
     (cancel)="onCancelDelete()"
   ></app-modal-confirm>
 
-  <app-modal-toast
+  <!-- Toast Modal Component -->
+  <app-toast-modal
     [message]="toastMessage"
-    [isVisible]="toastVisible"
+    [visible]="toastVisible"
     [type]="toastType"
     [animationPreset]="'preset-1'"
-  ></app-modal-toast>
+  ></app-toast-modal>
 </div>

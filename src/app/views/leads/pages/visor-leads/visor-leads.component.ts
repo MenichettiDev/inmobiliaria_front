@@ -2,15 +2,17 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { LeadsService, Lead, CreateLeadDto, UpdateLeadDto, CambiarEstadoLeadDto, AsignarLeadDto, PaginatedResponse } from '../../service/leads.service';
+import { LeadsService, Lead, CreateLeadDto, UpdateLeadDto, PaginatedResponse } from '../../service/leads.service';
 import { AuthService } from '../../../auth/auth.service';
-import { ModalDetailsLeadComponent } from '../../components/modal-details-lead/modal-details-lead.component';
-import { ModalEditLeadComponent } from '../../components/modal-edit-lead/modal-edit-lead.component';
+import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { ModalCreateLeadComponent } from '../../components/modal-create-lead/modal-create-lead.component';
+import { ModalEditLeadComponent } from '../../components/modal-edit-lead/modal-edit-lead.component';
+import { ModalDetailsLeadComponent } from '../../components/modal-details-lead/modal-details-lead.component';
+import { ModalCambioEstadoComponent } from '../../components/modal-cambio-estado/modal-cambio-estado.component';
 
 @Component({
   selector: 'app-visor-leads',
-  imports: [CommonModule, FormsModule, RouterModule, ModalDetailsLeadComponent, ModalEditLeadComponent, ModalCreateLeadComponent],
+  imports: [CommonModule, FormsModule, RouterModule, NgbModalModule],
   templateUrl: './visor-leads.component.html',
   styleUrl: './visor-leads.component.css'
 })
@@ -53,10 +55,6 @@ export class VisorLeadsComponent implements OnInit {
   mostrarModalCreacion = false;
   mostrarModalEditar = false;
   mostrarModalEliminar = false;
-  mostrarModalCambiarEstado = false;
-  mostrarModalReasignar = false;
-  mostrarModalPerdido = false;
-  mostrarModalNota = false;
   mostrarModalDetalle = false;
   leadSeleccionado: Lead | null = null;
 
@@ -69,27 +67,6 @@ export class VisorLeadsComponent implements OnInit {
     observaciones: ''
   };
 
-  // Formularios para nuevas acciones
-  cambioEstado = {
-    nuevoEstadoId: 0,
-    motivo: ''
-  };
-
-  reasignacion = {
-    nuevoUsuarioId: 0,
-    motivo: ''
-  };
-
-  perdidoData = {
-    motivo: '',
-    observaciones: ''
-  };
-
-  notaRapida = {
-    contenido: '',
-    importante: false
-  };
-
   // Usuario actual
   usuarioActual: any = null;
   puedeEliminar = false;
@@ -97,7 +74,8 @@ export class VisorLeadsComponent implements OnInit {
 
   constructor(
     private leadsService: LeadsService,
-    private authService: AuthService
+    private authService: AuthService,
+    private modalService: NgbModal
   ) { }
 
   ngOnInit(): void {
@@ -173,28 +151,49 @@ export class VisorLeadsComponent implements OnInit {
 
   // CRUD Operations
   abrirModalCreacion(): void {
-    this.mostrarModalCreacion = true;
+    // Abrir modal de creación usando NgbModal
+    const modalRef = this.modalService.open(ModalCreateLeadComponent, { centered: true, size: 'lg', backdrop: 'static' });
+    modalRef.result.then((result) => {
+      if (result && result.success) {
+        this.cargarLeads();
+      }
+    }).catch(() => {
+      // dismiss -> no hacer nada
+    });
   }
 
   cerrarModalCreacion(): void {
+    // Para compatibilidad, dismiss cualquier modal abierto
+    this.modalService.dismissAll();
     this.mostrarModalCreacion = false;
   }
 
   onLeadCreado(lead: any): void {
+    // Si algún flujo emite hacia aquí, recargar
     this.cargarLeads();
   }
 
   abrirModalEditar(lead: Lead): void {
-    this.leadSeleccionado = lead;
-    this.mostrarModalEditar = true;
+    // Abrir modal de edición pasando el lead seleccionado
+    const modalRef = this.modalService.open(ModalEditLeadComponent, { centered: true, size: 'lg', backdrop: 'static' });
+    modalRef.componentInstance.lead = lead;
+    modalRef.result.then((result) => {
+      if (result && result.success) {
+        this.cargarLeads();
+      }
+    }).catch(() => {
+      // dismiss -> no hacer nada
+    });
   }
 
   cerrarModalEditar(): void {
+    this.modalService.dismissAll();
     this.mostrarModalEditar = false;
     this.leadSeleccionado = null;
   }
 
   onGuardarEdicionLead(leadActualizado: UpdateLeadDto): void {
+    // Mantener por compatibilidad si algún modal sigue usando output
     this.loading = true;
     this.leadsService.actualizarLead(leadActualizado.id, leadActualizado).subscribe({
       next: (response) => {
@@ -242,216 +241,81 @@ export class VisorLeadsComponent implements OnInit {
     });
   }
 
-  // Nuevos métodos para dropdown actions
-  abrirModalCambiarEstado(lead: Lead): void {
-    this.leadSeleccionado = lead;
-    this.cambioEstado = {
-      nuevoEstadoId: 0,
-      motivo: ''
-    };
-    this.mostrarModalCambiarEstado = true;
-  }
-
-  abrirModalReasignar(lead: Lead): void {
-    this.leadSeleccionado = lead;
-    this.reasignacion = {
-      nuevoUsuarioId: 0,
-      motivo: ''
-    };
-    this.mostrarModalReasignar = true;
-  }
-
-  abrirModalPerdido(lead: Lead): void {
-    this.leadSeleccionado = lead;
-    this.perdidoData = {
-      motivo: '',
-      observaciones: ''
-    };
-    this.mostrarModalPerdido = true;
-  }
-
-  abrirModalNota(lead: Lead): void {
-    this.leadSeleccionado = lead;
-    this.notaRapida = {
-      contenido: '',
-      importante: false
-    };
-    this.mostrarModalNota = true;
-  }
-
-  procesarCambioEstado(): void {
-    if (!this.leadSeleccionado || !this.cambioEstado.nuevoEstadoId) return;
-
-    this.loading = true;
-    const cambioDto: CambiarEstadoLeadDto = {
-      idLead: this.leadSeleccionado.id,
-      idEstadoNuevo: this.cambioEstado.nuevoEstadoId
-    };
-
-    this.leadsService.cambiarEstado(cambioDto).subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.mostrarModalCambiarEstado = false;
-          this.cargarLeads();
-        } else {
-          this.error = response.message || 'Error al cambiar estado';
-        }
-        this.loading = false;
-      },
-      error: (err) => {
-        this.error = 'Error al cambiar estado';
-        this.loading = false;
-        console.error('Error:', err);
-      }
-    });
-  }
-
-  procesarReasignacion(): void {
-    if (!this.leadSeleccionado || !this.reasignacion.nuevoUsuarioId) return;
-
-    this.loading = true;
-    // Update lead with new assigned user
-    const updateDto: UpdateLeadDto = {
-      id: this.leadSeleccionado.id,
-      nombreCompleto: this.leadSeleccionado.nombreCompleto,
-      email: this.leadSeleccionado.email || '',
-      telefono: this.leadSeleccionado.telefono || '',
-      idFuente: this.leadSeleccionado.idFuente,
-      idUsuarioAsignado: this.reasignacion.nuevoUsuarioId,
-      idPropiedad: this.leadSeleccionado.idPropiedad,
-      observaciones: `${this.leadSeleccionado.observaciones || ''}\n\nReasignado: ${this.reasignacion.motivo}`,
-      activo: this.leadSeleccionado.activo
-    };
-
-    this.leadsService.actualizarLead(this.leadSeleccionado.id, updateDto).subscribe({
-      next: (response: any) => {
-        if (response.success) {
-          this.mostrarModalReasignar = false;
-          this.cargarLeads();
-        } else {
-          this.error = response.message || 'Error al reasignar lead';
-        }
-        this.loading = false;
-      },
-      error: (err: any) => {
-        this.error = 'Error al reasignar lead';
-        this.loading = false;
-        console.error('Error:', err);
-      }
-    });
-  }
-
-  marcarComoPerdido(): void {
-    if (!this.leadSeleccionado) return;
-
-    this.loading = true;
-    // Assuming we mark as lost by setting active to false and updating with observations
-    const updateDto: UpdateLeadDto = {
-      id: this.leadSeleccionado.id,
-      nombreCompleto: this.leadSeleccionado.nombreCompleto,
-      email: this.leadSeleccionado.email || '',
-      telefono: this.leadSeleccionado.telefono || '',
-      idFuente: this.leadSeleccionado.idFuente,
-      observaciones: `${this.leadSeleccionado.observaciones || ''}\n\nMarcado como PERDIDO: ${this.perdidoData.motivo}\n${this.perdidoData.observaciones}`,
-      activo: false
-    };
-
-    this.leadsService.actualizarLead(this.leadSeleccionado.id, updateDto).subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.mostrarModalPerdido = false;
-          this.cargarLeads();
-        } else {
-          this.error = response.message || 'Error al marcar como perdido';
-        }
-        this.loading = false;
-      },
-      error: (err) => {
-        this.error = 'Error al marcar como perdido';
-        this.loading = false;
-        console.error('Error:', err);
-      }
-    });
-  }
-
-  agregarNotaRapida(): void {
-    if (!this.leadSeleccionado || !this.notaRapida.contenido.trim()) return;
-
-    this.loading = true;
-    const marcaImportante = this.notaRapida.importante ? '[IMPORTANTE] ' : '';
-    const fechaActual = new Date().toLocaleString();
-    const nuevaNota = `${marcaImportante}${fechaActual}: ${this.notaRapida.contenido}`;
-
-    const updateDto: UpdateLeadDto = {
-      id: this.leadSeleccionado.id,
-      nombreCompleto: this.leadSeleccionado.nombreCompleto,
-      email: this.leadSeleccionado.email || '',
-      telefono: this.leadSeleccionado.telefono || '',
-      idFuente: this.leadSeleccionado.idFuente,
-      observaciones: `${this.leadSeleccionado.observaciones || ''}\n\n${nuevaNota}`,
-      activo: this.leadSeleccionado.activo
-    };
-
-    this.leadsService.actualizarLead(this.leadSeleccionado.id, updateDto).subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.mostrarModalNota = false;
-          this.cargarLeads();
-        } else {
-          this.error = response.message || 'Error al agregar nota';
-        }
-        this.loading = false;
-      },
-      error: (err) => {
-        this.error = 'Error al agregar nota';
-        this.loading = false;
-        console.error('Error:', err);
-      }
-    });
-  }
-
   // Modal Details Handlers
   abrirModalDetalle(lead: Lead): void {
-    this.leadSeleccionado = lead;
-    this.mostrarModalDetalle = true;
+    // Abrir modal de detalles pasando el lead; permitir que el modal devuelva acciones (p.e. edit)
+    const modalRef = this.modalService.open(ModalDetailsLeadComponent, { centered: true, size: 'lg', backdrop: 'static' });
+    modalRef.componentInstance.lead = lead;
+
+    modalRef.result.then((result) => {
+      if (result) {
+        // Si el modal solicita editar, abrir el editor
+        if (result.action === 'edit' && result.lead) {
+          this.abrirModalEditar(result.lead);
+        }
+        // Si el modal realizó cambios exitosos
+        if (result.success) {
+          this.cargarLeads();
+        }
+      }
+    }).catch(() => {
+      // dismiss -> no hacer nada
+    });
   }
 
   cerrarModalDetalle(): void {
+    this.modalService.dismissAll();
     this.mostrarModalDetalle = false;
     this.leadSeleccionado = null;
   }
 
-  onModalDetalleEditar(lead: Lead): void {
-    this.mostrarModalDetalle = false;
-    this.abrirModalEditar(lead);
+  abrirModalCambioEstado(lead: Lead): void {
+    const modalRef = this.modalService.open(ModalCambioEstadoComponent, { centered: true, size: 'lg', backdrop: 'static' });
+    modalRef.componentInstance.leadId = lead.id;
+    modalRef.componentInstance.leadNombre = lead.nombreCompleto ?? '';
+    modalRef.componentInstance.leadEmail = lead.email ?? '';
+    modalRef.componentInstance.leadTelefono = lead.telefono ?? '';
+
+    modalRef.result.then((result) => {
+      // si modal hizo el cambio correctamente -> recargar lista
+      if (result && result.success) {
+        this.cargarLeads();
+      }
+    }).catch(() => {
+      // dismiss -> no hacer nada
+    });
   }
 
-  onModalDetalleCambiarEstado(lead: Lead): void {
-    this.mostrarModalDetalle = false;
-    this.abrirModalCambiarEstado(lead);
-  }
+  onEstadoCambiado(data: { id_lead: number; id_estado: number; comentario: string; id_usuario: number }): void {
+    this.loading = true;
 
-  onModalDetalleReasignar(lead: Lead): void {
-    this.mostrarModalDetalle = false;
-    this.abrirModalReasignar(lead);
-  }
+    // Map the object to match the CambiarEstadoLeadDto type
+    const cambiarEstadoDto = {
+      idLead: data.id_lead,
+      idEstadoNuevo: data.id_estado,
+      comentario: data.comentario,
+      idUsuario: data.id_usuario
+    };
 
-  onModalDetalleMarcarPerdido(lead: Lead): void {
-    this.mostrarModalDetalle = false;
-    this.abrirModalPerdido(lead);
-  }
-
-  onModalDetalleAgregarNota(lead: Lead): void {
-    this.mostrarModalDetalle = false;
-    this.abrirModalNota(lead);
+    this.leadsService.cambiarEstado(cambiarEstadoDto).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.cargarLeads();
+        } else {
+          this.error = response.message || 'Error al cambiar estado del lead';
+        }
+        this.loading = false;
+      },
+      error: (err) => {
+        this.error = 'Error al cambiar estado del lead';
+        this.loading = false;
+        console.error('Error:', err);
+      }
+    });
   }
 
   cerrarModal(): void {
     this.mostrarModalEliminar = false;
-    this.mostrarModalCambiarEstado = false;
-    this.mostrarModalReasignar = false;
-    this.mostrarModalPerdido = false;
-    this.mostrarModalNota = false;
     this.mostrarModalDetalle = false;
     this.error = '';
   }
