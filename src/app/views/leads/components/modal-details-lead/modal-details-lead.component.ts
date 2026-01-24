@@ -120,7 +120,7 @@ export class ModalDetailsLeadComponent implements OnInit {
       const contactNote = `Contacto realizado con el cliente: ${this.lead.nombreCompleto}`;
       this.agregarNota.emit({
         ...this.lead,
-        observaciones: `${this.lead.observaciones || ''}\n\n${contactNote}`
+        mensaje: `${this.lead.mensaje || ''}\n\n${contactNote}`
       });
     }
   }

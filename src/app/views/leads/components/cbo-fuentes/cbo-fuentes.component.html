@@ -1,4 +1,4 @@
-<div class="cbo-estado-lead">
+<div class="cbo-fuentes">
   <div class="d-flex align-items-center gap-2">
     <select
       class="form-select form-select-sm"
@@ -7,8 +7,8 @@
       [disabled]="loading"
     >
       <option [ngValue]="null">Sin especificar</option>
-      <option *ngFor="let e of estados; trackBy: trackById" [ngValue]="e.id">
-        {{ e.nombre }}
+      <option *ngFor="let f of fuentes; trackBy: trackById" [ngValue]="f.id">
+        {{ f.nombre }}
       </option>
     </select>
 
@@ -17,13 +17,6 @@
       class="spinner-border spinner-border-sm"
       role="status"
       aria-hidden="true"
-    ></span>
-
-    <span
-      *ngIf="getSelectedColor()"
-      class="estado-color"
-      [style.backgroundColor]="getSelectedColor()"
-      title="Color del estado"
     ></span>
   </div>
 

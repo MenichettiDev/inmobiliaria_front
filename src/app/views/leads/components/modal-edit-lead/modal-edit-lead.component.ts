@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { Lead, UpdateLeadDto, LeadsService } from '../../service/leads.service';
 import { AuthService } from '../../../auth/auth.service';
 import { CboUsuarioComponent } from '../../../usuario/components/cbo-usuario/cbo-usuario.component';
+import { CboEstadoLeadComponent } from '../cbo-estado-lead/cbo-estado-lead.component';
+import { CboFuentesComponent } from '../cbo-fuentes/cbo-fuentes.component';
 import { SpinnerComponent } from '../../../../shared/components/spinner/spinner.component';
 import { ConfirmModalComponent } from '../../../../shared/components/confirm-modal/confirm-modal.component';
 import { ToastModalComponent } from '../../../../shared/components/toast-modal/toast-modal.component';
@@ -15,6 +17,8 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
     CommonModule,
     FormsModule,
     CboUsuarioComponent,
+    CboEstadoLeadComponent,
+    CboFuentesComponent,
     SpinnerComponent,
     ToastModalComponent // Ensure ToastModalComponent is included here
   ],
@@ -90,7 +94,7 @@ export class ModalEditLeadComponent implements OnInit, OnChanges {
         idUsuarioAsignado: this.leadOriginal.idUsuarioAsignado,
         idPropiedad: this.leadOriginal.idPropiedad,
         idEstado: this.leadOriginal.idEstado,
-        observaciones: this.leadOriginal.observaciones || '',
+        mensaje: this.leadOriginal.mensaje || '',
         activo: this.leadOriginal.activo !== false
       };
     } else {
@@ -108,7 +112,7 @@ export class ModalEditLeadComponent implements OnInit, OnChanges {
       idUsuarioAsignado: undefined,
       idPropiedad: undefined,
       idEstado: 1,
-      observaciones: '',
+      mensaje: '',
       activo: true
     };
   }

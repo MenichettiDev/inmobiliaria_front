@@ -166,25 +166,6 @@
             </div>
             <div class="card-body timeline-container">
               <div class="timeline">
-                <!-- Lead creado -->
-                <div class="timeline-item">
-                  <div class="timeline-marker bg-success">
-                    <i class="fas fa-plus text-white"></i>
-                  </div>
-                  <div class="timeline-content">
-                    <h6 class="timeline-title">Lead creado</h6>
-                    <p class="timeline-text">
-                      El lead fue registrado en el sistema desde
-                      <strong>{{
-                        lead.fuenteNombre || "fuente desconocida"
-                      }}</strong>
-                    </p>
-                    <small class="timeline-date">
-                      {{ lead.fechaCreacion | date: "dd/MM/yyyy HH:mm" }}
-                    </small>
-                  </div>
-                </div>
-
                 <!-- Timeline dinámico basado en observaciones -->
                 <div
                   class="timeline-item"

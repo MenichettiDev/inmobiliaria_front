@@ -17,7 +17,7 @@ export interface Lead {
     usuarioAsignadoNombre?: string;
     idPropiedad?: number;
     propiedadDireccion?: string;
-    observaciones?: string;
+    mensaje?: string;
     fechaCreacion: string;
     fechaUltimaActividad?: string;
     activo: boolean;
@@ -42,7 +42,7 @@ export interface UpdateLeadDto {
     idFuente: number;
     idUsuarioAsignado?: number;
     idPropiedad?: number;
-    observaciones?: string;
+    mensaje?: string;
     activo: boolean;
 }
 

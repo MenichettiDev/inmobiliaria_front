@@ -73,19 +73,10 @@
           <label class="form-label">
             Fuente <span class="text-danger">*</span>
           </label>
-          <select
-            class="form-select"
-            [(ngModel)]="leadEdicion.idFuente"
-            name="idFuente"
-            required
-          >
-            <option value="1">Página Web</option>
-            <option value="2">Redes Sociales</option>
-            <option value="3">Referido</option>
-            <option value="4">Llamada Directa</option>
-            <option value="5">WhatsApp</option>
-            <option value="6">Email Marketing</option>
-          </select>
+          <!-- Replaced native select with reusable combo for fuentes -->
+          <app-cbo-fuentes
+            [(selectedId)]="leadEdicion.idFuente"
+          ></app-cbo-fuentes>
         </div>
 
         <div class="mb-3" *ngIf="puedeAsignar">
@@ -101,25 +92,17 @@
 
         <div class="mb-3">
           <label class="form-label">Estado</label>
-          <select
-            class="form-select"
-            [(ngModel)]="leadEdicion.idEstado"
-            name="idEstado"
-          >
-            <option value="1">Nuevo</option>
-            <option value="2">Contactado</option>
-            <option value="3">Calificado</option>
-            <option value="4">Visita</option>
-            <option value="5">Negociación</option>
-            <option value="6">Cerrado</option>
-          </select>
+          <!-- Replaced native select with reusable combo for estados -->
+          <app-cbo-estado-lead
+            [(selectedId)]="leadEdicion.idEstado"
+          ></app-cbo-estado-lead>
         </div>
 
         <div class="mb-3">
           <label class="form-label">Observaciones</label>
           <textarea
             class="form-control"
-            [(ngModel)]="leadEdicion.observaciones"
+            [(ngModel)]="leadEdicion.mensaje"
             name="observaciones"
             rows="4"
             placeholder="Notas adicionales sobre el lead..."
