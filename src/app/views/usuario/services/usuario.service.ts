@@ -216,7 +216,7 @@ export class UsuarioService {
      * No se envía body (se pasa null) para respetar la API que no requiere payload.
      */
     toggleActivo(id: number): Observable<any> {
-        const url = `${this.baseUrl}/${id}/toggle-activo`;
+        const url = `${this.baseUrl}/${id}/toggle-estado`;
         // No enviamos body: el backend hará el toggle basándose únicamente en el id.
         return this.http.patch(url, null);
     }
