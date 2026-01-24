@@ -13,15 +13,15 @@
     <!-- Filter bar -->
     <div class="pyre-filter-bar container-fluid">
       <div class="row g-3 align-items-end">
-        <!-- Legajo -->
-        <div class="col-xl-2 col-lg-2 col-md-3 col-sm-6">
+        <!-- Email -->
+        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6">
           <div class="filter-item">
             <div class="filter-input-group">
               <input
                 type="text"
                 class="form-control"
-                [(ngModel)]="filtroLegajo"
-                placeholder="Legajo"
+                [(ngModel)]="filtroEmail"
+                placeholder="Email"
                 (keyup.enter)="onSearch()"
               />
             </div>
@@ -29,7 +29,7 @@
         </div>
 
         <!-- Nombre -->
-        <div class="col-xl-2 col-lg-2 col-md-3 col-sm-6">
+        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6">
           <div class="filter-item">
             <div class="filter-input-group">
               <input
@@ -37,21 +37,6 @@
                 class="form-control"
                 [(ngModel)]="filtroNombre"
                 placeholder="Nombre"
-                (keyup.enter)="onSearch()"
-              />
-            </div>
-          </div>
-        </div>
-
-        <!-- Apellido -->
-        <div class="col-xl-2 col-lg-2 col-md-3 col-sm-6">
-          <div class="filter-item">
-            <div class="filter-input-group">
-              <input
-                type="text"
-                class="form-control"
-                [(ngModel)]="filtroApellido"
-                placeholder="Apellido"
                 (keyup.enter)="onSearch()"
               />
             </div>
@@ -98,9 +83,8 @@
       <table class="custom-table">
         <thead>
           <tr>
-            <th>Legajo</th>
+            <th>Email</th>
             <th>Nombre</th>
-            <th>Apellido</th>
             <th>Rol</th>
             <th>Estado</th>
             <th>Acciones</th>
@@ -112,7 +96,6 @@
               <span class="legajo-badge">{{ user.legajo }}</span>
             </td>
             <td>{{ user.nombre }}</td>
-            <td>{{ user.apellido }}</td>
             <td>{{ user.rol }}</td>
             <td>
               <div class="estado-toggle">

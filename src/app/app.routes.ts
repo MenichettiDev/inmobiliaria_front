@@ -61,10 +61,10 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
-    path: 'equipo',
+    path: 'usuarios',
     loadChildren: () =>
-      import('./views/equipo/equipo.routes').then(
-        (m) => m.equipoRoutes
+      import('./views/usuario/user.routes').then(
+        (m) => m.userRoutes
       ),
     canActivate: [authGuard],
   },

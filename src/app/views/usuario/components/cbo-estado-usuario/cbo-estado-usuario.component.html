@@ -1,0 +1,24 @@
+<div class="cbo-estado-usuario">
+  <div class="d-flex align-items-center gap-2">
+    <select
+      class="form-select form-select-sm"
+      [(ngModel)]="selectedId"
+      (ngModelChange)="selectedIdChange.emit($event)"
+      [disabled]="loading"
+    >
+      <option [ngValue]="null">Sin especificar</option>
+      <option *ngFor="let e of estados; trackBy: trackById" [ngValue]="e.id">
+        {{ e.codigo }}{{ e.descripcion ? " - " + e.descripcion : "" }}
+      </option>
+    </select>
+
+    <span
+      *ngIf="loading"
+      class="spinner-border spinner-border-sm"
+      role="status"
+      aria-hidden="true"
+    ></span>
+  </div>
+
+  <div *ngIf="error" class="text-danger small mt-1">{{ error }}</div>
+</div>

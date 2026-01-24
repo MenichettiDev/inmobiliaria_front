@@ -2,14 +2,15 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { UsuarioService } from '../../../views/usuario/usuario.service';
+import { UsuarioService } from '../../../usuario/services/usuario.service';
 import { Router } from '@angular/router';
-import { Roles } from '../../../shared/enums/roles';
-import { PaginatorComponent } from '../../../shared/components/paginator/paginator.component';
+import { Roles } from '../../../../shared/enums/roles';
+import { PaginatorComponent } from '../../../../shared/components/paginator/paginator.component';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
-import { CboRolUsuarioComponent } from '../components/cbo-rol-usuario/cbo-rol-usuario.component';
-import { SpinnerComponent } from '../../../shared/components/spinner/spinner.component';
-import { AlertaService } from '../../../services/alerta.service';
+import { CboRolUsuarioComponent } from '../../components/cbo-rol-usuario/cbo-rol-usuario.component';
+import { SpinnerComponent } from '../../../../shared/components/spinner/spinner.component';
+import { AlertaService } from '../../../../services/alerta.service';
+import { UsuariosModalComponent } from "../../components/modal-usuario/modal-usuario.component";
 
 interface UserRaw {
   [key: string]: any;
@@ -65,15 +66,16 @@ interface ApiResponse {
     PaginatorComponent,
     NgbTooltipModule,
     SpinnerComponent,
+    UsuariosModalComponent
   ],
   templateUrl: './visor-usuario.component.html',
-  styleUrls: ['../../../../styles/visor-style.css'],
+  styleUrls: ['../../../../../styles/visor-style.css'],
   providers: [UsuarioService],
 })
 export class VisorUsuariosComponent implements OnInit {
   users: DisplayUser[] = [];
   filteredUsers: DisplayUser[] = [];
-  columns: string[] = ['legajo', 'nombre', 'apellido', 'rol', 'estado'];
+  columns: string[] = ['email', 'nombre', 'rol', 'estado'];
   currentPage = 1;
   pageSize = 6;
   isLoading = false;
@@ -84,9 +86,8 @@ export class VisorUsuariosComponent implements OnInit {
   Math = Math;
 
   // Filtros
-  filtroLegajo: string = '';
+  filtroEmail: string = '';
   filtroNombre: string = '';
-  filtroApellido: string = '';
   filtroRol: number | null = null;
   filtroEstado: string = '';
 
@@ -116,10 +117,8 @@ export class VisorUsuariosComponent implements OnInit {
 
     // Construir objeto de filtros para enviar al servicio
     const filters: any = {};
-    if (this.filtroLegajo?.trim()) filters.legajo = this.filtroLegajo.trim();
+    if (this.filtroEmail?.trim()) filters.email = this.filtroEmail.trim();
     if (this.filtroNombre?.trim()) filters.nombre = this.filtroNombre.trim();
-    if (this.filtroApellido?.trim())
-      filters.apellido = this.filtroApellido.trim();
     // Validar filtroRol: sólo incluir si está definido y es un número válido
     if (this.filtroRol !== null && this.filtroRol !== undefined) {
       // Permitir que filtroRol sea number o string (por seguridad). Convertir a Number y validar.
@@ -242,21 +241,19 @@ export class VisorUsuariosComponent implements OnInit {
 
   // Helper para mapear usuario a formato de visualización
   private mapUserToDisplayFormat(u: UserRaw): DisplayUser {
-    const estadoRaw =
-      u['activo'] ?? u['estado'] ?? u['active'] ?? u['isActive'] ?? null;
-    const activo =
-      typeof estadoRaw === 'boolean'
-        ? estadoRaw
-        : estadoRaw === 'Activo' || estadoRaw === true;
+    // API ahora devuelve IdEstado numérico; considerar 1 == Activo
+    const idEstado = u['idEstado'] ?? u['IdEstado'] ?? u['estado'] ?? null;
+    const activo = idEstado === null ? true : Number(idEstado) === 1;
     const estado = activo ? 'Activo' : 'Inactivo';
 
     return {
-      id: u['id'] ?? u['userId'] ?? null,
-      legajo:
-        u['legajo'] ?? u['legajo_number'] ?? u['legajoNumber'] ?? u['id'] ?? '',
-      nombre: u['nombre'] ?? u['firstName'] ?? u['name'] ?? '',
-      apellido: u['apellido'] ?? u['lastName'] ?? u['surname'] ?? '',
-      rol: u['rol'] ?? u['role'] ?? u['rolNombre'] ?? u['roleName'] ?? '',
+      id: u['id'] ?? u['Id'] ?? u['userId'] ?? null,
+      nombre: u['nombre'] ?? u['Nombre'] ?? '',
+      // Email como columna principal en la vista
+      legajo: u['email'] ?? u['Email'] ?? '',
+      // Telefono si se necesita internamente
+      apellido: undefined,
+      rol: u['rolNombre'] ?? u['RolNombre'] ?? u['roleName'] ?? '',
       estado: estado,
       activo: activo,
       _pending: false,
@@ -270,9 +267,8 @@ export class VisorUsuariosComponent implements OnInit {
   }
 
   onResetFilters(): void {
-    this.filtroLegajo = '';
+    this.filtroEmail = '';
     this.filtroNombre = '';
-    this.filtroApellido = '';
     this.filtroRol = null;
     this.filtroEstado = '';
     this.currentPage = 1;
@@ -304,9 +300,8 @@ export class VisorUsuariosComponent implements OnInit {
 
   hasActiveFilters(): boolean {
     return !!(
-      this.filtroLegajo?.trim() ||
+      this.filtroEmail?.trim() ||
       this.filtroNombre?.trim() ||
-      this.filtroApellido?.trim() ||
       this.filtroRol !== null ||
       this.filtroEstado
     );

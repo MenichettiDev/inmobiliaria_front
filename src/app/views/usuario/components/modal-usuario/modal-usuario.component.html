@@ -63,7 +63,7 @@
         />
         <!-- Grid compacto de campos -->
         <div class="compact-form-grid">
-          <!-- Fila 1: Información básica -->
+          <!-- Nombre -->
           <div
             class="field-group"
             [class.has-error]="
@@ -86,74 +86,14 @@
             </div>
           </div>
 
-          <div
-            class="field-group"
-            [class.has-error]="
-              form.get('Apellido')?.invalid && form.get('Apellido')?.touched
-            "
-          >
-            <label class="required">Apellido</label>
-            <input
-              formControlName="Apellido"
-              placeholder="Ingresa el apellido"
-              [class.error]="
-                form.get('Apellido')?.invalid && form.get('Apellido')?.touched
-              "
-            />
-            <div
-              *ngIf="
-                form.get('Apellido')?.invalid && form.get('Apellido')?.touched
-              "
-              class="error-text"
-            >
-              <span *ngIf="form.get('Apellido')?.errors?.['required']"
-                >El apellido es requerido</span
-              >
-              <span *ngIf="form.get('Apellido')?.errors?.['maxlength']"
-                >Máximo 100 caracteres</span
-              >
-            </div>
-          </div>
-
-          <div
-            class="field-group"
-            [class.has-error]="
-              (form.get('Dni')?.invalid && form.get('Dni')?.touched) ||
-              serverErrors['Dni']
-            "
-          >
-            <label class="required">DNI</label>
-            <input
-              formControlName="Dni"
-              placeholder="12345678"
-              [class.error]="
-                (form.get('Dni')?.invalid && form.get('Dni')?.touched) ||
-                serverErrors['Dni']
-              "
-            />
-            <div *ngIf="serverErrors['Dni']" class="error-text">
-              {{ serverErrors["Dni"] }}
-            </div>
-            <div
-              *ngIf="
-                !serverErrors['Dni'] &&
-                form.get('Dni')?.invalid &&
-                form.get('Dni')?.touched
-              "
-              class="error-text"
-            >
-              El DNI es requerido y debe tener máximo 8 caracteres numericos
-            </div>
-          </div>
-
-          <!-- Fila 2: Contacto y acceso -->
+          <!-- Email -->
           <div
             class="field-group full-width"
             [class.has-error]="
               form.get('Email')?.invalid && form.get('Email')?.touched
             "
           >
-            <label>Email <span class="optional-text">(requerido)</span></label>
+            <label class="required">Email</label>
             <input
               formControlName="Email"
               type="email"
@@ -172,9 +112,13 @@
               <span *ngIf="form.get('Email')?.errors?.['maxlength']"
                 >Máximo 150 caracteres</span
               >
+              <span *ngIf="form.get('Email')?.errors?.['required']"
+                >El email es requerido</span
+              >
             </div>
           </div>
 
+          <!-- Telefono -->
           <div class="field-group">
             <label class="optional"
               >Teléfono <span class="optional-text">(opcional)</span></label
@@ -194,64 +138,56 @@
             </div>
           </div>
 
+          <!-- Rol -->
           <div
             class="field-group"
             [class.has-error]="
-              (form.get('Legajo')?.invalid && form.get('Legajo')?.touched) ||
-              serverErrors['Legajo']
-            "
-          >
-            <label class="required">Legajo</label>
-            <input
-              formControlName="Legajo"
-              placeholder="ABC001"
-              [class.error]="
-                (form.get('Legajo')?.invalid && form.get('Legajo')?.touched) ||
-                serverErrors['Legajo']
-              "
-            />
-            <div *ngIf="serverErrors['Legajo']" class="error-text">
-              {{ serverErrors["Legajo"] }}
-            </div>
-            <div
-              *ngIf="
-                !serverErrors['Legajo'] &&
-                form.get('Legajo')?.invalid &&
-                form.get('Legajo')?.touched
-              "
-              class="error-text"
-            >
-              El legajo es requerido (máx 5 caracteres)
-            </div>
-          </div>
-
-          <div
-            class="field-group"
-            [class.has-error]="
-              form.get('RolId')?.invalid && form.get('RolId')?.touched
+              form.get('IdRol')?.invalid && form.get('IdRol')?.touched
             "
           >
             <label class="required">Rol</label>
-            <select
-              formControlName="RolId"
-              [class.error]="
-                form.get('RolId')?.invalid && form.get('RolId')?.touched
-              "
-            >
-              <option value="" disabled>Selecciona un rol</option>
-              <option *ngFor="let r of rolesList" [value]="r.id">
-                {{ r.label }}
-              </option>
-            </select>
+
+            <!-- Replaced native select with reusable combo component -->
+            <app-cbo-rol-usuario
+              formControlName="IdRol"
+              [placeholder]="'Selecciona un rol'"
+              [showOnlyActive]="true"
+            ></app-cbo-rol-usuario>
+
             <div
-              *ngIf="form.get('RolId')?.invalid && form.get('RolId')?.touched"
+              *ngIf="form.get('IdRol')?.invalid && form.get('IdRol')?.touched"
               class="error-text"
             >
               Selecciona un rol
             </div>
           </div>
 
-          <!-- Fila 3: Contraseñas -->
+          <!-- Estado -->
+          <div
+            class="field-group"
+            [class.has-error]="
+              form.get('IdEstado')?.invalid && form.get('IdEstado')?.touched
+            "
+          >
+            <label class="required">Estado</label>
+            <app-cbo-estado-usuario
+              [selectedId]="form.get('IdEstado')?.value"
+              (selectedIdChange)="form.get('IdEstado')?.setValue($event)"
+            ></app-cbo-estado-usuario>
+            <div
+              *ngIf="
+                form.get('IdEstado')?.invalid && form.get('IdEstado')?.touched
+              "
+              class="error-text"
+            >
+              Selecciona un estado
+            </div>
+          </div>
+
+          <!-- IdInmobiliaria (hidden or configurable) -->
+          <input type="hidden" formControlName="IdInmobiliaria" />
+
+          <!-- Password -->
           <div
             class="field-group"
             [class.has-error]="
@@ -259,7 +195,10 @@
             "
           >
             <label>
-              Contraseña <span class="optional-text">(opcional)</span>
+              Contraseña
+              <span class="optional-text" *ngIf="mode === 'edit'"
+                >(opcional)</span
+              >
             </label>
             <div class="input-with-icon">
               <input
@@ -283,10 +222,8 @@
                   [class]="showPassword ? 'pi pi-eye-slash' : 'pi pi-eye'"
                 ></span>
               </button>
-              <!-- State for password is shown to the right of the confirm field instead -->
             </div>
             <div class="password-feedback">
-              <!-- Mostrar mensaje específico del primer campo o minlength -->
               <div *ngIf="passwordFeedback" class="error-text">
                 {{ passwordFeedback }}
               </div>
@@ -301,10 +238,14 @@
                 <span *ngIf="form.get('Password')?.errors?.['minlength']"
                   >La contraseña debe tener al menos 6 caracteres</span
                 >
+                <span *ngIf="form.get('Password')?.errors?.['required']"
+                  >La contraseña es requerida</span
+                >
               </div>
             </div>
           </div>
 
+          <!-- Confirm Password -->
           <div
             class="field-group"
             [class.has-error]="
@@ -338,10 +279,7 @@
                   [class]="showConfirm ? 'pi pi-eye-slash' : 'pi pi-eye'"
                 ></span>
               </button>
-              <!-- Aquí mantenemos sólo el input y el toggle del ojo; el estado se mostrará a la derecha fuera del input -->
             </div>
-
-            <!-- Zona de estado (a la derecha del segundo input) - icono + mensaje de coincidencia -->
             <div class="status-area" aria-live="polite">
               <span
                 *ngIf="passwordsMatch === true"
@@ -365,7 +303,6 @@
               </span>
             </div>
             <div class="password-feedback">
-              <!-- Mostrar feedback de confirmación o errores de minlength -->
               <div
                 *ngIf="
                   confirmFeedback &&

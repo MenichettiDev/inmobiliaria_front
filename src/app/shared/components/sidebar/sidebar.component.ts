@@ -270,30 +270,30 @@ export class SidebarComponent implements OnInit {
     // 👥 Equipo - Solo Admin
     {
       id: 7,
-      descripcion: 'Equipo',
+      descripcion: 'Usuarios',
       icono: 'bi bi-people-fill',
-      link: '/equipo',
+      link: '/usuarios',
       roles: [2], // Solo Administrador
       submenus: [
         {
           id: 71,
           descripcion: 'Alta / Baja Usuarios',
           icono: 'bi bi-person-plus',
-          link: '/equipo/visor',
+          link: '/usuarios/visor',
           roles: [2], // Solo Administrador
         },
         {
           id: 72,
           descripcion: 'Asignar Roles',
           icono: 'bi bi-shield-check',
-          link: '/equipo/roles',
+          link: '/usuarios/roles',
           roles: [2], // Solo Administrador
         },
         {
           id: 73,
           descripcion: 'Estados de Usuario',
           icono: 'bi bi-person-check',
-          link: '/equipo/estados',
+          link: '/usuarios/estados',
           roles: [2], // Solo Administrador
         },
       ],

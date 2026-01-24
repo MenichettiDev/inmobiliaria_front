@@ -149,6 +149,26 @@ export class UsuarioService {
         return this.http.get(`${this.baseUrl}/active`);
     }
 
+    // POST: api/usuario
+    createUser(user: any): Observable<any> {
+        try {
+            console.log('🔄 UsuarioService.createUser called', user);
+            const url = `${this.baseUrl}`;
+            return this.http.post(url, user, {
+                headers: { 'Content-Type': 'application/json' }
+            }).pipe(
+                tap(response => console.log('✅ createUser successful', response)),
+                catchError(error => {
+                    console.error('❌ createUser failed', error);
+                    throw error;
+                })
+            );
+        } catch (error) {
+            console.error('❌ Error preparing createUser request:', error);
+            throw error;
+        }
+    }
+
     updateUser(id: number, user: any): Observable<any> {
         try {
             console.log(`🔄 UsuarioService.updateUser called with ID: ${id}`);

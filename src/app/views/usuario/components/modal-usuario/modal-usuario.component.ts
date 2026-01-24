@@ -20,13 +20,14 @@ import {
   FormGroup,
 } from '@angular/forms';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
-import { Roles } from '../../../../shared/enums/roles';
 import { AlertaService } from '../../../../services/alerta.service';
+import { CboRolUsuarioComponent } from '../cbo-rol-usuario/cbo-rol-usuario.component';
+import { CboEstadoUsuarioComponent } from '../cbo-estado-usuario/cbo-estado-usuario.component';
 
 @Component({
   selector: 'app-usuarios-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, NgbTooltipModule],
+  imports: [CommonModule, ReactiveFormsModule, NgbTooltipModule, CboRolUsuarioComponent, CboEstadoUsuarioComponent],
   templateUrl: './modal-usuario.component.html',
   styleUrls: ['../../../../../styles/modal-style.css'], // usar estilos consolidados globales (scoped al componente)
 })
@@ -44,7 +45,7 @@ export class UsuariosModalComponent implements OnInit, OnChanges {
 
   visible = true;
   form!: FormGroup;
-  rolesList: Array<{ id: number; label: string }> = [];
+  // roles ahora proviene del componente app-cbo-rol-usuario (no se mantiene lista local)
   showPassword = false;
   showConfirm = false;
   // Flag para indicar si las contraseñas coinciden
@@ -79,11 +80,7 @@ export class UsuariosModalComponent implements OnInit, OnChanges {
     this.buildForm();
     this.updatePasswordValidators(); // ✅ Configurar validaciones iniciales
     if (this.initialData) this.patchForm(this.initialData);
-    this.initRoles();
-
-    // Inicializar estado de edición según modo
-    this.editingEnabled = this.mode !== 'edit';
-    this.setControlsDisabled(!this.editingEnabled);
+    // no initRoles() — usamos el combo de roles reutilizable
 
     // Focus management - focus the first input after view initialization
     setTimeout(() => {
@@ -163,17 +160,13 @@ export class UsuariosModalComponent implements OnInit, OnChanges {
   private buildForm() {
     this.form = this.fb.group({
       Nombre: ['', [Validators.required, Validators.maxLength(100)]],
-      Apellido: ['', [Validators.required, Validators.maxLength(100)]],
-      Legajo: ['', [Validators.required, Validators.maxLength(5)]],
-      Dni: ['', [Validators.required, Validators.maxLength(8), Validators.minLength(7), Validators.pattern('^[0-9]+$')]],
-      Email: ['', [Validators.email, Validators.maxLength(150)]],
+      Email: ['', [Validators.required, Validators.email, Validators.maxLength(150)]],
       Telefono: ['', [Validators.maxLength(50)]],
-      // Inicialmente vacío para forzar la selección por parte del usuario
-      RolId: ['', [Validators.required]],
-      AccedeAlSistema: [false],
-      Avatar: ['', [Validators.maxLength(45)]],
-      Password: ['', [Validators.minLength(6)]],
-      PasswordConfirm: ['', [Validators.minLength(6)]],
+      IdRol: ['', [Validators.required]],
+      IdInmobiliaria: [1, [Validators.required]],
+      IdEstado: [1],
+      Password: ['', []], // validators set later según mode
+      PasswordConfirm: ['', []],
     });
     // Inicialmente deshabilitamos el campo Confirm hasta que Password tenga al menos 6 chars
     this.form.get('PasswordConfirm')?.disable({ emitEvent: false });
@@ -184,14 +177,13 @@ export class UsuariosModalComponent implements OnInit, OnChanges {
     const passwordConfirmControl = this.form.get('PasswordConfirm');
 
     if (this.mode === 'edit') {
-      // En modo edición: contraseña opcional
+      // En modo edición: password opcional, solo minLength si existe
       passwordControl?.setValidators([Validators.minLength(6)]);
       passwordConfirmControl?.setValidators([Validators.minLength(6)]);
     } else {
-      // En modo creación: contraseña opcional según DTO, pero UI puede exigir 6 chars si se proporciona
-      // Mantendremos la validación mínima en cliente pero no obligatoria para permitir workflows con creación sin password si lo desea el backend
-      passwordControl?.setValidators([Validators.minLength(6)]);
-      passwordConfirmControl?.setValidators([Validators.minLength(6)]);
+      // En creación: password obligatorio según DTO del backend
+      passwordControl?.setValidators([Validators.required, Validators.minLength(6)]);
+      passwordConfirmControl?.setValidators([Validators.required, Validators.minLength(6)]);
     }
 
     passwordControl?.updateValueAndValidity();
@@ -407,41 +399,25 @@ export class UsuariosModalComponent implements OnInit, OnChanges {
     }
   }
 
-  private initRoles() {
-    // Build roles list from enum (exclude reverse numeric keys)
-    this.rolesList = Object.keys(Roles)
-      .filter((k) => Number.isNaN(Number(k)))
-      .map((name) => ({ id: (Roles as any)[name] as number, label: name }));
-  }
-
   private patchForm(data: any) {
     if (!this.form) this.buildForm();
 
     console.log('🔍 Patching form with data:', data); // Debug log
 
-    // ✅ Guardar el ID del usuario para edición - probemos múltiples posibles nombres de campo
     this.userId =
       data?.id ?? data?.Id ?? data?.usuario_id ?? data?.usuarioId ?? null;
     console.log('💾 User ID saved:', this.userId);
 
     const mapped = {
-      // ✅ Mapeo actualizado según respuesta del backend
       Nombre: data?.nombre ?? data?.Nombre ?? '',
-      Apellido: data?.apellido ?? data?.Apellido ?? '',
-      Legajo: data?.legajo ?? data?.Legajo ?? '',
-      Dni: data?.dni ?? data?.Dni ?? '',
       Email: data?.email ?? data?.Email ?? '',
       Telefono: data?.telefono ?? data?.Telefono ?? '',
-      // Para RolId necesitamos mapear desde rolNombre o crear un mapeo
-      // Si no viene rol, dejamos el control vacío para que el usuario deba seleccionar uno
-      RolId:
-        this.getRolIdFromRolNombre(data?.rolNombre) ??
-        data?.RolId ??
-        data?.rolId ??
-        '',
-      AccedeAlSistema: data?.accedeAlSistema ?? data?.AccedeAlSistema ?? true,
-      Password: '', // Siempre vacío para seguridad
-      PasswordConfirm: '', // Siempre vacío para seguridad
+      // Mapear IdRol solo desde valores numéricos proporcionados por la API
+      IdRol: data?.IdRol ?? data?.idRol ?? data?.rolId ?? '',
+      IdInmobiliaria: data?.idInmobiliaria ?? data?.IdInmobiliaria ?? 1,
+      IdEstado: data?.idEstado ?? data?.IdEstado ?? 1,
+      Password: '',
+      PasswordConfirm: '',
     };
 
     console.log('✅ Mapped data for form:', mapped); // Debug log
@@ -449,33 +425,6 @@ export class UsuariosModalComponent implements OnInit, OnChanges {
 
     // ✅ Actualizar validaciones después de patchear
     this.updatePasswordValidators();
-  }
-
-  private getRolIdFromRolNombre(rolNombre: string): number | null {
-    if (!rolNombre) return null;
-    // Normalizar string: quitar espacios, lowercase y reemplazar caracteres acentuados
-    const normalize = (s: string) =>
-      s
-        .toString()
-        .trim()
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/\p{Diacritic}/gu, '');
-    const key = normalize(rolNombre);
-
-    const roleMapNorm: { [key: string]: number } = {
-      superadmin: Roles.SuperAdmin,
-      'super-admin': Roles.SuperAdmin,
-      'super admin': Roles.SuperAdmin,
-      administrativo: Roles.Administrativo,
-      administrador: Roles.Administrativo,
-      admin: Roles.Administrativo,
-      supervisor: Roles.Supervisor,
-      operario: Roles.Operario,
-      operador: Roles.Operario,
-    };
-
-    return roleMapNorm[key] ?? null;
   }
 
   onSubmit(): void {

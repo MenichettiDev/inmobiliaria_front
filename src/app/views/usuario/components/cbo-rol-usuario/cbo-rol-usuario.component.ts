@@ -58,6 +58,7 @@ export class CboRolUsuarioComponent
 
   // State
   roles: RolDto[] = [];
+  private allRoles: RolDto[] = []; // <-- keep full list for search
   selectedRolId: number | null = null;
   isOpen = false;
   isLoading = false;
@@ -89,10 +90,11 @@ export class CboRolUsuarioComponent
         distinctUntilChanged(),
         switchMap((term: string) => {
           if (!term || term.length < 2) {
-            return of(this.roles);
+            // return full list (source: allRoles) when search is empty or too corto
+            return of(this.allRoles);
           }
           this.isLoading = true;
-          const filtered = this.roles.filter((r) =>
+          const filtered = this.allRoles.filter((r) =>
             (r.nombreRol || '').toLowerCase().includes(term.toLowerCase())
           );
           return of(filtered);
@@ -112,16 +114,41 @@ export class CboRolUsuarioComponent
     this.isLoading = true;
     this.rolService.getRoles().subscribe({
       next: (resp: any) => {
-        const data = resp?.data ?? [];
-        this.roles = Array.isArray(data) ? data : [];
-        if (this.showOnlyActive) {
-          this.roles = this.roles.filter((r) => r.activo !== false);
+        // Manejar distintos formatos de respuesta:
+        // - ApiResponse with data array => resp.data (array)
+        // - Paginated => resp.data.data (array)
+        // - legacy => resp?.data?.items etc.
+        let raw: any = resp?.data ?? resp;
+        if (raw && raw.data && Array.isArray(raw.data)) {
+          raw = raw.data;
+        } else if (raw && raw.items && Array.isArray(raw.items)) {
+          raw = raw.items;
         }
+
+        const items = Array.isArray(raw) ? raw : [];
+
+        // Mapear a RolDto esperado por el componente
+        const mapped: RolDto[] = items.map((i: any) => ({
+          idRol: i.idRol ?? i.id ?? null,
+          nombreRol: i.nombreRol ?? i.rolNombre ?? i.nombre ?? '',
+          descripcion: i.descripcion ?? i.descrip ?? '',
+          activo:
+            i.activo !== undefined
+              ? i.activo
+              : i.idEstado !== undefined
+                ? i.idEstado === 1
+                : true,
+        })).filter(r => r.idRol !== null) as RolDto[];
+
+        // Aplicar filtro showOnlyActive
+        this.allRoles = this.showOnlyActive ? mapped.filter(r => r.activo !== false) : mapped;
+        this.roles = [...this.allRoles];
         this.isLoading = false;
       },
       error: (err) => {
         console.error('Error loading roles', err);
         this.roles = [];
+        this.allRoles = [];
         this.isLoading = false;
       },
     });
