@@ -297,11 +297,5 @@
     [animationPreset]="'preset-1'"
   ></app-toast-modal>
 
-  <!-- Modal detalle -->
-  <app-modal-detalle-propiedad
-    *ngIf="detailVisible"
-    [visible]="detailVisible"
-    [propiedad]="detailPropiedad"
-    (close)="closeDetail()"
-  ></app-modal-detalle-propiedad>
+  <!-- modal detalle ahora gestionado por NgbModal -->
 </div>

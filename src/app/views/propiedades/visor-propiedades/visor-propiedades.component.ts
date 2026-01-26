@@ -8,6 +8,7 @@ import { ToastModalComponent } from '../../../shared/components/toast-modal/toas
 import { take } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
 import { ModalDetallePropiedadComponent } from '../components/modal-detalle-propiedad/modal-detalle-propiedad.component';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 interface Propiedad {
   id: number;
@@ -97,13 +98,10 @@ export class VisorPropiedadesComponent implements OnInit {
   toastVisible: boolean = false;
   toastType: 'success' | 'error' | 'warning' = 'success';
 
-  // detalle modal
-  detailVisible = false;
-  detailPropiedad: Propiedad | null = null;
-
   constructor(
     private propiedadesService: PropiedadesService,
-    private router: Router
+    private router: Router,
+    private modalService: NgbModal
   ) { }
 
   ngOnInit(): void {
@@ -398,13 +396,13 @@ export class VisorPropiedadesComponent implements OnInit {
 
   // abrir modal detalle
   openDetail(prop: Propiedad) {
-    this.detailPropiedad = prop;
-    this.detailVisible = true;
-  }
-
-  closeDetail() {
-    this.detailVisible = false;
-    this.detailPropiedad = null;
+    const ref = this.modalService.open(ModalDetallePropiedadComponent, { size: 'lg', centered: true });
+    ref.componentInstance.propiedad = prop;
+    // opcional: manejar result/respuesta
+    ref.result?.then(
+      () => { /* cerrado con éxito */ },
+      () => { /* dismiss */ }
+    );
   }
 
   private showToast(message: string, type: 'success' | 'error' | 'warning' = 'success') {

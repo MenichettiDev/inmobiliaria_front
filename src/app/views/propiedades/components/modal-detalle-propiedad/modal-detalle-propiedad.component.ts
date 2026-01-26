@@ -1,6 +1,7 @@
-import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { environment } from '../../../../../environments/environment';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 interface Imagen {
   id: number;
@@ -40,11 +41,11 @@ interface Propiedad {
   styleUrls: ['./modal-detalle-propiedad.component.css']
 })
 export class ModalDetallePropiedadComponent implements OnChanges {
-  @Input() visible: boolean = false;
   @Input() propiedad: Propiedad | null = null;
-  @Output() close = new EventEmitter<void>();
 
   mainIndex: number = 0;
+
+  constructor(public activeModal: NgbActiveModal) { }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['propiedad'] && this.propiedad) {
@@ -74,7 +75,7 @@ export class ModalDetallePropiedadComponent implements OnChanges {
   }
 
   onClose() {
-    this.close.emit();
+    this.activeModal.close();
   }
 
   formatDate(s?: string) {
