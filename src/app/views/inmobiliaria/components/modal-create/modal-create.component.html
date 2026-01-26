@@ -82,6 +82,37 @@
               </small>
             </div>
 
+            <!-- Coordenadas (opcionales) -->
+            <div class="col-md-6">
+              <label for="latitud" class="form-label">Latitud (Opcional)</label>
+              <input
+                type="text"
+                id="latitud"
+                class="form-control"
+                formControlName="latitud"
+                [class.is-invalid]="isFieldInvalid('latitud')"
+                placeholder="Ej: -34.6037"
+              />
+              <div class="invalid-feedback">{{ getFieldError("latitud") }}</div>
+            </div>
+
+            <div class="col-md-6">
+              <label for="longitud" class="form-label"
+                >Longitud (Opcional)</label
+              >
+              <input
+                type="text"
+                id="longitud"
+                class="form-control"
+                formControlName="longitud"
+                [class.is-invalid]="isFieldInvalid('longitud')"
+                placeholder="Ej: -58.3816"
+              />
+              <div class="invalid-feedback">
+                {{ getFieldError("longitud") }}
+              </div>
+            </div>
+
             <!-- Selección de Plan -->
             <div class="col-12 mt-4">
               <h6 class="section-title text-success">

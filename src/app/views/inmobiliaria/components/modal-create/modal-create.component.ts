@@ -1,6 +1,6 @@
 import { Component, Output, EventEmitter, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 import { CreateInmobiliariaDto } from '../../service/inmobiliaria.service';
 import { CboPlanesInmobiliariaComponent } from '../cbo-planes-inmobiliaria/cbo-planes-inmobiliaria.component';
 import { PlanesInmobiliariaService, PlanDto } from '../cbo-planes-inmobiliaria/../../service/planes-inmobiliaria.service';
@@ -31,6 +31,9 @@ export class ModalCreateComponent implements OnInit {
         Validators.maxLength(50)
       ]],
       dominioPersonalizado: [''],
+      // coordenadas opcionales con validación de rango
+      latitud: ['', [this.latitudeValidator]],
+      longitud: ['', [this.longitudeValidator]],
       idPlan: ['', Validators.required]
     });
   }
@@ -60,11 +63,21 @@ export class ModalCreateComponent implements OnInit {
     }
 
     const formData = this.form.value;
-    const createDto: CreateInmobiliariaDto = {
+    const createDto: CreateInmobiliariaDto & { latitud?: number; longitud?: number } = {
       nombre: formData.nombre.trim(),
       subdominio: formData.subdominio.trim().toLowerCase(),
       dominioPersonalizado: formData.dominioPersonalizado?.trim() || undefined,
       idPlan: Number(formData.idPlan)
+    };
+
+    // mapear lat/long si existen y son válidas
+    if (formData.latitud !== '' && formData.latitud !== null && formData.latitud !== undefined) {
+      const lat = Number(formData.latitud);
+      if (!isNaN(lat)) createDto.latitud = lat;
+    }
+    if (formData.longitud !== '' && formData.longitud !== null && formData.longitud !== undefined) {
+      const lon = Number(formData.longitud);
+      if (!isNaN(lon)) createDto.longitud = lon;
     };
 
     this.save.emit(createDto);
@@ -101,6 +114,8 @@ export class ModalCreateComponent implements OnInit {
       if (field.errors['pattern'] && fieldName === 'subdominio') {
         return 'Solo letras minúsculas, números y guiones';
       }
+      if (field.errors['invalidLatitude']) return 'Latitud inválida. Debe ser número entre -90 y 90';
+      if (field.errors['invalidLongitude']) return 'Longitud inválida. Debe ser número entre -180 y 180';
     }
     return '';
   }
@@ -123,6 +138,23 @@ export class ModalCreateComponent implements OnInit {
         subdominio: subdominioValue.toLowerCase()
       });
     }
+  }
+
+  // validadores simples para lat/lon (permiten vacío)
+  private latitudeValidator(control: AbstractControl | null) {
+    const v = control?.value;
+    if (v === null || v === undefined || v === '') return null;
+    const n = Number(v);
+    if (isNaN(n) || n < -90 || n > 90) return { invalidLatitude: true };
+    return null;
+  }
+
+  private longitudeValidator(control: AbstractControl | null) {
+    const v = control?.value;
+    if (v === null || v === undefined || v === '') return null;
+    const n = Number(v);
+    if (isNaN(n) || n < -180 || n > 180) return { invalidLongitude: true };
+    return null;
   }
 
   getPlanDescription(planId: any): string {
