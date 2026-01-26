@@ -1,4 +1,4 @@
-<div class="cbo-estado-wrapper">
+<div class="cbo-planes-wrapper">
   <div
     class="search-container"
     [class.has-error]="hasErrors()"
@@ -20,7 +20,7 @@
       />
 
       <button
-        *ngIf="selectedEstado && !isDisabled && isOpen"
+        *ngIf="selectedPlan && !isDisabled && isOpen"
         type="button"
         class="clear-button"
         (click)="clearSelection()"
@@ -44,7 +44,7 @@
 
     <div *ngIf="isOpen && !isDisabled" class="dropdown-panel">
       <div class="dropdown-content">
-        <div *ngIf="estados.length === 0 && !isLoading" class="no-results">
+        <div *ngIf="planes.length === 0 && !isLoading" class="no-results">
           <i
             class="pi pi-search"
             style="font-size: 1.5rem; margin-bottom: 8px; opacity: 0.5"
@@ -53,26 +53,36 @@
             Ingrese texto para buscar
           </div>
           <div *ngIf="searchControl.value && searchControl.value.length >= 1">
-            No se encontraron estados
+            No se encontraron planes
           </div>
-          <div *ngIf="!searchControl.value">No hay estados disponibles</div>
+          <div *ngIf="!searchControl.value">No hay planes disponibles</div>
         </div>
 
         <div
-          *ngFor="let est of estados; trackBy: trackByEstado"
+          *ngFor="let plan of planes; trackBy: trackByPlan"
           class="dropdown-option"
-          [class.selected]="selectedEstado?.id === est.id"
-          (click)="onOptionClick(est)"
+          [class.selected]="selectedPlan?.id === plan.id"
+          (click)="onOptionClick(plan)"
         >
           <div class="option-content">
             <div class="option-main">
-              <span class="option-codigo" [title]="est.codigo">{{
-                est.codigo
+              <span class="option-nombre" [title]="plan.nombre">{{
+                plan.nombre
               }}</span>
-              <span class="option-desc"> - {{ est.descripcion }}</span>
+              <span class="option-desc" *ngIf="plan.descripcion">
+                - {{ plan.descripcion }}</span
+              >
             </div>
             <div class="option-details">
-              <span class="option-status" *ngIf="!est.activo">(inactivo)</span>
+              <span
+                class="option-price"
+                *ngIf="plan.precioUsd !== undefined && plan.precioUsd !== null"
+              >
+                ${{ plan.precioUsd }}
+              </span>
+              <span class="option-status" *ngIf="!plan.activo">
+                (inactivo)</span
+              >
             </div>
           </div>
         </div>
@@ -84,6 +94,6 @@
 
   <div *ngIf="isLoading && !isOpen" class="loading-indicator">
     <i class="pi pi-spinner pi-spin"></i>
-    <span>Cargando estados...</span>
+    <span>Cargando planes...</span>
   </div>
 </div>

@@ -31,22 +31,18 @@
         />
       </div>
       <div class="col-md-3">
-        <select class="form-select" formControlName="planId">
-          <option value="">Todos los planes</option>
-          <option value="1">FREE</option>
-          <option value="2">BASIC</option>
-          <option value="3">PRO</option>
-          <option value="4">PREMIUM</option>
-        </select>
+        <app-cbo-planes-inmobiliaria
+          formControlName="planId"
+          placeholder="Todos los planes"
+          [showOnlyActive]="false"
+        ></app-cbo-planes-inmobiliaria>
       </div>
       <div class="col-md-3">
-        <select class="form-select" formControlName="estadoId">
-          <option value="">Todos los estados</option>
-          <option value="1">Operativa</option>
-          <option value="2">Suspendida</option>
-          <option value="3">De baja</option>
-          <option value="4">Pendiente de validación</option>
-        </select>
+        <app-cbo-estado-inmobiliaria
+          formControlName="estadoId"
+          placeholder="Todos los estados"
+          [showOnlyActive]="false"
+        ></app-cbo-estado-inmobiliaria>
       </div>
       <div class="col-md-2">
         <button

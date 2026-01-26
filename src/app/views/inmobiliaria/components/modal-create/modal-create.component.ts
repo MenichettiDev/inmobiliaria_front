@@ -1,12 +1,14 @@
 import { Component, Output, EventEmitter, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { CreateInmobiliariaDto } from '../../inmobiliaria.service';
+import { CreateInmobiliariaDto } from '../../service/inmobiliaria.service';
+import { CboPlanesInmobiliariaComponent } from '../cbo-planes-inmobiliaria/cbo-planes-inmobiliaria.component';
+import { PlanesInmobiliariaService, PlanDto } from '../cbo-planes-inmobiliaria/../../service/planes-inmobiliaria.service';
 
 @Component({
   selector: 'app-modal-create',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, CboPlanesInmobiliariaComponent],
   templateUrl: './modal-create.component.html',
   styleUrls: ['./modal-create.component.css']
 })
@@ -17,16 +19,9 @@ export class ModalCreateComponent implements OnInit {
   @Output() save = new EventEmitter<CreateInmobiliariaDto>();
 
   form: FormGroup;
+  private planMap: Record<number, PlanDto> = {};
 
-  // Plan options
-  planOptions = [
-    { id: 1, nombre: 'FREE', descripcion: 'Funcionalidades básicas' },
-    { id: 2, nombre: 'BASIC', descripcion: 'Para pequeñas inmobiliarias' },
-    { id: 3, nombre: 'PRO', descripcion: 'Para inmobiliarias en crecimiento' },
-    { id: 4, nombre: 'PREMIUM', descripcion: 'Funcionalidades completas' }
-  ];
-
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private planesService: PlanesInmobiliariaService) {
     this.form = this.fb.group({
       nombre: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
       subdominio: ['', [
@@ -41,6 +36,14 @@ export class ModalCreateComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // cargar planes activos para mostrar descripción en el modal
+    this.planesService.obtenerPlanesActivos().subscribe({
+      next: (res) => {
+        const list = (res.data || []) as PlanDto[];
+        list.forEach(p => { this.planMap[p.id] = p; });
+      },
+      error: () => { /* no crítico */ }
+    });
     // Focus en el primer campo
     setTimeout(() => {
       const nombreField = document.getElementById('nombre');
@@ -61,7 +64,7 @@ export class ModalCreateComponent implements OnInit {
       nombre: formData.nombre.trim(),
       subdominio: formData.subdominio.trim().toLowerCase(),
       dominioPersonalizado: formData.dominioPersonalizado?.trim() || undefined,
-      idPlan: parseInt(formData.idPlan)
+      idPlan: Number(formData.idPlan)
     };
 
     this.save.emit(createDto);
@@ -122,8 +125,19 @@ export class ModalCreateComponent implements OnInit {
     }
   }
 
-  getPlanDescription(planId: number): string {
-    const plan = this.planOptions.find(p => p.id === planId);
-    return plan?.descripcion || '';
+  getPlanDescription(planId: any): string {
+    const id = Number(planId);
+    if (!id) return '';
+    const plan = this.planMap[id];
+    if (plan) return plan.descripcion || plan.nombre || '';
+    // si no está en caché, solicitar al servicio (async) y dejar cadena vacía por ahora
+    this.planesService.obtenerPlanPorId(id).subscribe({
+      next: (res) => {
+        const p = (res.data || (res as any)) as PlanDto;
+        if (p) this.planMap[p.id] = p;
+      },
+      error: () => { /* silent */ }
+    });
+    return '';
   }
 }

@@ -1,16 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { InmobiliariaService, Inmobiliaria, InmobiliariaFilters, PaginatedResponse, ApiResponse, CreateInmobiliariaDto, UpdateInmobiliariaDto } from '../inmobiliaria.service';
+import { InmobiliariaService, Inmobiliaria, InmobiliariaFilters, PaginatedResponse, ApiResponse, CreateInmobiliariaDto, UpdateInmobiliariaDto } from '../service/inmobiliaria.service';
 import { AuthService } from '../../auth/auth.service';
 import { ModalDetailsEditComponent } from '../components/modal-details-edit/modal-details-edit.component';
 import { ModalCreateComponent } from '../components/modal-create/modal-create.component';
 import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/confirm-modal.component';
+import { CboPlanesInmobiliariaComponent } from '../components/cbo-planes-inmobiliaria/cbo-planes-inmobiliaria.component';
+import { CboEstadoInmobiliariaComponent } from '../components/cbo-estado-inmobiliaria/cbo-estado-inmobiliaria.component';
 
 @Component({
   selector: 'app-visor-inmobiliaria',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ModalDetailsEditComponent, ModalCreateComponent, ConfirmModalComponent],
+  imports: [CommonModule, ReactiveFormsModule, ModalDetailsEditComponent, ModalCreateComponent, ConfirmModalComponent, CboPlanesInmobiliariaComponent, CboEstadoInmobiliariaComponent],
   templateUrl: './visor-inmobiliaria.component.html',
   styleUrls: ['./visor-inmobiliaria.component.css']
 })

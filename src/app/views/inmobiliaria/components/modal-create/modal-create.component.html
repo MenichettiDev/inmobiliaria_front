@@ -94,18 +94,21 @@
               <label for="idPlan" class="form-label">
                 Plan de Suscripción *
               </label>
-              <select
-                id="idPlan"
-                class="form-select"
-                formControlName="idPlan"
-                [class.is-invalid]="isFieldInvalid('idPlan')"
-              >
-                <option value="">Seleccionar plan...</option>
-                <option *ngFor="let plan of planOptions" [value]="plan.id">
-                  {{ plan.nombre }} - {{ plan.descripcion }}
-                </option>
-              </select>
-              <div class="invalid-feedback">{{ getFieldError("idPlan") }}</div>
+              <div class="mb-3">
+                <label for="idPlan" class="form-label">Plan</label>
+                <app-cbo-planes-inmobiliaria
+                  id="idPlan"
+                  formControlName="idPlan"
+                  placeholder="Seleccione un plan"
+                  [showOnlyActive]="true"
+                ></app-cbo-planes-inmobiliaria>
+                <div
+                  *ngIf="isFieldInvalid('idPlan')"
+                  class="invalid-feedback d-block"
+                >
+                  {{ getFieldError("idPlan") }}
+                </div>
+              </div>
 
               <!-- Plan description -->
               <div *ngIf="form.get('idPlan')?.value" class="mt-2">

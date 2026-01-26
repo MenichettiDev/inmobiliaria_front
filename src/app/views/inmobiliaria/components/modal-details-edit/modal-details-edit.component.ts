@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Inmobiliaria, CreateInmobiliariaDto, UpdateInmobiliariaDto } from '../../inmobiliaria.service';
+import { Inmobiliaria, CreateInmobiliariaDto, UpdateInmobiliariaDto } from '../../service/inmobiliaria.service';
 
 @Component({
   selector: 'app-modal-details-edit',
