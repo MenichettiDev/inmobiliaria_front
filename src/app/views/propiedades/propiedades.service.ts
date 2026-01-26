@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
-interface Propiedad {
+export interface Propiedad {
     id: number;
     titulo: string;
     descripcion: string;
@@ -21,6 +21,7 @@ interface Propiedad {
     idEstadoOperativo: number;
     estadoAdminNombre: string;
     estadoOperativoNombre: string;
+    imagenes?: { id: number; idPropiedad: number; url: string; orden: number; creadoEn: string; propiedadTitulo?: string }[];
 }
 
 interface PropiedadesResponse {

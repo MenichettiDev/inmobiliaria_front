@@ -23,7 +23,7 @@
                   placeholder="Título de la propiedad"
                 />
                 <div class="invalid-feedback">
-                  {{ getFieldError('titulo') }}
+                  {{ getFieldError("titulo") }}
                 </div>
               </div>
 
@@ -39,7 +39,7 @@
                   rows="4"
                 ></textarea>
                 <div class="invalid-feedback">
-                  {{ getFieldError('descripcion') }}
+                  {{ getFieldError("descripcion") }}
                 </div>
               </div>
 
@@ -55,7 +55,7 @@
                   step="0.01"
                 />
                 <div class="invalid-feedback">
-                  {{ getFieldError('precio') }}
+                  {{ getFieldError("precio") }}
                 </div>
               </div>
 
@@ -71,7 +71,7 @@
                   placeholder="Dirección completa"
                 />
                 <div class="invalid-feedback">
-                  {{ getFieldError('direccion') }}
+                  {{ getFieldError("direccion") }}
                 </div>
               </div>
 
@@ -106,6 +106,62 @@
                   [showOnlyActive]="true"
                 ></app-cbo-usuario>
               </div>
+
+              <!-- Imágenes (hasta 4) -->
+              <div class="col-md-12 mb-3">
+                <label class="form-label"
+                  >Imágenes (jpg/jpeg/png) - Máx {{ maxImages }} - 5MB c/u
+                </label>
+                <input
+                  type="file"
+                  accept=".jpg,.jpeg,.png"
+                  multiple
+                  (change)="onFilesSelected($event)"
+                  class="form-control"
+                />
+                <div *ngIf="imageErrors?.length" class="text-danger mt-2">
+                  <div *ngFor="let err of imageErrors">{{ err }}</div>
+                </div>
+
+                <div class="image-previews d-flex flex-wrap gap-2 mt-2">
+                  <div
+                    *ngFor="let img of images; let i = index"
+                    class="preview-item position-relative"
+                  >
+                    <img
+                      [src]="img.preview"
+                      [alt]="img.name"
+                      style="
+                        width: 140px;
+                        height: 90px;
+                        object-fit: cover;
+                        border-radius: 4px;
+                        border: 1px solid #ddd;
+                      "
+                    />
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-danger position-absolute top-0 end-0"
+                      (click)="removeImage(i)"
+                      title="Quitar"
+                      style="transform: translate(30%, -30%)"
+                    >
+                      &times;
+                    </button>
+                    <div
+                      class="small text-muted mt-1"
+                      style="
+                        max-width: 140px;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                      "
+                    >
+                      {{ img.name }}
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div *ngIf="error" class="alert alert-danger mb-3">
@@ -124,7 +180,7 @@
                   class="spinner-border spinner-border-sm me-1"
                 ></span>
                 <i *ngIf="!loading" class="fas fa-save me-1"></i>
-                {{ loading ? 'Guardando...' : 'Crear Propiedad' }}
+                {{ loading ? "Guardando..." : "Crear Propiedad" }}
               </button>
               <button
                 type="button"

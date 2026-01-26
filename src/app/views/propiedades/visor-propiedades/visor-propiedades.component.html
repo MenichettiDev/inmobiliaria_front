@@ -98,10 +98,12 @@
         <div class="propiedad-card">
           <div class="propiedad-imagen">
             <img
-              [src]="'assets/images/backgrounds/vacia.jpg'"
+              [src]="
+                getImageUrl(propiedad, selectedImageIndex[propiedad.id] || 0)
+              "
               [alt]="propiedad.titulo"
               class="img-fluid"
-              onerror="this.src = 'assets/images/backgrounds/vacia.jpg'"
+              (error)="onImageError($event, propiedad.id)"
             />
             <div class="propiedad-badges">
               <span class="badge bg-info">ID: {{ propiedad.id }}</span>
@@ -114,6 +116,44 @@
                 {{ propiedad.estadoOperativoNombre }}
               </span>
             </div>
+          </div>
+          <!-- Thumbnails -->
+          <div class="mt-2 d-flex gap-2" *ngIf="propiedad.imagenes?.length">
+            <ng-container
+              *ngFor="let im of propiedad.imagenes; let idx = index"
+            >
+              <button
+                type="button"
+                class="btn p-0 border"
+                (click)="setMainImage(propiedad, idx)"
+                [class.border-primary]="
+                  (selectedImageIndex[propiedad.id] || 0) === idx
+                "
+                style="width: 60px; height: 45px; overflow: hidden"
+                title="Ver imagen {{ idx + 1 }}"
+              >
+                <ng-container
+                  *ngIf="
+                    (im?.url ?? '').toString().trim().length > 0;
+                    else noThumb
+                  "
+                >
+                  <img
+                    [src]="getImageUrl(propiedad, idx)"
+                    style="width: 100%; height: 100%; object-fit: cover"
+                    (error)="onImageError($event, propiedad.id)"
+                  />
+                </ng-container>
+                <ng-template #noThumb>
+                  <div
+                    class="d-flex align-items-center justify-content-center bg-light text-muted"
+                    style="width: 100%; height: 100%; font-size: 0.75rem"
+                  >
+                    Sin imagen
+                  </div>
+                </ng-template>
+              </button>
+            </ng-container>
           </div>
           <div class="propiedad-contenido p-3">
             <h5 class="propiedad-titulo">{{ propiedad.titulo }}</h5>

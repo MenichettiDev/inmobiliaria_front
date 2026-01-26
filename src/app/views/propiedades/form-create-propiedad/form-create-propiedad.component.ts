@@ -28,6 +28,13 @@ export class FormCreatePropiedadComponent implements OnInit {
   loading: boolean = false;
   error: string = '';
 
+  // imágenes
+  maxImages = 4;
+  allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+  maxSizeBytes = 5 * 1024 * 1024; // 5 MB
+  images: { file: File; preview: string; name: string; size: number }[] = [];
+  imageErrors: string[] = [];
+
   constructor(
     private fb: FormBuilder,
     private propiedadesService: PropiedadesService,
@@ -52,13 +59,60 @@ export class FormCreatePropiedadComponent implements OnInit {
     });
   }
 
+  // manejar selección de archivos
+  async onFilesSelected(event: Event) {
+    this.imageErrors = [];
+    const input = event.target as HTMLInputElement;
+    if (!input?.files) return;
+    const files = Array.from(input.files);
+
+    if (this.images.length + files.length > this.maxImages) {
+      this.imageErrors.push(`Solo puedes agregar hasta ${this.maxImages} imágenes.`);
+    }
+
+    for (const f of files) {
+      if (this.images.length >= this.maxImages) break;
+      if (!this.allowedTypes.includes(f.type)) {
+        this.imageErrors.push(`${f.name}: formato no permitido.`);
+        continue;
+      }
+      if (f.size > this.maxSizeBytes) {
+        this.imageErrors.push(`${f.name}: supera ${this.maxSizeBytes / (1024 * 1024)} MB.`);
+        continue;
+      }
+      try {
+        const preview = await this.readFileAsDataURL(f);
+        this.images.push({ file: f, preview, name: f.name, size: f.size });
+      } catch {
+        this.imageErrors.push(`${f.name}: no se pudo leer la imagen.`);
+      }
+    }
+    // limpiar input para permitir re-subir mismo archivo luego
+    if (input) input.value = '';
+  }
+
+  private readFileAsDataURL(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve((reader.result as string) || '');
+      reader.onerror = () => reject();
+      reader.readAsDataURL(file);
+    });
+  }
+
+  removeImage(index: number) {
+    if (index >= 0 && index < this.images.length) {
+      this.images.splice(index, 1);
+    }
+  }
+
   onSubmit(): void {
     if (this.propiedadForm.valid) {
       this.loading = true;
       this.error = '';
 
       const formData = this.propiedadForm.value;
-      const createDto: CreatePropiedadDto = {
+      const createDto: CreatePropiedadDto & { Imagenes?: string[] } = {
         titulo: formData.titulo,
         descripcion: formData.descripcion,
         precio: formData.precio || undefined,
@@ -68,6 +122,11 @@ export class FormCreatePropiedadComponent implements OnInit {
         idAgenteResponsable: formData.idAgenteResponsable || undefined,
         idInmobiliaria: 0 // This will be set automatically by the backend from token
       };
+
+      // incluir imágenes (array de dataURLs) si existen
+      if (this.images.length > 0) {
+        createDto.Imagenes = this.images.map(i => i.preview);
+      }
 
       this.propiedadesService.crearPropiedad(createDto).subscribe({
         next: (response) => {

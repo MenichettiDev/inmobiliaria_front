@@ -6,6 +6,7 @@ import { PropiedadesService } from './../propiedades.service';
 import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/confirm-modal.component';
 import { ToastModalComponent } from '../../../shared/components/toast-modal/toast-modal.component';
 import { take } from 'rxjs/operators';
+import { environment } from '../../../../environments/environment';
 
 interface Propiedad {
   id: number;
@@ -25,6 +26,7 @@ interface Propiedad {
   idEstadoOperativo: number;
   estadoAdminNombre: string;
   estadoOperativoNombre: string;
+  imagenes?: { id: number; idPropiedad: number; url: string; orden: number; creadoEn: string; propiedadTitulo?: string }[];
 }
 
 interface Filtros {
@@ -52,6 +54,8 @@ interface Paginacion {
 export class VisorPropiedadesComponent implements OnInit {
   propiedades: Propiedad[] = [];
   propiedadesFiltradas: Propiedad[] = [];
+  // índice de imagen seleccionada por propiedad id
+  selectedImageIndex: Record<number, number> = {};
   loading: boolean = false;
   error: string = '';
 
@@ -104,12 +108,29 @@ export class VisorPropiedadesComponent implements OnInit {
   cargarPropiedades(): void {
     this.loading = true;
     this.error = '';
+    console.log('[VisorPropiedades] solicitando propiedades al backend...');
 
     this.propiedadesService.obtenerPropiedades().subscribe({
       next: (response) => {
+        console.log('[VisorPropiedades] respuesta raw obtenerPropiedades:', response);
         if (response.success) {
-          // Adjust to handle nested data structure
           this.propiedades = response.data.data || [];
+          // inicializar índice de imagen por propiedad solo si tiene imágenes
+          this.propiedades.forEach(p => {
+            if (p.imagenes && p.imagenes.length > 0) {
+              this.selectedImageIndex[p.id] = 0;
+            } else {
+              this.selectedImageIndex[p.id] = -1;
+            }
+            console.log(`[VisorPropiedades] propiedad ${p.id} imagenes (raw):`, p.imagenes);
+            if (p.imagenes && p.imagenes.length > 0) {
+              p.imagenes.forEach((im, idx) => {
+                console.log(`[VisorPropiedades] propiedad=${p.id} imagen[${idx}] object:`, im);
+                const rawUrl = (im?.url ?? '').toString();
+                console.log(`[VisorPropiedades] propiedad=${p.id} imagen[${idx}] url raw length=${rawUrl.length} chars=`, rawUrl.split('').slice(0, 50));
+              });
+            }
+          });
           this.paginacion = {
             page: response.data.page,
             pageSize: response.data.pageSize,
@@ -132,6 +153,59 @@ export class VisorPropiedadesComponent implements OnInit {
         this.propiedadesFiltradas = [];
       }
     });
+  }
+
+  getImageUrl(propiedad: Propiedad, index: number = 0): string {
+    const imgs = propiedad.imagenes || [];
+    const defaultImg = 'assets/images/backgrounds/vacia.jpg';
+    if (!imgs.length) return defaultImg;
+    const img = imgs[index] || imgs[0];
+    if (!img) return defaultImg;
+    let url = (img.url ?? '').toString();
+    if (!url || !url.trim()) {
+      console.warn(`[VisorPropiedades] propiedad=${propiedad.id} imagen[${index}] url vacía o nula`, img);
+      return defaultImg;
+    }
+    // limpiar y normalizar
+    url = url.replace(/\r?\n|\r/g, '').trim();
+    // Si ya es URL absoluta, devolverla
+    if (/^https?:\/\//i.test(url)) {
+      console.log(`[VisorPropiedades] getImageUrl propiedad=${propiedad.id} usando URL absoluta:`, url);
+      return url;
+    }
+    // Determinar raíz del servidor sin el segmento /api
+    const apiRoot = environment.apiUrl.replace(/\/api(\/)?$/i, '').replace(/\/$/, '');
+    // Si la ruta ya incluye /uploads (ruta relativa típica), unir con apiRoot
+    let finalUrl = url;
+    if (url.startsWith('/uploads') || url.startsWith('uploads') || url.startsWith('/api/uploads')) {
+      // si viene con /api/uploads, eliminar /api al concatenar con apiRoot
+      const cleanUrl = url.replace(/^\/?api\/?/, '/').replace(/\/+/, '/');
+      finalUrl = apiRoot + (cleanUrl.startsWith('/') ? '' : '/') + cleanUrl;
+    } else {
+      // ruta relativa genérica: concatenar a apiRoot (fallback)
+      finalUrl = apiRoot + (url.startsWith('/') ? '' : '/') + url;
+    }
+    finalUrl = encodeURI(finalUrl);
+    console.log(`[VisorPropiedades] getImageUrl propiedad=${propiedad.id} construida:`, finalUrl);
+    return finalUrl || defaultImg;
+  }
+
+  setMainImage(propiedad: Propiedad, index: number) {
+    if (!propiedad || !propiedad.id) return;
+    const imgs = propiedad.imagenes || [];
+    if (index < 0 || index >= imgs.length) return;
+    this.selectedImageIndex[propiedad.id] = index;
+  }
+
+  onImageError(event: Event, propertyId?: number) {
+    const imgEl = event.target as HTMLImageElement;
+    const failingSrc = imgEl?.src || '(no-src)';
+    console.error('[VisorPropiedades] error cargando imagen para propiedad=', propertyId, ' src=', failingSrc);
+    if (imgEl) imgEl.src = 'assets/images/backgrounds/vacia.jpg';
+    // marcar índice como inválido para evitar reintentos continuos
+    if (propertyId && this.selectedImageIndex[propertyId] !== undefined) {
+      this.selectedImageIndex[propertyId] = -1;
+    }
   }
 
   aplicarFiltros(): void {
