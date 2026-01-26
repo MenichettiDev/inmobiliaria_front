@@ -95,7 +95,7 @@
         class="col-md-6 col-lg-4 mb-4"
         *ngFor="let propiedad of propiedadesFiltradas"
       >
-        <div class="propiedad-card">
+        <div class="propiedad-card" (click)="openDetail(propiedad)">
           <div class="propiedad-imagen">
             <img
               [src]="
@@ -182,19 +182,23 @@
             <div class="propiedad-actions">
               <button
                 class="btn btn-sm btn-outline-primary"
-                (click)="editarPropiedad(propiedad.id)"
+                (click)="
+                  $event.stopPropagation(); editarPropiedad(propiedad.id)
+                "
               >
                 <i class="bi bi-pencil"></i> Editar
               </button>
               <button
                 class="btn btn-sm btn-outline-warning"
-                (click)="cambiarEstado(propiedad.id)"
+                (click)="$event.stopPropagation(); cambiarEstado(propiedad.id)"
               >
                 <i class="bi bi-arrow-repeat"></i> Estado
               </button>
               <button
                 class="btn btn-sm btn-outline-success"
-                (click)="publicarPropiedad(propiedad.id)"
+                (click)="
+                  $event.stopPropagation(); publicarPropiedad(propiedad.id)
+                "
                 *ngIf="!propiedad.publicadaEn"
               >
                 <i class="bi bi-broadcast"></i> Publicar
@@ -206,7 +210,9 @@
               >
                 <button
                   class="btn btn-sm btn-outline-danger ms-2"
-                  (click)="solicitarEliminar(propiedad.id)"
+                  (click)="
+                    $event.stopPropagation(); solicitarEliminar(propiedad.id)
+                  "
                 >
                   <i class="bi bi-trash"></i> Eliminar
                 </button>
@@ -214,7 +220,9 @@
               <ng-template #reactivarBtn>
                 <button
                   class="btn btn-sm btn-outline-success ms-2"
-                  (click)="reactivarPropiedad(propiedad.id)"
+                  (click)="
+                    $event.stopPropagation(); reactivarPropiedad(propiedad.id)
+                  "
                 >
                   <i class="bi bi-arrow-clockwise"></i> Reactivar
                 </button>
@@ -288,4 +296,12 @@
     [type]="toastType"
     [animationPreset]="'preset-1'"
   ></app-toast-modal>
+
+  <!-- Modal detalle -->
+  <app-modal-detalle-propiedad
+    *ngIf="detailVisible"
+    [visible]="detailVisible"
+    [propiedad]="detailPropiedad"
+    (close)="closeDetail()"
+  ></app-modal-detalle-propiedad>
 </div>

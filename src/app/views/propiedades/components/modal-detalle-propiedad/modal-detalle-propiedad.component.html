@@ -1,0 +1,66 @@
+<div class="modal-like" *ngIf="visible">
+  <div class="modal-dialog-centered">
+    <div class="modal-content-detail">
+      <div class="modal-header-detail">
+        <h5>{{ propiedad?.titulo }}</h5>
+        <button type="button" class="btn-close" (click)="onClose()">
+          &times;
+        </button>
+      </div>
+
+      <div class="modal-body-detail">
+        <div class="images-section">
+          <div class="main-image">
+            <img
+              [src]="getMainImage()"
+              alt="{{ propiedad?.titulo }}"
+              (error)="(null)"
+            />
+          </div>
+          <div class="thumbs" *ngIf="propiedad?.imagenes?.length">
+            <button
+              *ngFor="let im of propiedad?.imagenes; let idx = index"
+              type="button"
+              class="thumb-btn"
+              [class.active]="idx === mainIndex"
+              (click)="setMain(idx)"
+            >
+              <img
+                [src]="buildUrl(im.url)"
+                alt="thumb-{{ idx }}"
+                (error)="(null)"
+              />
+            </button>
+          </div>
+        </div>
+
+        <div class="info-section">
+          <p class="precio" *ngIf="propiedad?.precio !== undefined">
+            <strong>${{ propiedad?.precio | number: "1.2-2" }}</strong>
+          </p>
+          <p class="direccion">
+            <i class="bi bi-geo-alt"></i> {{ propiedad?.direccion }}
+          </p>
+          <p class="descripcion">{{ propiedad?.descripcion }}</p>
+          <p class="agente">
+            <i class="bi bi-person"></i>
+            {{ propiedad?.agenteResponsableNombre || "Sin asignar" }}
+          </p>
+          <p class="fechas small text-muted">
+            Creado: {{ formatDate(propiedad?.creadoEn) }}
+            <span *ngIf="propiedad?.actualizadoEn">
+              · Actualizado: {{ formatDate(propiedad?.actualizadoEn) }}</span
+            >
+          </p>
+        </div>
+      </div>
+
+      <div class="modal-footer-detail">
+        <button type="button" class="btn btn-secondary" (click)="onClose()">
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="backdrop" (click)="onClose()"></div>
+</div>

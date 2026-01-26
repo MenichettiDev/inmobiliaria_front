@@ -7,6 +7,7 @@ import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/
 import { ToastModalComponent } from '../../../shared/components/toast-modal/toast-modal.component';
 import { take } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
+import { ModalDetallePropiedadComponent } from '../components/modal-detalle-propiedad/modal-detalle-propiedad.component';
 
 interface Propiedad {
   id: number;
@@ -47,7 +48,7 @@ interface Paginacion {
 
 @Component({
   selector: 'app-visor-propiedades',
-  imports: [CommonModule, FormsModule, RouterModule, ConfirmModalComponent, ToastModalComponent],
+  imports: [CommonModule, FormsModule, RouterModule, ConfirmModalComponent, ToastModalComponent, ModalDetallePropiedadComponent],
   templateUrl: './visor-propiedades.component.html',
   styleUrl: './visor-propiedades.component.css'
 })
@@ -95,6 +96,10 @@ export class VisorPropiedadesComponent implements OnInit {
   toastMessage: string = '';
   toastVisible: boolean = false;
   toastType: 'success' | 'error' | 'warning' = 'success';
+
+  // detalle modal
+  detailVisible = false;
+  detailPropiedad: Propiedad | null = null;
 
   constructor(
     private propiedadesService: PropiedadesService,
@@ -389,6 +394,17 @@ export class VisorPropiedadesComponent implements OnInit {
   onCancelDelete(): void {
     this.confirmTargetId = null;
     this.confirmVisible = false;
+  }
+
+  // abrir modal detalle
+  openDetail(prop: Propiedad) {
+    this.detailPropiedad = prop;
+    this.detailVisible = true;
+  }
+
+  closeDetail() {
+    this.detailVisible = false;
+    this.detailPropiedad = null;
   }
 
   private showToast(message: string, type: 'success' | 'error' | 'warning' = 'success') {
