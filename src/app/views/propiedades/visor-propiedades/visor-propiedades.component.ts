@@ -7,8 +7,9 @@ import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/
 import { ToastModalComponent } from '../../../shared/components/toast-modal/toast-modal.component';
 import { take } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
-import { ModalDetallePropiedadComponent } from '../components/modal-detalle-propiedad/modal-detalle-propiedad.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ModalDetallePropiedadComponent } from '../components/modal-detalle-propiedad/modal-detalle-propiedad.component';
+import { ModalEditComponent } from '../components/modal-edit/modal-edit.component';
 
 interface Propiedad {
   id: number;
@@ -49,7 +50,7 @@ interface Paginacion {
 
 @Component({
   selector: 'app-visor-propiedades',
-  imports: [CommonModule, FormsModule, RouterModule, ConfirmModalComponent, ToastModalComponent, ModalDetallePropiedadComponent],
+  imports: [CommonModule, FormsModule, RouterModule, ConfirmModalComponent, ToastModalComponent, ModalEditComponent],
   templateUrl: './visor-propiedades.component.html',
   styleUrl: './visor-propiedades.component.css'
 })
@@ -297,7 +298,76 @@ export class VisorPropiedadesComponent implements OnInit {
   }
 
   editarPropiedad(id: number): void {
-    this.router.navigate(['/propiedades/edit', id]);
+    const propiedad = this.propiedades.find(p => p.id === id);
+    if (!propiedad) {
+      this.showToast('Propiedad no encontrada', 'error');
+      return;
+    }
+
+    const ref = this.modalService.open(ModalEditComponent, { size: 'lg', centered: true });
+    const comp = ref.componentInstance as ModalEditComponent;
+    comp.propiedad = { ...propiedad };
+    comp.estadosAdministrativos = this.estadosAdministrativos;
+    comp.estadosOperativos = this.estadosOperativos;
+
+    const saveSub = comp.save.subscribe((payload: any) => {
+      comp.setLoading(true);
+      this.propiedadesService.actualizarPropiedad(payload.id, payload).pipe(take(1)).subscribe({
+        next: (res: any) => {
+          comp.setLoading(false);
+          if (res && res.success) {
+            ref.close();
+            this.showToast('Propiedad actualizada correctamente', 'success');
+            this.cargarPropiedades();
+          } else {
+            comp.setError(res?.message || 'Error al actualizar la propiedad');
+          }
+        },
+        error: (err) => {
+          comp.setLoading(false);
+          const msg = err?.error?.message || err?.message || 'Error al actualizar la propiedad';
+          comp.setError(msg);
+        }
+      });
+    });
+
+    const cancelSub = comp.cancel.subscribe(() => ref.dismiss());
+
+    // limpiar subs al cerrar/dismissar
+    ref.result.finally(() => {
+      saveSub.unsubscribe?.();
+      cancelSub.unsubscribe?.();
+    });
+  }
+
+  onModalSave(propiedadEditada: any): void {
+    this.actualizarPropiedad(propiedadEditada);
+  }
+
+  onModalCancel(): void {
+    // El modal se cierra automáticamente
+  }
+
+  private actualizarPropiedad(propiedadEditada: any): void {
+    this.loading = true;
+
+    this.propiedadesService.actualizarPropiedad(propiedadEditada.id, propiedadEditada).pipe(take(1)).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.showToast('Propiedad actualizada correctamente', 'success');
+          this.cargarPropiedades();
+        } else {
+          this.showToast(response.message || 'Error al actualizar la propiedad', 'error');
+          this.loading = false;
+        }
+      },
+      error: (error) => {
+        console.error('Error al actualizar propiedad:', error);
+        const msg = error?.error?.message || error?.message || 'Error al actualizar la propiedad';
+        this.showToast(msg, 'error');
+        this.loading = false;
+      }
+    });
   }
 
   cambiarEstado(id: number): void {

@@ -116,46 +116,45 @@
                 {{ propiedad.estadoOperativoNombre }}
               </span>
             </div>
-          </div>
-          <!-- Thumbnails -->
-          <div class="mt-2 d-flex gap-2" *ngIf="propiedad.imagenes?.length">
-            <ng-container
-              *ngFor="let im of propiedad.imagenes; let idx = index"
-            >
-              <button
-                type="button"
-                class="btn p-0 border"
-                (click)="setMainImage(propiedad, idx)"
-                [class.border-primary]="
-                  (selectedImageIndex[propiedad.id] || 0) === idx
-                "
-                style="width: 60px; height: 45px; overflow: hidden"
-                title="Ver imagen {{ idx + 1 }}"
-              >
+
+            <!-- Thumbnails overlay: miniaturas sobre la imagen principal -->
+            <div class="thumbnails-overlay" *ngIf="propiedad.imagenes?.length">
+              <div class="thumbs d-flex align-items-center">
                 <ng-container
-                  *ngIf="
-                    (im?.url ?? '').toString().trim().length > 0;
-                    else noThumb
-                  "
+                  *ngFor="let im of propiedad.imagenes; let idx = index"
                 >
-                  <img
-                    [src]="getImageUrl(propiedad, idx)"
-                    style="width: 100%; height: 100%; object-fit: cover"
-                    (error)="onImageError($event, propiedad.id)"
-                  />
-                </ng-container>
-                <ng-template #noThumb>
-                  <div
-                    class="d-flex align-items-center justify-content-center bg-light text-muted"
-                    style="width: 100%; height: 100%; font-size: 0.75rem"
+                  <button
+                    type="button"
+                    class="thumb-btn"
+                    (click)="
+                      $event.stopPropagation(); setMainImage(propiedad, idx)
+                    "
+                    [class.active]="
+                      (selectedImageIndex[propiedad.id] || 0) === idx
+                    "
+                    title="Ver imagen {{ idx + 1 }}"
                   >
-                    Sin imagen
-                  </div>
-                </ng-template>
-              </button>
-            </ng-container>
+                    <ng-container
+                      *ngIf="
+                        (im?.url ?? '').toString().trim().length > 0;
+                        else noThumb
+                      "
+                    >
+                      <img
+                        [src]="getImageUrl(propiedad, idx)"
+                        alt="thumb {{ idx + 1 }}"
+                        (error)="onImageError($event, propiedad.id)"
+                      />
+                    </ng-container>
+                    <ng-template #noThumb>
+                      <div class="no-thumb">Sin imagen</div>
+                    </ng-template>
+                  </button>
+                </ng-container>
+              </div>
+            </div>
           </div>
-          <div class="propiedad-contenido p-3">
+          <div class="propiedad-contenido p-3 d-flex flex-column">
             <h5 class="propiedad-titulo">{{ propiedad.titulo }}</h5>
             <p class="propiedad-descripcion text-muted mb-2">
               {{ propiedad.descripcion }}
@@ -179,7 +178,7 @@
                 {{ propiedad.estadoAdminNombre }}
               </small>
             </div>
-            <div class="propiedad-actions">
+            <div class="propiedad-actions mt-auto">
               <button
                 class="btn btn-sm btn-outline-primary"
                 (click)="
@@ -296,6 +295,12 @@
     [type]="toastType"
     [animationPreset]="'preset-1'"
   ></app-toast-modal>
+
+  <!-- Modal Edit Component -->
+  <app-modal-edit
+    (save)="onModalSave($event)"
+    (cancel)="onModalCancel()"
+  ></app-modal-edit>
 
   <!-- modal detalle ahora gestionado por NgbModal -->
 </div>

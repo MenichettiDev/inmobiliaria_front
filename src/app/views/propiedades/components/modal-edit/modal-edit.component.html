@@ -1,0 +1,226 @@
+<div>
+  <div>
+    <div class="card shadow">
+      <div class="card-header bg-warning text-dark">
+        <div class="d-flex justify-content-between align-items-center">
+          <h2 class="card-title mb-0">
+            <i class="bi bi-pencil-square"></i> Editar Propiedad
+            <span *ngIf="propiedadId" class="badge bg-info ms-2"
+              >ID: {{ propiedadId }}</span
+            >
+          </h2>
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-secondary"
+            (click)="onCancel()"
+            aria-label="Cerrar"
+          >
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <!-- Error Alert -->
+        <div *ngIf="error" class="alert alert-danger" role="alert">
+          <i class="bi bi-exclamation-triangle"></i>
+          {{ error }}
+        </div>
+
+        <!-- Form -->
+        <form [formGroup]="propiedadForm" (ngSubmit)="onSubmit()" novalidate>
+          <!-- Título -->
+          <div class="mb-3">
+            <label for="titulo" class="form-label">Título</label>
+            <input
+              type="text"
+              class="form-control"
+              id="titulo"
+              formControlName="titulo"
+              [class.is-invalid]="isFieldInvalid('titulo')"
+              placeholder="Título de la propiedad"
+            />
+            <div *ngIf="isFieldInvalid('titulo')" class="invalid-feedback">
+              {{ getFieldError("titulo") }}
+            </div>
+          </div>
+
+          <!-- Descripción -->
+          <div class="mb-3">
+            <label for="descripcion" class="form-label">Descripción</label>
+            <textarea
+              class="form-control"
+              id="descripcion"
+              formControlName="descripcion"
+              rows="3"
+              [class.is-invalid]="isFieldInvalid('descripcion')"
+              placeholder="Descripción de la propiedad"
+            ></textarea>
+            <div *ngIf="isFieldInvalid('descripcion')" class="invalid-feedback">
+              {{ getFieldError("descripcion") }}
+            </div>
+          </div>
+
+          <!-- Precio y Agente -->
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="precio" class="form-label">Precio</label>
+                <div class="input-group">
+                  <span class="input-group-text">$</span>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="precio"
+                    formControlName="precio"
+                    [class.is-invalid]="isFieldInvalid('precio')"
+                    placeholder="0.00"
+                    step="0.01"
+                    min="0.01"
+                  />
+                </div>
+                <div *ngIf="isFieldInvalid('precio')" class="invalid-feedback">
+                  {{ getFieldError("precio") }}
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="agente" class="form-label"
+                  >Agente Responsable</label
+                >
+                <app-cbo-usuario
+                  [ngModel]="propiedadForm.get('idAgenteResponsable')?.value"
+                  (ngModelChange)="onUsuarioAsignadoChange($event)"
+                  [ngModelOptions]="{ standalone: true }"
+                  placeholder="Seleccionar agente (opcional)"
+                  [showOnlyActive]="true"
+                ></app-cbo-usuario>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dirección -->
+          <div class="mb-3">
+            <label for="direccion" class="form-label">Dirección</label>
+            <input
+              type="text"
+              class="form-control"
+              id="direccion"
+              formControlName="direccion"
+              [class.is-invalid]="isFieldInvalid('direccion')"
+              placeholder="Dirección de la propiedad"
+            />
+            <div *ngIf="isFieldInvalid('direccion')" class="invalid-feedback">
+              {{ getFieldError("direccion") }}
+            </div>
+          </div>
+
+          <!-- Estados -->
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="estadoAdmin" class="form-label"
+                  >Estado Administrativo</label
+                >
+                <select
+                  class="form-select"
+                  id="estadoAdmin"
+                  formControlName="idEstadoAdmin"
+                >
+                  <option
+                    *ngFor="let estado of estadosAdministrativos"
+                    [value]="estado.id"
+                  >
+                    {{ estado.nombre }}
+                  </option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="estadoOperativo" class="form-label"
+                  >Estado Operativo</label
+                >
+                <select
+                  class="form-select"
+                  id="estadoOperativo"
+                  formControlName="idEstadoOperativo"
+                >
+                  <option
+                    *ngFor="let estado of estadosOperativos"
+                    [value]="estado.id"
+                  >
+                    {{ estado.nombre }}
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Coordenadas -->
+          <div class="mb-4">
+            <label class="form-label">Coordenadas (opcional)</label>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="latitud" class="form-label">Latitud</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="latitud"
+                    formControlName="latitud"
+                    placeholder="-34.6118"
+                    step="0.00000001"
+                  />
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="longitud" class="form-label">Longitud</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="longitud"
+                    formControlName="longitud"
+                    placeholder="-58.3960"
+                    step="0.00000001"
+                  />
+                </div>
+              </div>
+            </div>
+            <small class="text-muted">
+              <i class="bi bi-info-circle"></i>
+              Las coordenadas ayudan a ubicar la propiedad en el mapa
+            </small>
+          </div>
+
+          <!-- Buttons -->
+          <div class="d-flex justify-content-between">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              (click)="onCancel()"
+              [disabled]="loading"
+            >
+              <i class="bi bi-x-circle"></i> Cancelar
+            </button>
+            <button
+              type="submit"
+              class="btn btn-warning"
+              [disabled]="loading || propiedadForm.invalid"
+            >
+              <span
+                *ngIf="loading"
+                class="spinner-border spinner-border-sm me-2"
+                role="status"
+              ></span>
+              <i *ngIf="!loading" class="bi bi-check-circle"></i>
+              {{ loading ? "Actualizando..." : "Actualizar Propiedad" }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
