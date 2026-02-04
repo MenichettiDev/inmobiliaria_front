@@ -1,15 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { PropiedadesService } from './../propiedades.service';
 import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/confirm-modal.component';
 import { ToastModalComponent } from '../../../shared/components/toast-modal/toast-modal.component';
-import { take } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ModalDetallePropiedadComponent } from '../components/modal-detalle-propiedad/modal-detalle-propiedad.component';
 import { ModalEditComponent } from '../components/modal-edit/modal-edit.component';
+import { forkJoin, of } from 'rxjs';
+import { map, catchError, take, switchMap } from 'rxjs/operators';
 
 interface Propiedad {
   id: number;
@@ -55,6 +56,7 @@ interface Paginacion {
   styleUrl: './visor-propiedades.component.css'
 })
 export class VisorPropiedadesComponent implements OnInit {
+  @ViewChild(ModalEditComponent) modalEdit!: ModalEditComponent;
   propiedades: Propiedad[] = [];
   propiedadesFiltradas: Propiedad[] = [];
   // índice de imagen seleccionada por propiedad id
@@ -312,7 +314,40 @@ export class VisorPropiedadesComponent implements OnInit {
 
     const saveSub = comp.save.subscribe((payload: any) => {
       comp.setLoading(true);
-      this.propiedadesService.actualizarPropiedad(payload.id, payload).pipe(take(1)).subscribe({
+
+      // Construir DTO conforme a UpdatePropiedadDto y añadir arrays (imagenes para agregar/eliminar/actualizar)
+      const dto: any = {
+        Id: payload.id,
+        Titulo: payload.titulo ?? null,
+        Descripcion: payload.descripcion ?? null,
+        Precio: payload.precio ?? null,
+        Direccion: payload.direccion ?? null,
+        Latitud: payload.latitud ?? null,
+        Longitud: payload.longitud ?? null,
+        IdAgenteResponsable: payload.idAgenteResponsable ?? null,
+        IdEstadoAdmin: payload.idEstadoAdmin ?? null,
+        IdEstadoOperativo: payload.idEstadoOperativo ?? null,
+        ImagenesParaEliminar: payload.imagesToRemove && payload.imagesToRemove.length ? payload.imagesToRemove : undefined,
+        ImagenesParaActualizar: payload.imagenesParaActualizar && payload.imagenesParaActualizar.length ? payload.imagenesParaActualizar : undefined,
+        ImagenesParaAgregar: undefined // se enviarán como archivos, no como URLs
+      };
+
+      const fd = new FormData();
+      // Adjuntar el DTO como parte JSON para que el binder lo parse como UpdatePropiedadDto
+      fd.append('updateDto', JSON.stringify(dto));
+
+
+      // Adjuntar archivos nuevos (multipart) con la clave que maneja el backend
+      if (payload.newFiles && payload.newFiles.length) {
+        payload.newFiles.forEach((f: File, idx: number) => {
+          fd.append('ImagenesParaAgregar', f, f.name);
+        });
+      }
+
+      console.log('[VisorPropiedades] actualizarPropiedad payload:', fd);
+
+      // Enviar multipart/form-data directamente al servicio
+      this.propiedadesService.actualizarPropiedad(id, fd).pipe(take(1)).subscribe({
         next: (res: any) => {
           comp.setLoading(false);
           if (res && res.success) {
@@ -333,42 +368,14 @@ export class VisorPropiedadesComponent implements OnInit {
 
     const cancelSub = comp.cancel.subscribe(() => ref.dismiss());
 
-    // limpiar subs al cerrar/dismissar
     ref.result.finally(() => {
       saveSub.unsubscribe?.();
       cancelSub.unsubscribe?.();
     });
   }
 
-  onModalSave(propiedadEditada: any): void {
-    this.actualizarPropiedad(propiedadEditada);
-  }
 
-  onModalCancel(): void {
-    // El modal se cierra automáticamente
-  }
 
-  private actualizarPropiedad(propiedadEditada: any): void {
-    this.loading = true;
-
-    this.propiedadesService.actualizarPropiedad(propiedadEditada.id, propiedadEditada).pipe(take(1)).subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.showToast('Propiedad actualizada correctamente', 'success');
-          this.cargarPropiedades();
-        } else {
-          this.showToast(response.message || 'Error al actualizar la propiedad', 'error');
-          this.loading = false;
-        }
-      },
-      error: (error) => {
-        console.error('Error al actualizar propiedad:', error);
-        const msg = error?.error?.message || error?.message || 'Error al actualizar la propiedad';
-        this.showToast(msg, 'error');
-        this.loading = false;
-      }
-    });
-  }
 
   cambiarEstado(id: number): void {
     const propiedad = this.propiedades.find(p => p.id === id);

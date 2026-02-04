@@ -195,6 +195,64 @@
             </small>
           </div>
 
+          <!-- Imágenes: existentes -->
+          <div class="mb-3">
+            <label class="form-label">Imágenes</label>
+            <div class="d-flex flex-wrap gap-2 mb-2">
+              <div *ngFor="let img of existingImages" class="position-relative">
+                <img
+                  [src]="img.url"
+                  alt="img-{{ img.id }}"
+                  class="img-thumbnail"
+                  style="width: 180px; height: 120px; object-fit: cover"
+                />
+                <button
+                  type="button"
+                  class="btn btn-sm btn-danger position-absolute"
+                  style="top: 6px; right: 6px; padding: 0.25rem 0.35rem"
+                  (click)="removeExistingImage(img.id)"
+                  title="Borrar imagen"
+                >
+                  <i class="bi bi-trash" aria-hidden="true"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Previews de archivos nuevos -->
+            <div class="d-flex flex-wrap gap-2 mb-2">
+              <div
+                *ngFor="let p of newFilePreviews; let i = index"
+                class="position-relative"
+              >
+                <img
+                  [src]="p"
+                  alt="new-{{ i }}"
+                  class="img-thumbnail"
+                  style="width: 180px; height: 120px; object-fit: cover"
+                />
+                <button
+                  type="button"
+                  class="btn btn-sm btn-secondary position-absolute"
+                  style="top: 6px; right: 6px; padding: 0.25rem 0.35rem"
+                  (click)="removeNewFile(i)"
+                  title="Quitar imagen nueva"
+                >
+                  <i class="bi bi-trash" aria-hidden="true"></i>
+                </button>
+              </div>
+            </div>
+
+            <input
+              type="file"
+              accept="image/*"
+              (change)="onFilesSelected($event)"
+              multiple
+            />
+            <small class="text-muted d-block mt-1"
+              >Puedes borrar imágenes existentes o subir nuevas.</small
+            >
+          </div>
+
           <!-- Buttons -->
           <div class="d-flex justify-content-between">
             <button

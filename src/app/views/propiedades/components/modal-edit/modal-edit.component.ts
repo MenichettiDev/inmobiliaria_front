@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { CboUsuarioComponent } from "../../../usuario/components/cbo-usuario/cbo-usuario.component";
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-modal-edit',
@@ -19,10 +20,15 @@ export class ModalEditComponent implements OnInit, OnChanges {
   @Output() cancel = new EventEmitter<void>();
 
   propiedadForm!: FormGroup;
-  visible = false;
   loading = false;
   propiedadId: any = null;
   error: string = '';
+
+  // Imágenes: existentes (desde propiedad), ids a borrar y nuevos archivos a subir
+  existingImages: any[] = [];
+  imagesToRemove: number[] = [];
+  newFiles: File[] = [];
+  newFilePreviews: string[] = [];
 
   constructor(private fb: FormBuilder) {
     this.propiedadForm = this.fb.group({
@@ -57,8 +63,20 @@ export class ModalEditComponent implements OnInit, OnChanges {
 
   private loadPropiedadData() {
     if (!this.propiedad) return;
-    
+
     this.propiedadId = this.propiedad.id;
+    // mapear y normalizar urls de imagen (usar buildUrl)
+    this.existingImages = Array.isArray(this.propiedad.imagenes)
+      ? this.propiedad.imagenes.map((im: any) => ({
+        ...im,
+        url: this.buildUrl(im?.url)
+      }))
+      : [];
+
+    this.imagesToRemove = [];
+    this.newFiles = [];
+    this.newFilePreviews = [];
+
     this.propiedadForm.patchValue({
       titulo: this.propiedad.titulo || '',
       descripcion: this.propiedad.descripcion || '',
@@ -72,19 +90,28 @@ export class ModalEditComponent implements OnInit, OnChanges {
     });
   }
 
-  open(propiedad?: any) {
-    if (propiedad) {
-      this.propiedad = propiedad;
-      this.loadPropiedadData();
-    }
-    this.visible = true;
-    this.error = '';
+  private buildUrl(url?: string): string {
+    if (!url) return 'assets/images/backgrounds/vacia.jpg';
+    const raw = url.toString().replace(/\r?\n|\r/g, '').trim();
+    if (/^https?:\/\//i.test(raw)) return raw;
+    const apiRoot = environment.apiUrl.replace(/\/api(\/)?$/i, '').replace(/\/$/, '');
+    const cleanUrl = raw.replace(/^\/?api\/?/, '/').replace(/\/+/, '/');
+    return encodeURI(apiRoot + (cleanUrl.startsWith('/') ? '' : '/') + cleanUrl);
   }
 
-  close() {
-    this.visible = false;
-    this.error = '';
-  }
+  // open(propiedad?: any) {
+  //   if (propiedad) {
+  //     this.propiedad = propiedad;
+  //     this.loadPropiedadData();
+  //   }
+  //   this.visible = true;
+  //   this.error = '';
+  // }
+
+  // close() {
+  //   this.visible = false;
+  //   this.error = '';
+  // }
 
   isFieldInvalid(fieldName: string): boolean {
     const field = this.propiedadForm.get(fieldName);
@@ -100,6 +127,35 @@ export class ModalEditComponent implements OnInit, OnChanges {
     return '';
   }
 
+  // Eliminar imagen existente (marcar para borrado y quitar de la lista mostrada)
+  removeExistingImage(imageId: number) {
+    if (!imageId) return;
+    this.imagesToRemove.push(imageId);
+    this.existingImages = this.existingImages.filter(img => img.id !== imageId);
+  }
+
+  // Seleccionar nuevos archivos (multiple)
+  onFilesSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (!input.files) return;
+    Array.from(input.files).forEach(file => {
+      this.newFiles.push(file);
+      const url = URL.createObjectURL(file);
+      this.newFilePreviews.push(url);
+    });
+    // reset input value to allow selecting same file again if needed
+    input.value = '';
+  }
+
+  removeNewFile(index: number) {
+    if (index < 0 || index >= this.newFiles.length) return;
+    // revoke preview URL
+    const url = this.newFilePreviews[index];
+    if (url) URL.revokeObjectURL(url);
+    this.newFiles.splice(index, 1);
+    this.newFilePreviews.splice(index, 1);
+  }
+
   onUsuarioAsignadoChange(usuarioId: any) {
     this.propiedadForm.patchValue({ idAgenteResponsable: usuarioId });
   }
@@ -111,21 +167,22 @@ export class ModalEditComponent implements OnInit, OnChanges {
     }
 
     this.loading = true;
-    const formData = { ...this.propiedad, ...this.propiedadForm.value };
-    this.save.emit(formData);
+    const payload: any = {
+      ...this.propiedad,
+      ...this.propiedadForm.value
+    };
+    if (this.imagesToRemove && this.imagesToRemove.length) payload.imagesToRemove = [...this.imagesToRemove];
+    if (this.newFiles && this.newFiles.length) payload.newFiles = [...this.newFiles];
+    this.save.emit(payload);
   }
 
   onCancel() {
     this.cancel.emit();
-    this.close();
   }
 
   // Método público para ser llamado desde el componente padre
   setLoading(loading: boolean) {
     this.loading = loading;
-    if (!loading) {
-      this.close();
-    }
   }
 
   setError(error: string) {

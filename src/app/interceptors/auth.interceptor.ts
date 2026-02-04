@@ -8,16 +8,17 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     const authService = inject(AuthService);
     const router = inject(Router);
 
-    // Solo agregar token a las peticiones de la API (excepto login)
     if (req.url.includes('/api/') && !req.url.includes('/auth/login')) {
         const token = authService.getToken();
 
         if (token && !authService.isTokenExpired()) {
-            // Clonar la request y agregar el header de autorización
+
+            const isFormData = req.body instanceof FormData;
+
             const authReq = req.clone({
                 setHeaders: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
+                    Authorization: `Bearer ${token}`,
+                    ...(isFormData ? {} : { 'Content-Type': 'application/json' })
                 }
             });
 
@@ -26,28 +27,16 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
                     if (error.status === 401) {
                         authService.logout();
                         router.navigate(['/login']);
-                    } else if (error.status === 403) {
-                        // Acceso denegado - Sin permisos suficientes
                     }
                     return throwError(() => error);
                 })
             );
-        } else {
-            // Si no hay token válido para peticiones API protegidas
-            authService.logout();
-            router.navigate(['/login']);
-            return throwError(() => new Error('No hay token válido'));
         }
+
+        authService.logout();
+        router.navigate(['/login']);
+        return throwError(() => new Error('No hay token válido'));
     }
 
-    // Para peticiones que no son de API o son de login, continuar sin modificar
-    return next(req).pipe(
-        catchError((error: HttpErrorResponse) => {
-            if (error.status === 401 && req.url.includes('/api/')) {
-                authService.logout();
-                router.navigate(['/login']);
-            }
-            return throwError(() => error);
-        })
-    );
+    return next(req);
 };
