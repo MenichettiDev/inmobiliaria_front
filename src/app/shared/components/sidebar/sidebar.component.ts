@@ -55,20 +55,6 @@ export class SidebarComponent implements OnInit {
           link: '/dashboard/resumen',
           roles: [1, 2, 3], // Solo Admin, Programador y Supervisor
         },
-        {
-          id: 12,
-          descripcion: 'Actividad Reciente',
-          icono: 'bi bi-clock-history',
-          link: '/dashboard/actividad',
-          roles: [1, 2, 3, 4, 6], // Todos
-        },
-        {
-          id: 13,
-          descripcion: 'Alertas',
-          icono: 'bi bi-exclamation-triangle',
-          link: '/dashboard/alertas',
-          roles: [1, 2, 3, 4, 6], // Todos
-        },
       ],
     },
 
@@ -89,23 +75,9 @@ export class SidebarComponent implements OnInit {
         },
         {
           id: 22,
-          descripcion: 'Crear / Editar',
+          descripcion: 'Crear',
           icono: 'bi bi-plus-circle',
           link: '/propiedades/crear',
-          roles: [2, 3, 4], // Solo Admin, Supervisor y Agente
-        },
-        {
-          id: 23,
-          descripcion: 'Publicar / Despublicar',
-          icono: 'bi bi-broadcast',
-          link: '/propiedades/publicar',
-          roles: [2, 3, 4], // Solo Admin, Supervisor y Agente
-        },
-        {
-          id: 24,
-          descripcion: 'Cambiar Estado',
-          icono: 'bi bi-arrow-repeat',
-          link: '/propiedades/estados',
           roles: [2, 3, 4], // Solo Admin, Supervisor y Agente
         },
       ],
@@ -127,34 +99,6 @@ export class SidebarComponent implements OnInit {
           roles: [2, 3, 4], // Solo Admin, Supervisor y Agente
         },
         {
-          id: 32,
-          descripcion: 'Cambiar Estado',
-          icono: 'bi bi-arrow-repeat',
-          link: '/leads/estados',
-          roles: [2, 3, 4, 6], // Todos excepto Programador
-        },
-        {
-          id: 33,
-          descripcion: 'Historial',
-          icono: 'bi bi-clock-history',
-          link: '/leads/historial',
-          roles: [2, 3, 4, 6], // Todos excepto Programador
-        },
-        {
-          id: 34,
-          descripcion: 'Notas',
-          icono: 'bi bi-journal-text',
-          link: '/leads/notas',
-          roles: [2, 3, 4, 6], // Todos excepto Programador
-        },
-        {
-          id: 35,
-          descripcion: 'Adjuntos',
-          icono: 'bi bi-paperclip',
-          link: '/leads/adjuntos',
-          roles: [2, 3, 4, 6], // Todos excepto Programador
-        },
-        {
           id: 36,
           descripcion: 'Mis Leads',
           icono: 'bi bi-person',
@@ -167,13 +111,6 @@ export class SidebarComponent implements OnInit {
           icono: 'bi bi-person-check',
           link: '/leads/asignados',
           roles: [6], // Solo Asistente - ve leads asignados
-        },
-        {
-          id: 38,
-          descripcion: 'Todos los Leads',
-          icono: 'bi bi-people-fill',
-          link: '/leads/visor',
-          roles: [2, 3], // Solo Admin y Supervisor
         },
       ],
     },
@@ -277,23 +214,9 @@ export class SidebarComponent implements OnInit {
       submenus: [
         {
           id: 71,
-          descripcion: 'Alta / Baja Usuarios',
+          descripcion: 'Administracion de Usuarios',
           icono: 'bi bi-person-plus',
           link: '/usuarios/visor',
-          roles: [2], // Solo Administrador
-        },
-        {
-          id: 72,
-          descripcion: 'Asignar Roles',
-          icono: 'bi bi-shield-check',
-          link: '/usuarios/roles',
-          roles: [2], // Solo Administrador
-        },
-        {
-          id: 73,
-          descripcion: 'Estados de Usuario',
-          icono: 'bi bi-person-check',
-          link: '/usuarios/estados',
           roles: [2], // Solo Administrador
         },
       ],
@@ -314,20 +237,6 @@ export class SidebarComponent implements OnInit {
           link: '/inmobiliaria/visor',
           roles: [1, 2], // Solo Administrador
         },
-        {
-          id: 82,
-          descripcion: 'Marca / Subdominio',
-          icono: 'bi bi-globe',
-          link: '/inmobiliaria/marca',
-          roles: [1, 2], // Solo Administrador
-        },
-        {
-          id: 83,
-          descripcion: 'Integraciones',
-          icono: 'bi bi-plug',
-          link: '/inmobiliaria/integraciones',
-          roles: [1, 2], // Solo Administrador
-        },
       ],
     },
 
@@ -344,20 +253,6 @@ export class SidebarComponent implements OnInit {
           descripcion: 'Plan Actual',
           icono: 'bi bi-star',
           link: '/plan-facturacion/visor',
-          roles: [2], // Solo Administrador
-        },
-        {
-          id: 92,
-          descripcion: 'Facturas',
-          icono: 'bi bi-receipt',
-          link: '/plan-facturacion/facturas',
-          roles: [2], // Solo Administrador
-        },
-        {
-          id: 93,
-          descripcion: 'Métodos de Pago',
-          icono: 'bi bi-credit-card',
-          link: '/plan-facturacion/metodos-pago',
           roles: [2], // Solo Administrador
         },
       ],
@@ -378,13 +273,6 @@ export class SidebarComponent implements OnInit {
           link: '/reportes/visor',
           roles: [2, 3], // Admin y Supervisor
         },
-        {
-          id: 102,
-          descripcion: 'Exportaciones',
-          icono: 'bi bi-download',
-          link: '/reportes/exportaciones',
-          roles: [2, 3], // Admin y Supervisor
-        },
       ],
     },
 
@@ -401,20 +289,6 @@ export class SidebarComponent implements OnInit {
           descripcion: 'Estados',
           icono: 'bi bi-tags',
           link: '/configuracion/visor',
-          roles: [2], // Solo Administrador
-        },
-        {
-          id: 112,
-          descripcion: 'Automatizaciones',
-          icono: 'bi bi-robot',
-          link: '/configuracion/automatizaciones',
-          roles: [2], // Solo Administrador
-        },
-        {
-          id: 113,
-          descripcion: 'Plantillas',
-          icono: 'bi bi-file-earmark-text',
-          link: '/configuracion/plantillas',
           roles: [2], // Solo Administrador
         },
       ],
