@@ -8,6 +8,8 @@ import { PaginatorComponent } from '../../../../shared/components/paginator/pagi
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { SpinnerComponent } from '../../../../shared/components/spinner/spinner.component';
 import { AlertaService } from '../../../../services/alerta.service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ModalViewEditComponent } from '../../components/modal-view-edit/modal-view-edit.component';
 
 interface ClienteRaw {
   [key: string]: any;
@@ -15,8 +17,7 @@ interface ClienteRaw {
 
 interface DisplayCliente {
   id: number | null;
-  nombre?: string;
-  apellido?: string;
+  nombreCompleto: string;
   email?: string;
   telefono?: string;
   dni?: string;
@@ -85,7 +86,8 @@ export class VisorClientesComponent implements OnInit {
   constructor(
     private clientesService: ClientesService,
     private router: Router,
-    private alertService: AlertaService
+    private alertService: AlertaService,
+    private modalService: NgbModal
   ) { }
 
   ngOnInit(): void {
@@ -202,8 +204,7 @@ export class VisorClientesComponent implements OnInit {
 
     return {
       id: c['id'] ?? null,
-      nombre: c['nombre'] ?? '',
-      apellido: c['apellido'] ?? '',
+      nombreCompleto: c['nombreCompleto'] ?? '',
       email: c['email'] ?? '',
       telefono: c['telefono'] ?? '',
       dni: c['dni'] ?? '',
@@ -257,12 +258,29 @@ export class VisorClientesComponent implements OnInit {
     this.calculatePagination();
   }
 
-  editCliente(item: DisplayCliente): void {
-    const id = item?.id ?? null;
-    if (id == null) return;
+  createNewCliente(): void {
+    this.openModal();
+  }
 
-    // Navigate to edit page or open modal
-    this.router.navigate(['/clientes/editar', id]);
+  editCliente(cliente: any): void {
+    this.openModal(cliente);
+  }
+
+  private openModal(cliente?: any): void {
+    const modalRef = this.modalService.open(ModalViewEditComponent, { centered: true, size: 'lg' });
+    modalRef.componentInstance.cliente = cliente ?? null;
+
+    modalRef.result.then(
+      (result) => {
+        // result contiene el cliente creado/actualizado: refrescar la lista
+        if (typeof this.onSearch === 'function') {
+          this.onSearch();
+        }
+      },
+      (reason) => {
+        // dismissed - no action required
+      }
+    );
   }
 
   deleteCliente(item: DisplayCliente): void {
@@ -293,10 +311,6 @@ export class VisorClientesComponent implements OnInit {
           });
         }
       });
-  }
-
-  createNewCliente(): void {
-    this.router.navigate(['/clientes/crear']);
   }
 
   onPageEvent(event: { pageIndex: number; pageSize: number }): void {

@@ -5,8 +5,9 @@ import { environment } from '../../../../environments/environment';
 
 export interface Cliente {
     id: number;
-    nombre: string;
-    apellido: string;
+    nombre?: string;
+    apellido?: string;
+    nombreCompleto?: string;
     email: string;
     telefono: string;
     dni: string;
@@ -17,8 +18,7 @@ export interface Cliente {
 }
 
 export interface CreateClienteDto {
-    nombre: string;
-    apellido: string;
+    nombreCompleto: string;
     email: string;
     telefono: string;
     dni: string;
@@ -27,8 +27,7 @@ export interface CreateClienteDto {
 
 export interface UpdateClienteDto {
     id: number;
-    nombre: string;
-    apellido: string;
+    nombreCompleto: string;
     email: string;
     telefono: string;
     dni: string;
@@ -91,8 +90,8 @@ export class ClientesService {
             .set('page', page.toString())
             .set('pageSize', pageSize.toString());
 
-        if (filters.nombre?.trim()) {
-            params = params.set('nombre', filters.nombre.trim());
+        if (filters.nombreCompleto?.trim()) {
+            params = params.set('nombreCompleto', filters.nombreCompleto.trim());
         }
 
         if (filters.activo !== undefined && filters.activo !== null) {

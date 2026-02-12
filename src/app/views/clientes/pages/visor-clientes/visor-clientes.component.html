@@ -23,7 +23,7 @@
                 type="text"
                 class="form-control"
                 [(ngModel)]="filtroNombre"
-                placeholder="Nombre"
+                placeholder="Nombre completo"
                 (keyup.enter)="onSearch()"
               />
             </div>
@@ -100,8 +100,7 @@
       <table class="custom-table">
         <thead>
           <tr>
-            <th>Nombre</th>
-            <th>Apellido</th>
+            <th>Nombre completo</th>
             <th>Email</th>
             <th>Teléfono</th>
             <th>DNI</th>
@@ -111,8 +110,7 @@
         </thead>
         <tbody>
           <tr *ngFor="let cliente of getPaginatedClientes(); let i = index">
-            <td>{{ cliente.nombre }}</td>
-            <td>{{ cliente.apellido }}</td>
+            <td>{{ cliente.nombreCompleto }}</td>
             <td>{{ cliente.email }}</td>
             <td>{{ cliente.telefono }}</td>
             <td>{{ cliente.dni }}</td>
@@ -151,7 +149,7 @@
             </td>
           </tr>
           <tr *ngIf="getPaginatedClientes().length === 0">
-            <td colspan="7" class="empty-message">
+            <td colspan="6" class="empty-message">
               No se encontraron clientes.
             </td>
           </tr>

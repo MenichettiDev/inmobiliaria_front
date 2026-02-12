@@ -1,1 +1,179 @@
-<p>modal-view-edit works!</p>
+<div class="modal-overlay" role="dialog" aria-modal="true">
+  <div
+    class="modal-wrapper"
+    [class.readonly]="mode === 'edit' && !editingEnabled"
+  >
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="header-controls">
+          <!-- switch similar al modal-usuario para activar/desactivar edición en modo edit -->
+          <div *ngIf="mode === 'edit'" class="mode-switch-wrapper">
+            <button
+              type="button"
+              class="mode-switch"
+              (click)="editingEnabled = !editingEnabled"
+              [attr.aria-pressed]="editingEnabled"
+              [attr.aria-label]="
+                editingEnabled ? 'Desactivar edición' : 'Activar edición'
+              "
+            >
+              <span class="switch-track" [class.on]="editingEnabled">
+                <span class="switch-thumb" [class.on]="editingEnabled"></span>
+              </span>
+            </button>
+          </div>
+          <h3 class="modal-title">
+            {{
+              mode === "edit"
+                ? editingEnabled
+                  ? "Modo edición"
+                  : "Modo lectura"
+                : "Nuevo cliente"
+            }}
+          </h3>
+        </div>
+
+        <button class="close-btn" (click)="cancel()" aria-label="Cerrar">
+          <span class="pi pi-times" aria-hidden="true"></span>
+        </button>
+      </div>
+
+      <form class="modal-form compact-form-grid" autocomplete="off">
+        <!-- dummy hidden inputs para evitar autofill como en modal-usuario -->
+        <input
+          type="text"
+          name="fakeusernameremembered"
+          autocomplete="username"
+          style="display: none"
+        />
+        <input
+          type="password"
+          name="fakepasswordremembered"
+          autocomplete="new-password"
+          style="display: none"
+        />
+
+        <!-- Nombre completo -->
+        <div class="field-group" [class.has-error]="false">
+          <label class="required">Nombre completo</label>
+          <input
+            [(ngModel)]="editedCliente.nombreCompleto"
+            name="nombreCompleto"
+            placeholder="Nombre completo"
+            [readonly]="mode === 'edit' && !editingEnabled"
+          />
+        </div>
+
+        <!-- DNI -->
+        <div class="field-group">
+          <label class="required">DNI</label>
+          <input
+            [(ngModel)]="editedCliente.dni"
+            name="dni"
+            placeholder="DNI"
+            [readonly]="mode === 'edit' && !editingEnabled"
+          />
+        </div>
+
+        <!-- Teléfono -->
+        <div class="field-group">
+          <label class="optional"
+            >Teléfono <span class="optional-text">(opcional)</span></label
+          >
+          <input
+            [(ngModel)]="editedCliente.telefono"
+            name="telefono"
+            placeholder="Teléfono"
+            [readonly]="mode === 'edit' && !editingEnabled"
+          />
+        </div>
+
+        <!-- Email -->
+        <div class="field-group full-width">
+          <label class="required">Email</label>
+          <input
+            type="email"
+            [(ngModel)]="editedCliente.email"
+            name="email"
+            placeholder="cliente@ejemplo.com"
+            [readonly]="mode === 'edit' && !editingEnabled"
+          />
+        </div>
+
+        <!-- Activo -->
+        <div class="field-group">
+          <label>Estado</label>
+          <div class="input-with-icon">
+            <input
+              type="checkbox"
+              [(ngModel)]="editedCliente.activo"
+              name="activo"
+              [disabled]="mode === 'edit' && !editingEnabled"
+            />
+            <span class="optional-text">{{
+              editedCliente.activo ? "Activo" : "Inactivo"
+            }}</span>
+          </div>
+        </div>
+
+        <!-- IdInmobiliaria hidden -->
+        <input
+          type="hidden"
+          [(ngModel)]="editedCliente.idInmobiliaria"
+          name="idInmobiliaria"
+        />
+      </form>
+
+      <div class="actions">
+        <button
+          type="button"
+          class="btn-cancel"
+          (click)="cancel()"
+          [disabled]="isSaving"
+        >
+          Cancelar
+        </button>
+
+        <span
+          [ngbTooltip]="
+            mode === 'edit' && !editingEnabled
+              ? 'Activa edición para actualizar'
+              : null
+          "
+          placement="top"
+          container="body"
+        >
+          <button
+            *ngIf="mode === 'edit'"
+            class="btn-submit"
+            (click)="save()"
+            [disabled]="!editingEnabled || isSaving"
+          >
+            <span
+              *ngIf="isSaving"
+              class="spinner-border spinner-border-sm me-2"
+              role="status"
+              aria-hidden="true"
+            ></span>
+            Actualizar
+          </button>
+        </span>
+
+        <button
+          *ngIf="mode !== 'edit'"
+          class="btn-submit"
+          (click)="save()"
+          [disabled]="isSaving"
+        >
+          <span
+            *ngIf="isSaving"
+            class="spinner-border spinner-border-sm me-2"
+            role="status"
+            aria-hidden="true"
+          ></span>
+          Crear
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
