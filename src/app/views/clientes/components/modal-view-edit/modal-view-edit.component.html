@@ -134,6 +134,20 @@
           Cancelar
         </button>
 
+        <!-- Eliminar: solo en modo edición -->
+        <button
+          *ngIf="mode === 'edit'"
+          type="button"
+          class="btn btn-danger btn-delete"
+          (click)="delete()"
+          [disabled]="!editingEnabled || isSaving"
+          ngbTooltip="Eliminar cliente"
+          placement="top"
+          container="body"
+        >
+          <i class="pi pi-trash"></i> Eliminar
+        </button>
+
         <span
           [ngbTooltip]="
             mode === 'edit' && !editingEnabled

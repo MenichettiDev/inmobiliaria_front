@@ -114,6 +114,30 @@ export class ModalViewEditComponent implements OnInit {
     }
   }
 
+  delete() {
+    if (!this.editedCliente || !this.editedCliente.id) return;
+    this.alertaService
+      .confirm('¿Estás seguro de que deseas eliminar este cliente?', 'Eliminar Cliente')
+      .then((result: any) => {
+        if (result && result.isConfirmed) {
+          this.isSaving = true;
+          const id = Number(this.editedCliente.id);
+          this.clientesService.deleteCliente(id).pipe(take(1)).subscribe({
+            next: () => {
+              this.isSaving = false;
+              this.alertaService.success('El cliente ha sido eliminado correctamente.', '¡Eliminado!');
+              // cerrar indicando que se eliminó para que el padre refresque
+              this.activeModal.close({ deleted: true, id });
+            },
+            error: (err) => {
+              this.isSaving = false;
+              this.alertaService.error('No se pudo eliminar el cliente. Intente nuevamente.');
+            }
+          });
+        }
+      });
+  }
+
   cancel() {
     this.activeModal.dismiss();
   }
