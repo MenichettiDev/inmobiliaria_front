@@ -10,7 +10,7 @@ import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { CboRolUsuarioComponent } from '../../components/cbo-rol-usuario/cbo-rol-usuario.component';
 import { SpinnerComponent } from '../../../../shared/components/spinner/spinner.component';
 import { AlertaService } from '../../../../services/alerta.service';
-import { UsuariosModalComponent } from "../../components/modal-usuario/modal-usuario.component";
+import { UsuariosModalCrudComponent } from "../../components/modal-crud-usuario/modal-crud-usuario.component";
 
 interface UserRaw {
   [key: string]: any;
@@ -66,7 +66,7 @@ interface ApiResponse {
     PaginatorComponent,
     NgbTooltipModule,
     SpinnerComponent,
-    UsuariosModalComponent
+    UsuariosModalCrudComponent
   ],
   templateUrl: './visor-usuario.component.html',
   styleUrls: ['../../../../../styles/visor-style.css'],

@@ -28,10 +28,10 @@ import { CboEstadoUsuarioComponent } from '../cbo-estado-usuario/cbo-estado-usua
   selector: 'app-usuarios-modal',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, NgbTooltipModule, CboRolUsuarioComponent, CboEstadoUsuarioComponent],
-  templateUrl: './modal-usuario.component.html',
+  templateUrl: './modal-crud-usuario.component.html',
   styleUrls: ['../../../../../styles/modal-style.css'], // usar estilos consolidados globales (scoped al componente)
 })
-export class UsuariosModalComponent implements OnInit, OnChanges {
+export class UsuariosModalCrudComponent implements OnInit, OnChanges {
   @Output() submit = new EventEmitter<{
     mode: 'create' | 'edit';
     data: any;

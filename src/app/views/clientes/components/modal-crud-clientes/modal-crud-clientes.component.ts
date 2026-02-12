@@ -9,11 +9,11 @@ import { take } from 'rxjs/operators';
 @Component({
   standalone: true,
   imports: [CommonModule, FormsModule, NgbTooltipModule],
-  selector: 'app-modal-view-edit',
-  templateUrl: './modal-view-edit.component.html',
+  selector: 'app-modal-crud-clientes',
+  templateUrl: './modal-crud-clientes.component.html',
   styleUrls: ['../../../../../styles/modal-style.css']
 })
-export class ModalViewEditComponent implements OnInit {
+export class ModalCrudClientesComponent implements OnInit {
   @Input() cliente: any | null = null;
 
   editedCliente: any = {

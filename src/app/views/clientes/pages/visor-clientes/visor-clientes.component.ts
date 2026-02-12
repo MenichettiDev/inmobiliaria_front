@@ -9,7 +9,7 @@ import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { SpinnerComponent } from '../../../../shared/components/spinner/spinner.component';
 import { AlertaService } from '../../../../services/alerta.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ModalViewEditComponent } from '../../components/modal-view-edit/modal-view-edit.component';
+import { ModalCrudClientesComponent } from '../../components/modal-crud-clientes/modal-crud-clientes.component';
 
 interface ClienteRaw {
   [key: string]: any;
@@ -267,7 +267,7 @@ export class VisorClientesComponent implements OnInit {
   }
 
   private openModal(cliente?: any): void {
-    const modalRef = this.modalService.open(ModalViewEditComponent, { centered: true, size: 'lg' });
+    const modalRef = this.modalService.open(ModalCrudClientesComponent, { centered: true, size: 'lg' });
     modalRef.componentInstance.cliente = cliente ?? null;
 
     modalRef.result.then(
