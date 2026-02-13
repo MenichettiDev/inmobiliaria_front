@@ -9,7 +9,11 @@
       <!-- Main input - readonly when collapsed, editable when expanded -->
       <input
         [id]="isId"
-        [value]="isOpen ? searchControl.value || '' : placeholder"
+        [value]="
+          isOpen
+            ? searchControl.value || ''
+            : displayTextForInput || placeholder
+        "
         [disabled]="isDisabled"
         [readonly]="!isOpen"
         [class.error]="hasErrors()"
@@ -18,6 +22,7 @@
         (focus)="onMainInputFocus()"
         (blur)="onMainInputBlur()"
         (input)="onMainInputChange($event)"
+        [placeholder]="isOpen ? placeholder : ''"
         autocomplete="off"
       />
 

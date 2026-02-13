@@ -98,6 +98,64 @@
           ></app-cbo-estado-lead>
         </div>
 
+        <!-- Cliente Section (añadido) -->
+        <div class="mb-3">
+          <label class="form-label">Cliente</label>
+
+          <div class="mb-2">
+            <div class="form-check form-check-inline">
+              <input
+                class="form-check-input"
+                type="radio"
+                id="clienteNoRegistrado_edit"
+                name="tipoCliente_edit"
+                [(ngModel)]="clienteRegistrado"
+                [value]="false"
+                (change)="onClienteRegistradoChange()"
+              />
+              <label class="form-check-label" for="clienteNoRegistrado_edit">
+                No registrado
+              </label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input
+                class="form-check-input"
+                type="radio"
+                id="clienteRegistrado_edit"
+                name="tipoCliente_edit"
+                [(ngModel)]="clienteRegistrado"
+                [value]="true"
+                (change)="onClienteRegistradoChange()"
+              />
+              <label class="form-check-label" for="clienteRegistrado_edit">
+                Cliente registrado
+              </label>
+            </div>
+          </div>
+
+          <div *ngIf="clienteRegistrado">
+            <app-cbo-clientes
+              [ngModel]="leadEdicion['idCliente']"
+              (ngModelChange)="onClienteChange($event)"
+              name="idCliente"
+              placeholder="Seleccionar cliente existente"
+              [showOnlyActive]="true"
+              [disabled]="loading"
+            ></app-cbo-clientes>
+            <div class="form-text">
+              Busca y selecciona un cliente ya registrado en el sistema.
+            </div>
+          </div>
+
+          <div *ngIf="!clienteRegistrado" class="alert alert-info py-2">
+            <i class="fas fa-info-circle me-1"></i>
+            <small>
+              Este lead será tratado como un cliente potencial no registrado.
+              Podrás convertirlo en cliente más adelante.
+            </small>
+          </div>
+        </div>
+
         <div class="mb-3">
           <label class="form-label">Observaciones</label>
           <textarea

@@ -10,6 +10,7 @@ import { SpinnerComponent } from '../../../../shared/components/spinner/spinner.
 import { ConfirmModalComponent } from '../../../../shared/components/confirm-modal/confirm-modal.component';
 import { ToastModalComponent } from '../../../../shared/components/toast-modal/toast-modal.component';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { CboClientesComponent } from '../../../clientes/components/cbo-clientes/cbo-clientes.component';
 
 @Component({
   selector: 'app-modal-edit-lead',
@@ -19,6 +20,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
     CboUsuarioComponent,
     CboEstadoLeadComponent,
     CboFuentesComponent,
+    CboClientesComponent,
     SpinnerComponent,
     ToastModalComponent // Ensure ToastModalComponent is included here
   ],
@@ -38,6 +40,8 @@ export class ModalEditLeadComponent implements OnInit, OnChanges {
 
   // Permisos
   puedeAsignar = false;
+  // Cliente registrado toggle
+  clienteRegistrado: boolean = false;
 
   constructor(
     private authService: AuthService,
@@ -97,8 +101,17 @@ export class ModalEditLeadComponent implements OnInit, OnChanges {
         mensaje: this.leadOriginal.mensaje || '',
         activo: this.leadOriginal.activo !== false
       };
+      // Pre-cargar cliente si existe y activar el toggle correspondiente
+      if (this.leadOriginal.idCliente !== undefined && this.leadOriginal.idCliente !== null) {
+        (this.leadEdicion as any).idCliente = this.leadOriginal.idCliente;
+        this.clienteRegistrado = true;
+      } else {
+        (this.leadEdicion as any).idCliente = undefined;
+        this.clienteRegistrado = false;
+      }
     } else {
       this.leadEdicion = this.getEmptyLead();
+      this.clienteRegistrado = false;
     }
   }
 
@@ -127,14 +140,24 @@ export class ModalEditLeadComponent implements OnInit, OnChanges {
     }
 
     this.loading = true;
-
-    // Emit the updated lead data
-    this.guardar.emit(this.leadEdicion);
-
-    // Simulate a delay for the spinner
-    setTimeout(() => {
-      this.onGuardadoCompleto();
-    }, 1000); // Example delay
+    this.leadsService.actualizarLead(this.leadEdicion.id, this.leadEdicion).subscribe({
+      next: (response) => {
+        // Emitir para el padre por compatibilidad
+        this.guardar.emit(this.leadEdicion);
+        this.loading = false;
+        this.mostrarToastGuardar = true;
+        // Cerrar modal después de mostrar toast breve 
+        setTimeout(() => {
+          this.mostrarToastGuardar = false;
+          this.activeModal.close({ success: true, data: response?.data ?? response });
+        }, 1500);
+      },
+      error: (err) => {
+        console.error('Error updating lead:', err);
+        this.loading = false;
+        this.onErrorGuardado();
+      }
+    });
   }
 
   onGuardadoCompleto(): void {
@@ -152,5 +175,17 @@ export class ModalEditLeadComponent implements OnInit, OnChanges {
 
   onUsuarioAsignadoChange(userId: number | null): void {
     this.leadEdicion.idUsuarioAsignado = userId || undefined;
+  }
+
+  onClienteChange(clienteId: number | null): void {
+    // Mantener undefined si null
+    (this.leadEdicion as any).idCliente = clienteId || undefined;
+  }
+
+  onClienteRegistradoChange(): void {
+    if (!this.clienteRegistrado) {
+      // Si se cambia a "No registrado", limpiar la selección del cliente
+      (this.leadEdicion as any).idCliente = undefined;
+    }
   }
 }
