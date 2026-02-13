@@ -17,6 +17,8 @@ export interface Lead {
     usuarioAsignadoNombre?: string;
     idPropiedad?: number;
     propiedadDireccion?: string;
+    idCliente?: number;
+    clienteNombre?: string;
     mensaje?: string;
     fechaCreacion: string;
     fechaUltimaActividad?: string;
@@ -30,6 +32,7 @@ export interface CreateLeadDto {
     idFuente: number;
     idUsuarioAsignado?: number;
     idPropiedad?: number;
+    idCliente?: number;
     observaciones?: string;
 }
 
@@ -42,6 +45,7 @@ export interface UpdateLeadDto {
     idFuente: number;
     idUsuarioAsignado?: number;
     idPropiedad?: number;
+    idCliente?: number;
     mensaje?: string;
     activo: boolean;
 }
@@ -93,6 +97,7 @@ export class LeadsService {
         fuenteId?: number,
         usuarioAsignadoId?: number,
         propiedadId?: number,
+        clienteId?: number,
         activo?: boolean
     ): Observable<PaginatedResponse<Lead>> {
         let params = new HttpParams()
@@ -104,6 +109,7 @@ export class LeadsService {
         if (fuenteId) params = params.set('fuenteId', fuenteId.toString());
         if (usuarioAsignadoId) params = params.set('usuarioAsignadoId', usuarioAsignadoId.toString());
         if (propiedadId) params = params.set('propiedadId', propiedadId.toString());
+        if (clienteId) params = params.set('clienteId', clienteId.toString());
         if (activo !== undefined) params = params.set('activo', activo.toString());
 
         return this.http.get<PaginatedResponse<Lead>>(`${this.apiUrl}`, { params }).pipe(

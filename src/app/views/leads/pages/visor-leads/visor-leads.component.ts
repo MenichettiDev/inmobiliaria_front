@@ -45,6 +45,7 @@ export class VisorLeadsComponent implements OnInit {
     fuenteId: null as number | null,
     usuarioAsignadoId: null as number | null,
     propiedadId: null as number | null,
+    clienteId: null as number | null,
     activo: null as boolean | null
   };
 
@@ -102,6 +103,7 @@ export class VisorLeadsComponent implements OnInit {
       this.filtros.fuenteId || undefined,
       this.filtros.usuarioAsignadoId || undefined,
       this.filtros.propiedadId || undefined,
+      this.filtros.clienteId || undefined,
       this.filtros.activo === null ? undefined : this.filtros.activo // Convert null to undefined
     ).subscribe({
       next: (response) => {
@@ -135,6 +137,7 @@ export class VisorLeadsComponent implements OnInit {
       fuenteId: null,
       usuarioAsignadoId: null,
       propiedadId: null,
+      clienteId: null,
       activo: null
     };
     this.aplicarFiltros();
