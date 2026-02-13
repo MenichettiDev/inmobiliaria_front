@@ -81,13 +81,17 @@ export class CboClientesComponent
   isOpen = false;
   selectedCliente: ClienteOption | null = null;
 
+  // NEW: display text used in the input (don't overwrite @Input() placeholder)
+  displayTextForInput: string = '';
+
   constructor(private clientesService: ClientesService) { }
 
   ngOnInit(): void {
     this.setupSearchSubscription();
     this.loadInitialClientes();
     this.updateDisabledState();
-    this.updatePlaceholderText();
+    // Initialize display text with either selected cliente or the original placeholder
+    this.displayTextForInput = this.selectedCliente ? this.selectedCliente.displayText : this.placeholder;
   }
 
   ngOnDestroy(): void {
@@ -101,7 +105,8 @@ export class CboClientesComponent
         distinctUntilChanged(),
         switchMap((term) => {
           if (!this.isOpen) {
-            return of([]);
+            // DON'T clear the cached list when the dropdown is closed
+            return of(this.clientes);
           }
 
           const searchTerm = (term || '').toString().trim();
@@ -134,8 +139,9 @@ export class CboClientesComponent
 
     return this.clientesService.getClientes(1, 10, filters).pipe(
       switchMap((response) => {
-        // Fix: Extract the correct array from the nested response structure
-        const rawList = response.data.data || [];
+        // Robust extraction: response.data puede ser el array o contener .data
+        const raw = response?.data;
+        const rawList = Array.isArray(raw) ? raw : (raw?.data ?? []);
         const clientes = this.mapClientesToOptions(rawList);
         this.isLoading = false;
         return of(clientes);
@@ -161,8 +167,9 @@ export class CboClientesComponent
 
     return this.clientesService.getClientes(1, 20, filters).pipe(
       switchMap((response) => {
-        // Fix: Extract the correct array from the nested response structure
-        const rawList = response.data.data || [];
+        // Robust extraction similar to loadInitialData
+        const raw = response?.data;
+        const rawList = Array.isArray(raw) ? raw : (raw?.data ?? []);
         const clientes = this.mapClientesToOptions(rawList);
         this.isLoading = false;
         return of(clientes);
@@ -304,10 +311,11 @@ export class CboClientesComponent
   }
 
   private updatePlaceholderText(): void {
+    // Do not mutate the @Input() placeholder. Use displayTextForInput for the template.
     if (this.selectedCliente) {
-      this.placeholder = this.selectedCliente.displayText;
+      this.displayTextForInput = this.selectedCliente.displayText;
     } else {
-      this.placeholder = 'Seleccionar cliente...';
+      this.displayTextForInput = this.placeholder;
     }
   }
 

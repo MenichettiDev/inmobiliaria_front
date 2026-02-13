@@ -138,11 +138,10 @@
                 class="form-check-input"
                 type="radio"
                 id="clienteNoRegistrado"
-                [ngModel]="!clienteRegistrado"
-                (ngModelChange)="
-                  clienteRegistrado = !$event; onClienteRegistradoChange()
-                "
                 name="tipoCliente"
+                [(ngModel)]="clienteRegistrado"
+                [value]="false"
+                (change)="onClienteRegistradoChange()"
                 [disabled]="loading"
               />
               <label class="form-check-label" for="clienteNoRegistrado">
@@ -154,11 +153,10 @@
                 class="form-check-input"
                 type="radio"
                 id="clienteRegistrado"
-                [ngModel]="clienteRegistrado"
-                (ngModelChange)="
-                  clienteRegistrado = $event; onClienteRegistradoChange()
-                "
                 name="tipoCliente"
+                [(ngModel)]="clienteRegistrado"
+                [value]="true"
+                (change)="onClienteRegistradoChange()"
                 [disabled]="loading"
               />
               <label class="form-check-label" for="clienteRegistrado">
