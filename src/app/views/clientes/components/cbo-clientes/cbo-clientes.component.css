@@ -1,0 +1,10 @@
+/* Importar estilos compartidos para combos (módulo movimientos/cbo) */
+@import "./../../../../shared/cbo.component.css";
+
+/* Overrides locales (mínimos) */
+.cbo-usuario-wrapper {
+    /* mantener posicionamiento contextual si hace falta */
+    position: relative;
+}
+
+/* Si necesita reglas específicas de este combo, añadirlas aquí. */

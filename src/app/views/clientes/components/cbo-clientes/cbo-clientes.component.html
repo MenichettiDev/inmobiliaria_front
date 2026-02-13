@@ -1,1 +1,114 @@
-<p>cbo-clientes works!</p>
+<div class="cbo-clientes-wrapper">
+  <!-- Search input container -->
+  <div
+    class="search-container"
+    [class.has-error]="hasErrors()"
+    [class.is-expanded]="isOpen"
+  >
+    <div class="search-input-group">
+      <!-- Main input - readonly when collapsed, editable when expanded -->
+      <input
+        [id]="isId"
+        [value]="isOpen ? searchControl.value || '' : placeholder"
+        [disabled]="isDisabled"
+        [readonly]="!isOpen"
+        [class.error]="hasErrors()"
+        class="search-input"
+        (click)="onMainInputClick()"
+        (focus)="onMainInputFocus()"
+        (blur)="onMainInputBlur()"
+        (input)="onMainInputChange($event)"
+        autocomplete="off"
+      />
+
+      <!-- Clear button -->
+      <button
+        *ngIf="selectedCliente && !isDisabled && isOpen"
+        type="button"
+        class="clear-button"
+        (click)="clearSelection()"
+        title="Limpiar selección"
+      >
+        <i class="pi pi-times"></i>
+      </button>
+
+      <!-- Loading spinner -->
+      <div *ngIf="isLoading" class="loading-spinner">
+        <i class="pi pi-spinner pi-spin"></i>
+      </div>
+
+      <!-- Dropdown arrow -->
+      <div
+        *ngIf="!isLoading"
+        class="dropdown-arrow"
+        (click)="toggleDropdown($event)"
+      >
+        <i class="pi pi-chevron-down" [class.rotated]="isOpen"></i>
+      </div>
+    </div>
+
+    <!-- Dropdown options -->
+    <div *ngIf="isOpen && !isDisabled" class="dropdown-panel">
+      <div class="dropdown-content">
+        <!-- No results message -->
+        <div *ngIf="clientes.length === 0 && !isLoading" class="no-results">
+          <i
+            class="pi pi-search"
+            style="font-size: 1.5rem; margin-bottom: 8px; opacity: 0.5"
+          ></i>
+          <div *ngIf="searchControl.value && searchControl.value.length < 3">
+            Ingrese al menos 3 caracteres para buscar
+          </div>
+          <div *ngIf="searchControl.value && searchControl.value.length >= 3">
+            No se encontraron clientes que coincidan
+          </div>
+          <div *ngIf="!searchControl.value">No hay clientes disponibles</div>
+        </div>
+
+        <!-- Options list -->
+        <div
+          *ngFor="let cliente of clientes; trackBy: trackByCliente"
+          class="dropdown-option"
+          [class.selected]="selectedCliente?.id === cliente.id"
+          (click)="onOptionClick(cliente)"
+        >
+          <div class="option-content">
+            <!-- Left side: nombreCompleto + email -->
+            <div class="option-main">
+              <span class="option-nombre" [title]="cliente.displayText">
+                {{ cliente.nombreCompleto }}
+              </span>
+              <span class="option-email" *ngIf="cliente.email">
+                {{ cliente.email }}
+              </span>
+            </div>
+
+            <!-- Right side: DNI/Teléfono -->
+            <div class="option-details">
+              <span class="option-dni" *ngIf="cliente.dni">
+                DNI: {{ cliente.dni }}
+              </span>
+              <span
+                class="option-telefono"
+                *ngIf="cliente.telefono && !cliente.dni"
+              >
+                {{ cliente.telefono }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error message -->
+  <div *ngIf="hasErrors()" class="error-message">
+    {{ getErrorMessage() }}
+  </div>
+
+  <!-- Loading indicator -->
+  <div *ngIf="isLoading && !isOpen" class="loading-indicator">
+    <i class="pi pi-spinner pi-spin"></i>
+    <span>Cargando clientes...</span>
+  </div>
+</div>

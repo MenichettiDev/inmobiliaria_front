@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { LeadsService } from '../../../leads/service/leads.service';
 import { CboUsuarioComponent } from '../../../usuario/components/cbo-usuario/cbo-usuario.component';
 import { CboPropiedadesComponent } from '../../../propiedades/components/cbo-propiedades/cbo-propiedades.component';
+import { CboClientesComponent } from '../../../clientes/components/cbo-clientes/cbo-clientes.component';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 interface CreateLeadDto {
@@ -13,13 +14,14 @@ interface CreateLeadDto {
   idFuente: number;
   idUsuarioAsignado?: number;
   idPropiedad?: number;
+  idCliente?: number;
   observaciones?: string;
 }
 
 @Component({
   selector: 'app-modal-create-lead',
   standalone: true,
-  imports: [CommonModule, FormsModule, CboUsuarioComponent, CboPropiedadesComponent],
+  imports: [CommonModule, FormsModule, CboUsuarioComponent, CboPropiedadesComponent, CboClientesComponent],
   templateUrl: './modal-create-lead.component.html',
   styleUrl: './modal-create-lead.component.css'
 })
@@ -30,6 +32,7 @@ export class ModalCreateLeadComponent {
 
   loading: boolean = false;
   error: string = '';
+  clienteRegistrado: boolean = false;
 
   nuevoLead: CreateLeadDto = {
     nombreCompleto: '',
@@ -83,6 +86,17 @@ export class ModalCreateLeadComponent {
 
   onPropiedadChange(propiedadId: number | null): void {
     this.nuevoLead.idPropiedad = propiedadId || undefined;
+  }
+
+  onClienteChange(clienteId: number | null): void {
+    this.nuevoLead.idCliente = clienteId || undefined;
+  }
+
+  onClienteRegistradoChange(): void {
+    if (!this.clienteRegistrado) {
+      // Si cambia a "No registrado", limpiar la selección del cliente
+      this.nuevoLead.idCliente = undefined;
+    }
   }
 
   private isFormValid(): boolean {
