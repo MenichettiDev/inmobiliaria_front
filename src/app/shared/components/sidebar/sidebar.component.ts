@@ -184,14 +184,14 @@ export class SidebarComponent implements OnInit {
           id: 61,
           descripcion: 'Crear Operaciones',
           icono: 'bi bi-plus-circle',
-          link: '/operaciones/crear',
+          link: '/operaciones/visor',
           roles: [2, 3], // Solo Admin y Supervisor
         },
         {
           id: 62,
           descripcion: 'Cerrar Ventas / Alquileres',
           icono: 'bi bi-check-circle',
-          link: '/operaciones/cerrar',
+          link: '/operaciones/crear',
           roles: [2, 3], // Solo Admin y Supervisor
         },
         {

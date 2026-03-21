@@ -3,6 +3,6 @@ import { Routes } from '@angular/router';
 export const operacionesRoutes: Routes = [
   {
     path: 'visor',
-    loadComponent: () => import('./visor-operaciones/visor-operaciones.component').then(m => m.VisorOperacionesComponent)
+    loadComponent: () => import('./pages/visor-operaciones/visor-operaciones.component').then(m => m.VisorOperacionesComponent)
   },
 ];

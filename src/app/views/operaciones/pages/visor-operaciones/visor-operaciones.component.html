@@ -3,7 +3,11 @@
     class="page-header d-flex justify-content-between align-items-center mb-4"
   >
     <h1><i class="bi bi-briefcase"></i> Operaciones</h1>
-    <button class="btn btn-primary" (click)="crearOperacion()">
+    <button
+      class="btn btn-primary"
+      (click)="crearOperacion()"
+      [disabled]="loading"
+    >
       <i class="bi bi-plus-circle"></i> Nueva Operación
     </button>
   </div>
@@ -14,7 +18,7 @@
       <div class="col-md-3">
         <div class="metric-card bg-primary text-white">
           <div class="metric-content">
-            <h3>{{ operaciones.length }}</h3>
+            <h3>{{ total }}</h3>
             <p>Total Operaciones</p>
           </div>
           <i class="bi bi-briefcase metric-icon"></i>
@@ -117,9 +121,16 @@
     </div>
   </div>
 
+  <!-- Indicador de carga -->
+  <div *ngIf="loading" class="text-center my-4">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+
   <!-- Lista de Operaciones -->
   <div class="operaciones-lista">
-    <div class="table-responsive">
+    <div class="table-responsive" *ngIf="!loading">
       <table class="table table-hover">
         <thead>
           <tr>
@@ -167,11 +178,11 @@
             <td>
               <div>
                 <small
-                  >Inicio: {{ operacion.fechaInicio | date : "short" }}</small
+                  >Inicio: {{ operacion.fechaInicio | date: "short" }}</small
                 >
                 <br />
                 <small
-                  >Est: {{ operacion.fechaEstimada | date : "short" }}</small
+                  >Est: {{ operacion.fechaEstimada | date: "short" }}</small
                 >
               </div>
             </td>
@@ -180,18 +191,21 @@
                 <button
                   class="btn btn-outline-primary"
                   (click)="editarOperacion(operacion.id)"
+                  [disabled]="loading"
                 >
                   <i class="bi bi-pencil"></i>
                 </button>
                 <button
                   class="btn btn-outline-warning"
                   (click)="cambiarEstado(operacion.id)"
+                  [disabled]="loading"
                 >
                   <i class="bi bi-arrow-repeat"></i>
                 </button>
                 <button
                   class="btn btn-outline-info"
                   (click)="verDocumentacion(operacion.id)"
+                  [disabled]="loading"
                 >
                   <i class="bi bi-file-earmark-text"></i>
                 </button>
@@ -199,6 +213,7 @@
                   class="btn btn-outline-success"
                   (click)="marcarFinalizada(operacion.id)"
                   *ngIf="operacion.estado !== 3"
+                  [disabled]="loading"
                 >
                   <i class="bi bi-check-circle"></i>
                 </button>
@@ -207,11 +222,47 @@
           </tr>
         </tbody>
       </table>
+
+      <!-- Paginación simple -->
+      <nav aria-label="Paginación operaciones">
+        <ul class="pagination justify-content-center">
+          <li class="page-item" [class.disabled]="page === 1 || loading">
+            <button
+              class="page-link"
+              (click)="loadTransacciones(page - 1)"
+              [disabled]="page === 1 || loading"
+            >
+              Anterior
+            </button>
+          </li>
+          <li class="page-item disabled">
+            <span class="page-link"
+              >Página {{ page }} /
+              {{ total && pageSize ? Math.ceil(total / pageSize) : 1 }}</span
+            >
+          </li>
+          <li
+            class="page-item"
+            [class.disabled]="page * pageSize >= total || loading"
+          >
+            <button
+              class="page-link"
+              (click)="loadTransacciones(page + 1)"
+              [disabled]="page * pageSize >= total || loading"
+            >
+              Siguiente
+            </button>
+          </li>
+        </ul>
+      </nav>
     </div>
   </div>
 
   <!-- Si no hay operaciones -->
-  <div *ngIf="operacionesFiltradas.length === 0" class="text-center py-5">
+  <div
+    *ngIf="!loading && operacionesFiltradas.length === 0"
+    class="text-center py-5"
+  >
     <i class="bi bi-briefcase display-1 text-muted"></i>
     <h3 class="text-muted">No hay operaciones</h3>
     <p class="text-muted">

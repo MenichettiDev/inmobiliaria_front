@@ -88,8 +88,8 @@ export class LoginComponent implements OnInit {
             // Usar la estructura del usuario que viene en response.usuario
             const userData = response.usuario;
 
-            // Save token and user data
-            this.authService.saveAuthData(response.token, userData);
+            // Save token, refresh_token and user data
+            this.authService.saveAuthData(response.token, userData, response.refresh_token);
 
             this.isLoading = false;
             this.loginStartTime = null;

@@ -7,6 +7,8 @@ interface LoginResponse {
   status: number;
   message: string;
   token: string;
+  refresh_token: string;
+  expires_in: number;
   usuario: {
     Id: number;
     IdInmobiliaria: number;
