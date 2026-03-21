@@ -1,0 +1,130 @@
+/* ==========================================================
+   Pyre - PrimeNG Modern Overrides (V2)
+   ========================================================== */
+
+/* Buttons */
+.p-button {
+  border-radius: var(--radius-sm);
+  font-family: var(--font-main);
+  font-weight: 500;
+  transition: var(--transition-fast);
+  border: none;
+  box-shadow: var(--shadow-sm);
+}
+
+.p-button:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.p-button.p-button-primary {
+  background: var(--primary-600);
+}
+
+.p-button.p-button-primary:hover {
+  background: var(--primary-700) !important;
+}
+
+.p-button.p-button-outlined {
+  background: transparent;
+  border: 1px solid var(--neutral-200);
+  color: var(--neutral-700);
+}
+
+.p-button.p-button-outlined:hover {
+  background: var(--neutral-50) !important;
+  border-color: var(--neutral-300) !important;
+}
+
+/* Inputs */
+.p-inputtext {
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--neutral-200);
+  padding: 0.6rem 0.8rem;
+  font-size: var(--text-sm);
+  transition: var(--transition-fast);
+  background: #ffffff;
+}
+
+.p-inputtext:focus {
+  border-color: var(--primary-500) !important;
+  box-shadow: 0 0 0 2px var(--primary-100) !important;
+  outline: none;
+}
+
+.p-inputtext.ng-invalid.ng-touched {
+  border-color: var(--color-error) !important;
+  box-shadow: 0 0 0 2px rgba(244, 63, 94, 0.12) !important;
+}
+
+.p-inputtext:disabled {
+  background: var(--neutral-50) !important;
+  color: var(--color-text-muted) !important;
+  border-color: var(--neutral-200) !important;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Cards & Containers */
+.p-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--glass-shadow);
+}
+
+.p-card .p-card-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--neutral-900);
+}
+
+/* DataTable */
+.p-datatable {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--neutral-100);
+  box-shadow: var(--shadow-sm);
+}
+
+.p-datatable .p-datatable-thead>tr>th {
+  background: var(--neutral-50) !important;
+  color: var(--neutral-600) !important;
+  font-family: var(--font-display);
+  font-size: var(--text-xs) !important;
+  font-weight: 600 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 1rem 1.25rem !important;
+  border-bottom: 1px solid var(--neutral-200) !important;
+}
+
+.p-datatable .p-datatable-tbody>tr {
+  background: #ffffff !important;
+  transition: var(--transition-fast);
+}
+
+.p-datatable .p-datatable-tbody>tr:hover {
+  background: var(--neutral-50) !important;
+}
+
+.p-datatable .p-datatable-tbody>tr>td {
+  border-bottom: 1px solid var(--neutral-100) !important;
+  padding: 1rem 1.25rem !important;
+  font-size: var(--text-sm) !important;
+  color: var(--neutral-800);
+}
+
+/* Dialogs / Modals */
+.p-dialog {
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-xl);
+}
+
+.p-dialog .p-dialog-header {
+  background: #ffffff;
+  font-family: var(--font-display);
+  border-bottom: 1px solid var(--neutral-100);
+}

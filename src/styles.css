@@ -1,120 +1,43 @@
-@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap");
-/* Angular Global Styles - Pyre Application */
+@import "./styles/design-tokens.css";
+@import "./styles/prime-overrides.css";
+@import "./styles/prime-overrides-v2.css";
 
 /* ==========================================================
-   CSS Custom Properties (Design Tokens)
+   Base Theme Variables (Mapped to Design Tokens)
    ========================================================== */
-@import "./styles/prime-overrides.css";
-
 :root {
-  /* Brand Colors */
-  --color-primary: #841618;
-  --color-primary-dark: #5a1011;
-  --color-primary-alt: #dc261b;
-
-  /* Layout Dimensions */
-  --sidebar-width: 260px;
-  --content-left-offset: 130px;
-  /* La mitad del sidebar para centrado visual */
-
-  /* UI Colors */
-  --color-blue: #007bff;
-  --color-blue-dark: #0056b3;
-  --color-blue-darker: #1a365d;
-
-  /* Status Colors */
-  --color-success: #4caf50;
-  --color-success-dark: #2e7d32;
-  --color-warning: #ffc107;
-  --color-warning-bg: #fff3cd;
-  --color-error: #dc3545;
-  --color-error-dark: #a71b18;
-  --color-error-bg: #f8d7da;
-  --color-info: #17a2b8;
-  --color-info-alt: #2196f3;
-  --color-info-dark: #1565c0;
-
-  /* Neutral Colors */
-  --color-white: #ffffff;
-  --color-black: #000000;
-  --color-text: #333333;
-  --color-text-secondary: #666666;
-  --color-text-muted: #999999;
-  --color-text-disabled: #e0e0e0;
-
-  /* Background Colors */
-  --color-bg-base: #f5f6f8;
-  --color-bg-alt: #f8f9fa;
-  --color-bg-surface: #ffffff;
-  --color-overlay: rgba(0, 0, 0, 0.4);
-
-  /* Border Colors */
-  --color-border: #ddd;
-  --color-border-light: #e0e0e0;
-  --color-border-disabled: #cccccc;
-
-  /* Spacing */
-  --spacing-xs: 4px;
-  --spacing-sm: 8px;
-  --spacing-md: 16px;
-  --spacing-lg: 24px;
-  --spacing-xl: 32px;
-
-  /* Shadows */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.15);
-  --shadow-lg: 0 4px 20px rgba(0, 0, 0, 0.3);
-  --shadow-card: 0 5px 15px rgba(0, 0, 0, 0.3);
+  /* Brand Mapping */
+  --color-primary: var(--primary-600);
+  --color-primary-dark: var(--primary-700);
+  --color-primary-alt: var(--primary-500);
 
   /* Layout */
+  --sidebar-width: 260px;
   --topbar-height: 70px;
-  --topbar-bg: #ffffff;
-  --border-radius: 4px;
-  --border-radius-lg: 8px;
-  --input-height: 45px;
-  --button-height: 45px;
-  --content-padding: 1rem;
+  --content-left-offset: 130px;
 
-  /* Animation */
-  --transition-fast: 0.15s ease-in-out;
-  --transition-normal: 0.2s ease;
-  --transition-slow: 0.3s ease;
+  /* UI Aliases */
+  --color-success: #10b981;
+  /* Emerald 500 — semántico de éxito (no mezclar con brand primary) */
+  --color-error: #f43f5e;
+  --color-warning: #f59e0b;
 
-  /* Typography */
-  --font-family-primary: "Roboto", sans-serif;
-  --font-size-xs: 11px;
-  --font-size-sm: 12px;
-  --font-size-md: 14px;
-  --font-size-lg: 16px;
-  --font-size-xl: 18px;
+  --color-text: var(--neutral-900);
+  --color-text-secondary: var(--neutral-600);
+  --color-text-muted: var(--neutral-400);
 
-  /* Variables esenciales para el login */
-  --card-background: #ffffff;
-  /* Fondo blanco */
-  --text-color: #333333;
-  /* Texto oscuro */
-  --primary-blue-darker: #1a365d;
-  /* Azul oscuro */
+  --color-bg-base: var(--neutral-50);
+  --color-bg-surface: #ffffff;
+
+  --shadow-card: var(--shadow-lg);
+  --border-radius: var(--radius-sm);
+  --border-radius-lg: var(--radius-md);
+
+  /* Shared with Login & Components */
+  --card-background: var(--glass-bg);
+  --text-color: var(--neutral-900);
+  --primary-blue-darker: var(--primary-700);
   --white: #ffffff;
-  /* Blanco puro */
-
-  /* Colores para los inputs */
-  --input-background: #ffffff;
-  /* Fondo blanco */
-  --input-border: #cccccc;
-  /* Borde gris claro */
-  --input-border-focus: #007bff;
-  /* Azul al hacer foco */
-  --input-placeholder: #999999;
-  /* Placeholder gris */
-
-  /* Colores para el botón */
-  --button-background: #1a365d;
-  /* Azul oscuro */
-  --button-hover: #0056b3;
-  /* Azul más claro al hover */
-  --button-disabled: #cccccc;
-  /* Gris claro para estado deshabilitado */
 }
 
 /* ==========================================================
@@ -122,70 +45,66 @@
    ========================================================== */
 
 /* Fondo global: reutiliza la imagen del login para todas las páginas */
-html {
-  height: 100%;
-  width: 100%;
+/* ==========================================================
+   Global Reset & Base Styles
+   ========================================================== */
+html,
+body {
   margin: 0;
   padding: 0;
-  overflow-x: hidden;
-  overflow-y: auto;
-  /* Permitir scroll vertical global */
+  width: 100%;
+  min-height: 100%;
+  font-family: var(--font-main);
+  background-color: var(--color-bg-base);
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  /* Altura exactamente del viewport sin exceder */
-  height: 100vh;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  background: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.35)),
+  background: linear-gradient(rgba(15, 23, 42, 0.4), rgba(15, 23, 42, 0.4)),
     url("/assets/images/backgrounds/fondo.jpg") center/cover no-repeat;
   background-attachment: fixed;
-  overflow-y: auto;
-  /* Permitir scroll vertical */
-  overflow-x: hidden;
 }
 
-/* Asegurar que el contenedor principal permita ver el fondo detrás */
-.app-container,
-.main-wrapper,
-app-root {
-  background: transparent;
-  /* Evitar scroll vertical innecesario */
-  height: auto;
-  min-height: 0;
-  overflow: visible;
-  /* Permitir scroll si el contenido lo requiere */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.display-font {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.025em;
 }
 
-/* Efecto 'blanch' para que el fondo se vea más claro/deslavado después del login
-   - Aplica un pseudo-overlay blanco con mezcla y blur opcional
-   - Añadir la clase `bg-blanch` al <body> (o a app-root) para activar
-   - Transición suave para no ser brusco */
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: var(--transition-fast);
+}
+
+a:hover {
+  color: var(--color-primary-dark);
+}
+
+/* ==========================================================
+   SaaS Infrastructure Styles
+   ========================================================== */
 .bg-blanch {
-  /* Capa blanca semitransparente sobre la imagen */
-  --blanch-opacity: 0.55;
-  /* ajuste: 0.0 - 1.0 */
   position: relative;
-  /* No forzar tamaño que pueda generar scroll innecesario */
-  height: auto;
-  min-height: auto;
-  /* Solo permitir overflow cuando sea necesario */
-  overflow: auto;
+  min-height: 100vh;
 }
 
 .bg-blanch::before {
   content: "";
   position: fixed;
   inset: 0;
-  /* top:0; right:0; bottom:0; left:0 */
-  background: rgba(255, 255, 255, var(--blanch-opacity));
-  pointer-events: none;
-  mix-blend-mode: lighten;
-  /* intenta aclarar la imagen debajo */
-  backdrop-filter: blur(1px) saturate(1.05);
-  transition: opacity 300ms ease, backdrop-filter 300ms ease;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(2px) saturate(1.1);
   z-index: 0;
+  pointer-events: none;
 }
 
 /* Si queremos un blanqueado más sutil */
@@ -373,9 +292,30 @@ app-root,
   /* margen inferior global para separación */
 }
 
-/* Contenedor principal para páginas con espacio adecuado para el topbar fijo */
+/* Layout Wrapper */
+.main-wrapper {
+  min-height: 100vh;
+  transition: margin-left var(--transition-normal);
+  padding-top: var(--topbar-height);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.main-wrapper.with-sidebar {
+  margin-left: var(--sidebar-width);
+  width: calc(100% - var(--sidebar-width));
+}
+
+@media (max-width: 991.98px) {
+  .main-wrapper.with-sidebar {
+    margin-left: 0;
+    width: 100%;
+  }
+}
+
+/* Page Content Base */
 .page-content {
-  padding-top: calc(var(--topbar-height, 70px) + 1rem);
+  padding: var(--space-6);
   width: 100%;
   box-sizing: border-box;
 }
@@ -394,18 +334,17 @@ app-root,
 /* Shell que deja 1cm de margen desde el sidebar/pantalla y hace ancho completo */
 /* page-shell: mantener el div exterior separado de los bordes mediante margin
    en lugar de padding, para que el exterior no toque los bordes del viewport */
+/* page-shell: premium card feel with proper spacing */
 .page-shell {
-  /* usamos padding para garantizar separación interna del viewport y del sidebar
-     esto evita que elementos anidados ocupen el espacio hasta el borde */
-  padding-left: 1cm;
-  padding-right: 1cm;
-  box-sizing: border-box;
-  /* Evitar scroll innecesario */
-  overflow: hidden;
-  height: auto;
-  min-height: 0;
-  max-height: none;
+  background: #ffffff;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--neutral-100);
+  box-shadow: var(--shadow-md);
+  margin: var(--space-4);
+  padding: var(--space-6);
+  min-height: calc(100vh - var(--topbar-height) - 4rem);
 }
+
 
 /* En móviles reducimos el padding para no provocar scroll horizontal */
 @media (max-width: 767.98px) {
@@ -658,42 +597,50 @@ a:hover {
 }
 
 /* ==========================================================
-   SweetAlert2 Custom Theme (Corporate Branding)
+   SweetAlert2 Custom Theme (Indigo SaaS)
    ========================================================== */
-
-/* Contenedor principal del modal */
 .swal2-popup.swal2-themed {
-  font-family: var(--font-family-primary) !important;
-  background: var(--color-bg-surface) !important;
-  border-radius: var(--border-radius-lg) !important;
-  padding: 1.5rem !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35) !important;
-  /* 🌟 Sombra intensa para alert */
-  max-width: 520px;
-  /* Cambiar aquí para ajustar ancho del modal */
+  font-family: var(--font-main) !important;
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(var(--glass-blur)) !important;
+  border-radius: var(--radius-lg) !important;
+  padding: 2rem !important;
+  box-shadow: var(--shadow-xl) !important;
+  border: 1px solid var(--glass-border) !important;
+}
+
+.swal2-popup.swal2-themed .swal2-title {
+  font-family: var(--font-display) !important;
+  font-weight: 700 !important;
+  color: var(--neutral-900) !important;
+}
+
+.swal2-popup.swal2-themed .swal2-confirm {
+  background: var(--primary-600) !important;
+  border-radius: var(--radius-sm) !important;
+  font-family: var(--font-main) !important;
+}
+
+.swal2-popup.swal2-themed .swal2-cancel {
+  background: var(--neutral-100) !important;
+  color: var(--neutral-700) !important;
+  border-radius: var(--radius-sm) !important;
 }
 
 /* ==================================================
-   Global PrimeNG table styles (moved from component)
-   These apply globally so all p-tables share the same look
+   Utility Classes & Layout
    ==================================================*/
-.p-datatable .p-datatable-thead>tr>th {
-  background: linear-gradient(180deg, #3f3d3d 0%, #474646 100%) !important;
-  color: #ffffff !important;
-  font-size: 13px;
-  padding: 0.5rem !important;
-  border-bottom: 2px solid rgba(0, 0, 0, 0.06);
-  text-align: center !important;
-  /* Centrar títulos PrimeNG */
-}
-
-.p-datatable .p-datatable-tbody>tr:nth-child(odd) {
+.soft-edge {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--neutral-200);
+  box-shadow: var(--shadow-md);
   background: #ffffff;
 }
 
-.p-datatable .p-datatable-tbody>tr:nth-child(even) {
-  background: #fbfbfb;
+.depth-shadow {
+  box-shadow: var(--shadow-xl);
 }
+
 
 .p-datatable .p-datatable-tbody>tr:hover {
   background: #f1f5f9 !important;
@@ -721,26 +668,35 @@ a:hover {
   /* Mantener centrado en sticky */
 }
 
-/* Responsive tweaks for smaller screens */
-@media (max-width: 480px) {
+/* Finalizing cleanup */
+@media (max-width: 991.98px) {
+  .page-content {
+    margin-left: 0;
+    width: 100%;
+    padding-top: calc(var(--topbar-height) + var(--space-4));
+  }
 
-  .p-datatable .p-datatable-tbody td,
-  .p-datatable .p-datatable-thead th {
-    padding: 0.25rem 0.35rem !important;
-    font-size: 11px;
+  .page-shell {
+    margin: var(--space-2);
+    padding: var(--space-4);
   }
 }
 
-/* Wrapper for shared pyre tables: rounded borders and subtle shadow */
+/* Wrapper for shared pyre tables: premium card feel */
 .pyre-table-shell {
-  background: var(--color-bg-surface, #ffffff);
-  border-radius: 8px;
-  box-shadow: 0 6px 18px rgba(18, 38, 63, 0.06);
-  padding: 1.5rem 1.5rem 1.5rem 1.5rem;
-  /* top, right, bottom, left - increase top/left/right spacing */
-  margin-bottom: 1rem;
-  margin-left: 1cm;
-  margin-right: 1cm;
+  background: #ffffff;
+  border: 1px solid var(--neutral-100);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-6);
+  margin-bottom: var(--space-4);
+  margin-left: var(--space-6);
+  margin-right: var(--space-6);
+  transition: var(--transition-normal);
+}
+
+.pyre-table-shell:hover {
+  box-shadow: var(--shadow-lg);
 }
 
 /* If you want the table to be full-bleed inside the shell, remove table's margin */

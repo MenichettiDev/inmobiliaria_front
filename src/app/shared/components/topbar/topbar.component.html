@@ -60,52 +60,13 @@
       </ng-template>
     </button>
 
-    <!-- SECCIÓN DE TÍTULO CON BREADCRUMBS -->
+    <!-- SECCIÓN DE TÍTULO -->
     <div class="topbar-title-section" [@titleChange]>
-      <!-- Breadcrumbs (si existen y no es móvil) -->
-      <nav
-        *ngIf="hasBreadcrumbs && !isSmallScreen"
-        class="breadcrumbs"
-        aria-label="breadcrumb"
-      >
-        <ol class="breadcrumb-list">
-          <li
-            *ngFor="let crumb of breadcrumbs; let last = last"
-            class="breadcrumb-item"
-            [@breadcrumbSlide]
-          >
-            <a
-              *ngIf="crumb.route && !last"
-              [routerLink]="crumb.route"
-              class="breadcrumb-link"
-            >
-              <i *ngIf="crumb.icon" [class]="'bi ' + crumb.icon + ' me-1'"></i>
-              {{ crumb.label }}
-            </a>
-            <span
-              *ngIf="!crumb.route || last"
-              class="breadcrumb-current"
-              [class.active]="last"
-            >
-              <i *ngIf="crumb.icon" [class]="'bi ' + crumb.icon + ' me-1'"></i>
-              {{ crumb.label }}
-            </span>
-            <i
-              *ngIf="!last"
-              class="bi bi-chevron-right breadcrumb-separator"
-            ></i>
-          </li>
-        </ol>
-      </nav>
-
-      <!-- TÍTULO PRINCIPAL FIJO (GRANDE) -->
-      <div class="topbar-title-main" aria-hidden="true">
-        <h1>Sistema de Gestion de Inmobiliarias</h1>
-      </div>
-
-      <!-- SUBTÍTULO DINÁMICO (MÁS CHICO) - SOLO UNA VEZ -->
       <div class="topbar-subtitle" *ngIf="displayTitle">
         <span>{{ displayTitle }}</span>
+      </div>
+      <div class="topbar-title-main">
+        <h1>{{ pageTitle || 'Pyre SaaS' }}</h1>
       </div>
     </div>
 
