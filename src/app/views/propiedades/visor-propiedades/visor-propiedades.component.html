@@ -1,285 +1,170 @@
 <div class="propiedades-container">
-  <div
-    class="page-header d-flex justify-content-between align-items-center mb-4"
-  >
-    <h1><i class="bi bi-house-door"></i> Propiedades</h1>
-    <button class="btn btn-primary" (click)="crearPropiedad()">
+
+  <!-- Header -->
+  <div class="ml-page-header">
+    <h1 class="ml-page-title"><i class="bi bi-house-door"></i> Propiedades</h1>
+    <button class="btn ml-btn-cta" (click)="crearPropiedad()">
       <i class="bi bi-plus-circle"></i> Nueva Propiedad
     </button>
   </div>
 
   <!-- Filtros -->
-  <div class="filtros-section mb-4">
-    <div class="row">
-      <div class="col-md-3">
-        <label class="form-label">Estado Administrativo</label>
-        <select
-          class="form-select"
-          [(ngModel)]="filtros.estadoAdministrativo"
-          (change)="aplicarFiltros()"
-        >
+  <div class="ml-filters">
+    <div class="ml-filters-row">
+      <div class="ml-filter-field">
+        <label class="ml-filter-label">Estado Administrativo</label>
+        <select class="ml-select" [(ngModel)]="filtros.estadoAdministrativo" (change)="aplicarFiltros()">
           <option value="">Todos</option>
-          <option
-            *ngFor="let estado of estadosAdministrativos"
-            [value]="estado.id"
-          >
-            {{ estado.nombre }}
-          </option>
+          <option *ngFor="let estado of estadosAdministrativos" [value]="estado.id">{{ estado.nombre }}</option>
         </select>
       </div>
-      <div class="col-md-3">
-        <label class="form-label">Estado Operativo</label>
-        <select
-          class="form-select"
-          [(ngModel)]="filtros.estadoOperativo"
-          (change)="aplicarFiltros()"
-        >
+      <div class="ml-filter-field">
+        <label class="ml-filter-label">Estado Operativo</label>
+        <select class="ml-select" [(ngModel)]="filtros.estadoOperativo" (change)="aplicarFiltros()">
           <option value="">Todos</option>
-          <option *ngFor="let estado of estadosOperativos" [value]="estado.id">
-            {{ estado.nombre }}
-          </option>
+          <option *ngFor="let estado of estadosOperativos" [value]="estado.id">{{ estado.nombre }}</option>
         </select>
       </div>
-      <div class="col-md-2">
-        <label class="form-label">Agente</label>
-        <input
-          type="text"
-          class="form-control"
-          placeholder="Nombre del agente"
-          [(ngModel)]="filtros.agente"
-          (input)="aplicarFiltros()"
-        />
+      <div class="ml-filter-field">
+        <label class="ml-filter-label">Agente</label>
+        <input type="text" class="ml-input" placeholder="Nombre del agente"
+          [(ngModel)]="filtros.agente" (input)="aplicarFiltros()" />
       </div>
-      <div class="col-md-3">
-        <label class="form-label">Búsqueda</label>
-        <input
-          type="text"
-          class="form-control"
-          placeholder="Buscar propiedades..."
-          [(ngModel)]="filtros.busqueda"
-          (input)="aplicarFiltros()"
-        />
+      <div class="ml-filter-field ml-filter-search">
+        <label class="ml-filter-label">Búsqueda</label>
+        <input type="text" class="ml-input" placeholder="Buscar propiedades..."
+          [(ngModel)]="filtros.busqueda" (input)="aplicarFiltros()" />
       </div>
-      <div class="col-md-1 d-flex align-items-end">
-        <button class="btn btn-secondary" (click)="limpiarFiltros()">
+      <div class="ml-filter-reset">
+        <button class="ml-btn-reset" (click)="limpiarFiltros()" title="Limpiar filtros">
           <i class="bi bi-arrow-clockwise"></i>
         </button>
       </div>
     </div>
   </div>
 
-  <!-- Loading spinner -->
-  <div *ngIf="loading" class="text-center py-5">
-    <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">Cargando...</span>
-    </div>
-    <p class="mt-2">Cargando propiedades...</p>
+  <!-- Loading -->
+  <div *ngIf="loading" class="ml-loading">
+    <div class="spinner-border" role="status"><span class="visually-hidden">Cargando...</span></div>
+    <p>Cargando propiedades...</p>
   </div>
 
-  <!-- Error message -->
-  <div *ngIf="error && !loading" class="alert alert-danger text-center">
-    <i class="bi bi-exclamation-triangle"></i>
-    {{ error }}
-    <button
-      class="btn btn-outline-danger btn-sm ms-2"
-      (click)="cargarPropiedades()"
-    >
-      Reintentar
-    </button>
+  <!-- Error -->
+  <div *ngIf="error && !loading" class="ml-error">
+    <i class="bi bi-exclamation-triangle"></i> {{ error }}
+    <button class="btn btn-sm btn-outline-danger ms-2" (click)="cargarPropiedades()">Reintentar</button>
   </div>
 
-  <!-- Listado de Propiedades -->
+  <!-- Grid -->
   <div *ngIf="!loading && !error">
-    <div class="row" *ngIf="propiedadesFiltradas.length > 0">
-      <div
-        class="col-md-6 col-lg-4 mb-4"
-        *ngFor="let propiedad of propiedadesFiltradas"
-      >
-        <div class="propiedad-card" (click)="openDetail(propiedad)">
-          <div class="propiedad-imagen">
-            <img
-              [src]="
-                getImageUrl(propiedad, selectedImageIndex[propiedad.id] || 0)
-              "
-              [alt]="propiedad.titulo"
-              class="img-fluid"
-              (error)="onImageError($event, propiedad.id)"
-            />
-            <div class="propiedad-badges">
-              <span class="badge bg-info">ID: {{ propiedad.id }}</span>
-              <span
-                class="badge"
-                [ngClass]="
-                  'bg-' + obtenerColorEstado(propiedad.estadoOperativoNombre)
-                "
-              >
-                {{ propiedad.estadoOperativoNombre }}
-              </span>
-            </div>
+    <div class="ml-grid" *ngIf="propiedadesFiltradas.length > 0">
+      <div class="ml-card" *ngFor="let propiedad of propiedadesFiltradas" (click)="openDetail(propiedad)">
 
-            <!-- Thumbnails overlay: miniaturas sobre la imagen principal -->
-            <div class="thumbnails-overlay" *ngIf="propiedad.imagenes?.length">
-              <div class="thumbs d-flex align-items-center">
-                <ng-container
-                  *ngFor="let im of propiedad.imagenes; let idx = index"
-                >
-                  <button
-                    type="button"
-                    class="thumb-btn"
-                    (click)="
-                      $event.stopPropagation(); setMainImage(propiedad, idx)
-                    "
-                    [class.active]="
-                      (selectedImageIndex[propiedad.id] || 0) === idx
-                    "
-                    title="Ver imagen {{ idx + 1 }}"
-                  >
-                    <ng-container
-                      *ngIf="
-                        (im?.url ?? '').toString().trim().length > 0;
-                        else noThumb
-                      "
-                    >
-                      <img
-                        [src]="getImageUrl(propiedad, idx)"
-                        alt="thumb {{ idx + 1 }}"
-                        (error)="onImageError($event, propiedad.id)"
-                      />
-                    </ng-container>
-                    <ng-template #noThumb>
-                      <div class="no-thumb">Sin imagen</div>
-                    </ng-template>
-                  </button>
-                </ng-container>
-              </div>
-            </div>
-          </div>
-          <div class="propiedad-contenido p-3 d-flex flex-column">
-            <h5 class="propiedad-titulo">{{ propiedad.titulo }}</h5>
-            <p class="propiedad-descripcion text-muted mb-2">
-              {{ propiedad.descripcion }}
-            </p>
-            <p class="propiedad-precio mb-2">
-              <strong>${{ propiedad.precio | number: "1.2-2" }}</strong>
-            </p>
-            <p class="propiedad-direccion mb-2">
-              <i class="bi bi-geo-alt"></i> {{ propiedad.direccion }}
-            </p>
-            <p class="propiedad-agente mb-2">
-              <i class="bi bi-person"></i>
-              {{ propiedad.agenteResponsableNombre || "Sin asignar" }}
-            </p>
-            <p class="propiedad-fecha mb-3 text-muted small">
-              <i class="bi bi-calendar"></i> Creado:
-              {{ formatearFecha(propiedad.creadoEn) }}
-            </p>
-            <div class="propiedad-estados mb-3">
-              <small class="badge bg-secondary me-1">
-                {{ propiedad.estadoAdminNombre }}
-              </small>
-            </div>
-            <div class="propiedad-actions mt-auto">
-              <button
-                class="btn btn-sm btn-outline-primary"
-                (click)="
-                  $event.stopPropagation(); editarPropiedad(propiedad.id)
-                "
-              >
-                <i class="bi bi-pencil"></i> Editar
-              </button>
-              <button
-                class="btn btn-sm btn-outline-warning"
-                (click)="$event.stopPropagation(); cambiarEstado(propiedad.id)"
-              >
-                <i class="bi bi-arrow-repeat"></i> Estado
-              </button>
-              <button
-                class="btn btn-sm btn-outline-success"
-                (click)="
-                  $event.stopPropagation(); publicarPropiedad(propiedad.id)
-                "
-                *ngIf="!propiedad.publicadaEn"
-              >
-                <i class="bi bi-broadcast"></i> Publicar
-              </button>
+        <!-- Imagen -->
+        <div class="ml-card-img">
+          <img
+            [src]="getImageUrl(propiedad, selectedImageIndex[propiedad.id] || 0)"
+            [alt]="propiedad.titulo"
+            (error)="onImageError($event, propiedad.id)"
+          />
+          <!-- Badge estado operativo -->
+          <span class="ml-status-badge" [ngClass]="'badge-' + obtenerColorEstado(propiedad.estadoOperativoNombre)">
+            {{ propiedad.estadoOperativoNombre }}
+          </span>
+          <!-- ID badge -->
+          <span class="ml-id-badge">#{{ propiedad.id }}</span>
 
-              <!-- Cambios: mostrar Eliminar solo si idEstadoAdmin !== 0, si es 0 mostrar Reactivar -->
-              <ng-container
-                *ngIf="propiedad.idEstadoAdmin !== 0; else reactivarBtn"
-              >
-                <button
-                  class="btn btn-sm btn-outline-danger ms-2"
-                  (click)="
-                    $event.stopPropagation(); solicitarEliminar(propiedad.id)
-                  "
-                >
-                  <i class="bi bi-trash"></i> Eliminar
-                </button>
+          <!-- Thumbnails -->
+          <div class="ml-thumbs" *ngIf="propiedad.imagenes?.length">
+            <button
+              type="button"
+              class="ml-thumb"
+              *ngFor="let im of propiedad.imagenes; let idx = index"
+              (click)="$event.stopPropagation(); setMainImage(propiedad, idx)"
+              [class.active]="(selectedImageIndex[propiedad.id] || 0) === idx"
+              title="Ver imagen {{ idx + 1 }}"
+            >
+              <ng-container *ngIf="(im?.url ?? '').toString().trim().length > 0; else noThumb">
+                <img [src]="getImageUrl(propiedad, idx)" alt="thumb {{ idx + 1 }}" (error)="onImageError($event, propiedad.id)" />
               </ng-container>
-              <ng-template #reactivarBtn>
-                <button
-                  class="btn btn-sm btn-outline-success ms-2"
-                  (click)="
-                    $event.stopPropagation(); reactivarPropiedad(propiedad.id)
-                  "
-                >
-                  <i class="bi bi-arrow-clockwise"></i> Reactivar
-                </button>
-              </ng-template>
-            </div>
+              <ng-template #noThumb><span class="ml-no-thumb">{{ idx + 1 }}</span></ng-template>
+            </button>
           </div>
         </div>
+
+        <!-- Cuerpo ML: precio primero -->
+        <div class="ml-card-body">
+          <p class="ml-price">${{ propiedad.precio | number:'1.2-2' }}</p>
+          <h2 class="ml-title">{{ propiedad.titulo }}</h2>
+          <p class="ml-desc">{{ propiedad.descripcion }}</p>
+
+          <div class="ml-meta">
+            <span class="ml-meta-item">
+              <i class="bi bi-geo-alt"></i> {{ propiedad.direccion }}
+            </span>
+            <span class="ml-meta-item">
+              <i class="bi bi-person"></i> {{ propiedad.agenteResponsableNombre || 'Sin asignar' }}
+            </span>
+            <span class="ml-meta-item">
+              <i class="bi bi-calendar"></i> {{ formatearFecha(propiedad.creadoEn) }}
+            </span>
+          </div>
+
+          <div class="ml-estado-row">
+            <span class="ml-estado-badge">{{ propiedad.estadoAdminNombre }}</span>
+          </div>
+        </div>
+
+        <!-- Acciones -->
+        <div class="ml-card-actions" (click)="$event.stopPropagation()">
+          <button class="ml-action-btn ml-action-edit" (click)="editarPropiedad(propiedad.id)">
+            <i class="bi bi-pencil"></i> Editar
+          </button>
+          <button class="ml-action-btn ml-action-state" (click)="cambiarEstado(propiedad.id)">
+            <i class="bi bi-arrow-repeat"></i> Estado
+          </button>
+          <button class="ml-action-btn ml-action-publish" *ngIf="!propiedad.publicadaEn" (click)="publicarPropiedad(propiedad.id)">
+            <i class="bi bi-broadcast"></i> Publicar
+          </button>
+          <ng-container *ngIf="propiedad.idEstadoAdmin !== 0; else reactivarBtn">
+            <button class="ml-action-btn ml-action-delete" (click)="solicitarEliminar(propiedad.id)">
+              <i class="bi bi-trash"></i>
+            </button>
+          </ng-container>
+          <ng-template #reactivarBtn>
+            <button class="ml-action-btn ml-action-reactivar" (click)="reactivarPropiedad(propiedad.id)">
+              <i class="bi bi-arrow-clockwise"></i> Reactivar
+            </button>
+          </ng-template>
+        </div>
+
       </div>
     </div>
 
-    <!-- Si no hay propiedades -->
-    <div *ngIf="propiedadesFiltradas.length === 0" class="text-center py-5">
-      <i class="bi bi-house-door display-1 text-muted"></i>
-      <h3 class="text-muted">No se encontraron propiedades</h3>
-      <p class="text-muted">
-        Prueba ajustando los filtros o crea una nueva propiedad.
-      </p>
+    <!-- Empty state -->
+    <div *ngIf="propiedadesFiltradas.length === 0" class="ml-empty">
+      <i class="bi bi-house-door"></i>
+      <h3>No se encontraron propiedades</h3>
+      <p>Probá ajustando los filtros o creá una nueva propiedad.</p>
     </div>
   </div>
 
   <!-- Paginación -->
-  <nav
-    *ngIf="paginacion.totalPages > 1 && !loading && !error"
-    class="d-flex justify-content-center mt-4"
-  >
-    <ul class="pagination">
-      <li class="page-item" [class.disabled]="!paginacion.hasPreviousPage">
-        <a class="page-link" (click)="paginaAnterior()" style="cursor: pointer">
-          Anterior
-        </a>
-      </li>
-      <li class="page-item active">
-        <span class="page-link">
-          {{ paginacion.page }} de {{ paginacion.totalPages }}
-        </span>
-      </li>
-      <li class="page-item" [class.disabled]="!paginacion.hasNextPage">
-        <a
-          class="page-link"
-          (click)="paginaSiguiente()"
-          style="cursor: pointer"
-        >
-          Siguiente
-        </a>
-      </li>
-    </ul>
+  <nav *ngIf="paginacion.totalPages > 1 && !loading && !error" class="ml-pagination">
+    <button class="ml-page-btn" [disabled]="!paginacion.hasPreviousPage" (click)="paginaAnterior()">
+      <i class="bi bi-chevron-left"></i> Anterior
+    </button>
+    <span class="ml-page-info">{{ paginacion.page }} de {{ paginacion.totalPages }}</span>
+    <button class="ml-page-btn" [disabled]="!paginacion.hasNextPage" (click)="paginaSiguiente()">
+      Siguiente <i class="bi bi-chevron-right"></i>
+    </button>
   </nav>
 
-  <!-- Información de resultados -->
-  <div
-    *ngIf="!loading && !error && propiedadesFiltradas.length > 0"
-    class="text-muted text-center mt-3"
-  >
-    Mostrando {{ propiedadesFiltradas.length }} de {{ paginacion.totalRecords }}
-    propiedades
+  <div *ngIf="!loading && !error && propiedadesFiltradas.length > 0" class="ml-results-count">
+    Mostrando {{ propiedadesFiltradas.length }} de {{ paginacion.totalRecords }} propiedades
   </div>
 
-  <!-- Componente de confirmación y toast -->
+  <!-- Modales -->
   <app-modal-confirm
     [visible]="confirmVisible"
     title="Confirmar eliminación"
@@ -288,13 +173,10 @@
     (cancel)="onCancelDelete()"
   ></app-modal-confirm>
 
-  <!-- Toast Modal Component -->
   <app-toast-modal
     [message]="toastMessage"
     [visible]="toastVisible"
     [type]="toastType"
     [animationPreset]="'preset-1'"
   ></app-toast-modal>
-
-  <!-- modal detalle ahora gestionado por NgbModal -->
 </div>
