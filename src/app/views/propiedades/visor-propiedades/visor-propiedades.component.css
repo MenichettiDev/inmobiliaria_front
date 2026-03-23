@@ -487,6 +487,67 @@
   color: var(--color-text-muted);
 }
 
+/* ── Price row + Admin badge ────────────────────────────── */
+.ml-price-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+
+.ml-admin-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.ml-admin-badge.badge-activo   { background: #edfaf3; color: #00a650; }
+.ml-admin-badge.badge-inactivo { background: #fff0f0; color: #f23d4f; }
+
+/* ── Chips de info ──────────────────────────────────────── */
+.ml-chips {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.ml-chip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.78rem;
+  color: #555;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ml-chip i { flex-shrink: 0; font-size: 0.8rem; }
+
+.ml-chip-location i  { color: #f23d4f; }
+.ml-chip-agent i     { color: #3483fa; }
+.ml-chip-date i      { color: #888; }
+.ml-chip-published {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #00a650;
+  background: #edfaf3;
+  padding: 1px 8px;
+  border-radius: 999px;
+  width: fit-content;
+}
+.ml-chip-published i { color: #00a650; }
+
 /* ── Responsive ─────────────────────────────────────────── */
 @media (max-width: 768px) {
   .propiedades-container { padding: var(--space-3); }

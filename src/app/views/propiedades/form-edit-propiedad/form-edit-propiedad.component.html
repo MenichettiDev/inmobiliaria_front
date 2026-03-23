@@ -5,228 +5,132 @@
         <div class="card-header bg-warning text-dark">
           <h2 class="card-title mb-0">
             <i class="bi bi-pencil-square"></i> Editar Propiedad
-            <span *ngIf="propiedadId" class="badge bg-info ms-2"
-              >ID: {{ propiedadId }}</span
-            >
+            <span *ngIf="propiedadId" class="badge bg-info ms-2">ID: {{ propiedadId }}</span>
           </h2>
         </div>
         <div class="card-body">
-          <!-- Loading propiedad -->
+
           <div *ngIf="isLoadingPropiedad" class="text-center py-4">
-            <div class="spinner-border text-primary" role="status">
-              <span class="visually-hidden">Cargando...</span>
-            </div>
-            <p class="mt-2">Cargando datos de la propiedad...</p>
+            <div class="spinner-border text-primary" role="status"></div>
+            <p class="mt-2">Cargando datos...</p>
           </div>
 
-          <!-- Error Alert -->
-          <div *ngIf="error" class="alert alert-danger" role="alert">
-            <i class="bi bi-exclamation-triangle"></i>
-            {{ error }}
+          <div *ngIf="error" class="alert alert-danger">
+            <i class="bi bi-exclamation-triangle"></i> {{ error }}
           </div>
 
-          <!-- Form -->
-          <form
-            *ngIf="!isLoadingPropiedad"
-            [formGroup]="propiedadForm"
-            (ngSubmit)="onSubmit()"
-            novalidate
-          >
+          <form *ngIf="!isLoadingPropiedad" [formGroup]="propiedadForm" (ngSubmit)="onSubmit()" novalidate>
+
             <!-- Título -->
             <div class="mb-3">
-              <label for="titulo" class="form-label">Título</label>
-              <input
-                type="text"
-                class="form-control"
-                id="titulo"
-                formControlName="titulo"
-                [class.is-invalid]="isFieldInvalid('titulo')"
-                placeholder="Título de la propiedad"
-              />
-              <div *ngIf="isFieldInvalid('titulo')" class="invalid-feedback">
-                {{ getFieldError("titulo") }}
-              </div>
+              <label class="form-label">Título</label>
+              <input type="text" class="form-control" formControlName="titulo"
+                [class.is-invalid]="isFieldInvalid('titulo')" placeholder="Título de la propiedad" />
+              <div *ngIf="isFieldInvalid('titulo')" class="invalid-feedback">{{ getFieldError('titulo') }}</div>
             </div>
 
             <!-- Descripción -->
             <div class="mb-3">
-              <label for="descripcion" class="form-label">Descripción</label>
-              <textarea
-                class="form-control"
-                id="descripcion"
-                formControlName="descripcion"
-                rows="4"
+              <label class="form-label">Descripción</label>
+              <textarea class="form-control" formControlName="descripcion" rows="3"
                 [class.is-invalid]="isFieldInvalid('descripcion')"
-                placeholder="Descripción de la propiedad"
-              ></textarea>
-              <div
-                *ngIf="isFieldInvalid('descripcion')"
-                class="invalid-feedback"
-              >
-                {{ getFieldError("descripcion") }}
-              </div>
+                placeholder="Descripción de la propiedad"></textarea>
+              <div *ngIf="isFieldInvalid('descripcion')" class="invalid-feedback">{{ getFieldError('descripcion') }}</div>
             </div>
 
-            <!-- Precio y Agente -->
+            <!-- Precio + Agente -->
             <div class="row">
-              <div class="col-md-6">
-                <div class="mb-3">
-                  <label for="precio" class="form-label">Precio</label>
-                  <div class="input-group">
-                    <span class="input-group-text">$</span>
-                    <input
-                      type="number"
-                      class="form-control"
-                      id="precio"
-                      formControlName="precio"
-                      [class.is-invalid]="isFieldInvalid('precio')"
-                      placeholder="0.00"
-                      step="0.01"
-                      min="0.01"
-                    />
-                  </div>
-                  <div
-                    *ngIf="isFieldInvalid('precio')"
-                    class="invalid-feedback"
-                  >
-                    {{ getFieldError("precio") }}
-                  </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Precio</label>
+                <div class="input-group">
+                  <span class="input-group-text">$</span>
+                  <input type="number" class="form-control" formControlName="precio"
+                    [class.is-invalid]="isFieldInvalid('precio')" placeholder="0.00" step="0.01" min="0.01" />
                 </div>
+                <div *ngIf="isFieldInvalid('precio')" class="invalid-feedback d-block">{{ getFieldError('precio') }}</div>
               </div>
-              <div class="col-md-6">
-                <div class="mb-3">
-                  <label for="agente" class="form-label"
-                    >Agente Responsable</label
-                  >
-                  <app-cbo-usuario
-                    [ngModel]="propiedadForm.get('idAgenteResponsable')?.value"
-                    (ngModelChange)="onUsuarioAsignadoChange($event)"
-                    placeholder="Seleccionar agente (opcional)"
-                    [showOnlyActive]="true"
-                  ></app-cbo-usuario>
-                </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Agente Responsable</label>
+                <app-cbo-usuario
+                  [ngModel]="propiedadForm.get('idAgenteResponsable')?.value"
+                  (ngModelChange)="onUsuarioAsignadoChange($event)"
+                  placeholder="Seleccionar agente (opcional)"
+                  [showOnlyActive]="true"
+                ></app-cbo-usuario>
               </div>
             </div>
 
             <!-- Dirección -->
             <div class="mb-3">
-              <label for="direccion" class="form-label">Dirección</label>
-              <input
-                type="text"
-                class="form-control"
-                id="direccion"
-                formControlName="direccion"
-                [class.is-invalid]="isFieldInvalid('direccion')"
-                placeholder="Dirección de la propiedad"
-              />
-              <div *ngIf="isFieldInvalid('direccion')" class="invalid-feedback">
-                {{ getFieldError("direccion") }}
+              <label class="form-label">Dirección</label>
+              <input type="text" class="form-control" formControlName="direccion"
+                [class.is-invalid]="isFieldInvalid('direccion')" placeholder="Dirección de la propiedad" />
+              <div *ngIf="isFieldInvalid('direccion')" class="invalid-feedback">{{ getFieldError('direccion') }}</div>
+            </div>
+
+            <!-- Provincia + Localidad -->
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Provincia</label>
+                <app-cbo-provincia
+                  [ngModel]="propiedadForm.get('idProvincia')?.value"
+                  [ngModelOptions]="{standalone: true}"
+                  (provinciaSelected)="onProvinciaSelected($event)"
+                ></app-cbo-provincia>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Localidad</label>
+                <app-cbo-localidad
+                  [idProvincia]="selectedProvinciaId"
+                  [ngModel]="propiedadForm.get('idLocalidad')?.value"
+                  (ngModelChange)="onLocalidadChange($event)"
+                  [ngModelOptions]="{standalone: true}"
+                ></app-cbo-localidad>
               </div>
             </div>
 
             <!-- Estados -->
             <div class="row">
-              <div class="col-md-6">
-                <div class="mb-3">
-                  <label for="estadoAdmin" class="form-label"
-                    >Estado Administrativo</label
-                  >
-                  <select
-                    class="form-select"
-                    id="estadoAdmin"
-                    formControlName="idEstadoAdmin"
-                  >
-                    <option
-                      *ngFor="let estado of estadosAdministrativos"
-                      [value]="estado.id"
-                    >
-                      {{ estado.nombre }}
-                    </option>
-                  </select>
-                </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Estado Administrativo</label>
+                <select class="form-select" formControlName="idEstadoAdmin">
+                  <option *ngFor="let e of estadosAdministrativos" [value]="e.id">{{ e.nombre }}</option>
+                </select>
               </div>
-              <div class="col-md-6">
-                <div class="mb-3">
-                  <label for="estadoOperativo" class="form-label"
-                    >Estado Operativo</label
-                  >
-                  <select
-                    class="form-select"
-                    id="estadoOperativo"
-                    formControlName="idEstadoOperativo"
-                  >
-                    <option
-                      *ngFor="let estado of estadosOperativos"
-                      [value]="estado.id"
-                    >
-                      {{ estado.nombre }}
-                    </option>
-                  </select>
-                </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Estado Operativo</label>
+                <select class="form-select" formControlName="idEstadoOperativo">
+                  <option *ngFor="let e of estadosOperativos" [value]="e.id">{{ e.nombre }}</option>
+                </select>
               </div>
             </div>
 
-            <!-- Coordenadas -->
+            <!-- Mapa -->
             <div class="mb-4">
-              <label class="form-label">Coordenadas (opcional)</label>
-              <div class="row">
-                <div class="col-md-6">
-                  <div class="mb-3">
-                    <label for="latitud" class="form-label">Latitud</label>
-                    <input
-                      type="number"
-                      class="form-control"
-                      id="latitud"
-                      formControlName="latitud"
-                      placeholder="-34.6118"
-                      step="0.00000001"
-                    />
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="mb-3">
-                    <label for="longitud" class="form-label">Longitud</label>
-                    <input
-                      type="number"
-                      class="form-control"
-                      id="longitud"
-                      formControlName="longitud"
-                      placeholder="-58.3960"
-                      step="0.00000001"
-                    />
-                  </div>
-                </div>
-              </div>
-              <small class="text-muted">
-                <i class="bi bi-info-circle"></i>
-                Las coordenadas ayudan a ubicar la propiedad en el mapa
-              </small>
+              <label class="form-label">
+                <i class="bi bi-geo-alt-fill text-danger me-1"></i>Ubicación en el mapa
+                <span class="text-muted small ms-1">(click para mover el marcador)</span>
+              </label>
+              <app-map-picker
+                [lat]="selectedLat"
+                [lng]="selectedLng"
+                [provinciaNombre]="selectedProvinciaNombre"
+                (locationChange)="onLocationChange($event)"
+              ></app-map-picker>
             </div>
 
-            <!-- Buttons -->
+            <!-- Botones -->
             <div class="d-flex justify-content-between">
-              <button
-                type="button"
-                class="btn btn-secondary"
-                (click)="onCancel()"
-                [disabled]="loading"
-              >
+              <button type="button" class="btn btn-secondary" (click)="onCancel()" [disabled]="loading">
                 <i class="bi bi-x-circle"></i> Cancelar
               </button>
-              <button
-                type="submit"
-                class="btn btn-warning"
-                [disabled]="loading"
-              >
-                <span
-                  *ngIf="loading"
-                  class="spinner-border spinner-border-sm me-2"
-                  role="status"
-                ></span>
+              <button type="submit" class="btn btn-warning" [disabled]="loading">
+                <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status"></span>
                 <i *ngIf="!loading" class="bi bi-check-circle"></i>
-                {{ loading ? "Actualizando..." : "Actualizar Propiedad" }}
+                {{ loading ? 'Actualizando...' : 'Actualizar Propiedad' }}
               </button>
             </div>
+
           </form>
         </div>
       </div>

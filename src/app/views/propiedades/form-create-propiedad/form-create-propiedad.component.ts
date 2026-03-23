@@ -4,6 +4,10 @@ import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } 
 import { Router } from '@angular/router';
 import { PropiedadesService } from '../propiedades.service';
 import { CboUsuarioComponent } from '../../usuario/components/cbo-usuario/cbo-usuario.component';
+import { CboProvinciaComponent } from '../../../shared/cbo/cbo-provincia/cbo-provincia.component';
+import { CboLocalidadComponent } from '../../../shared/cbo/cbo-localidad/cbo-localidad.component';
+import { MapPickerComponent, LatLng } from '../../../shared/components/map-picker/map-picker.component';
+import { ProvinciaDto } from '../../../shared/services/geografia.service';
 
 interface CreatePropiedadDto {
   titulo: string;
@@ -13,25 +17,32 @@ interface CreatePropiedadDto {
   latitud?: number;
   longitud?: number;
   idAgenteResponsable?: number;
+  idLocalidad?: number;
   idInmobiliaria: number;
 }
 
 @Component({
   selector: 'app-form-create-propiedad',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, CboUsuarioComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, CboUsuarioComponent, CboProvinciaComponent, CboLocalidadComponent, MapPickerComponent],
   templateUrl: './form-create-propiedad.component.html',
   styleUrl: './form-create-propiedad.component.css'
 })
 export class FormCreatePropiedadComponent implements OnInit {
   propiedadForm: FormGroup;
-  loading: boolean = false;
-  error: string = '';
+  loading = false;
+  error = '';
+
+  // ubicación
+  selectedLat: number | null = null;
+  selectedLng: number | null = null;
+  selectedProvinciaId: number | null = null;
+  selectedProvinciaNombre: string | null = null;
 
   // imágenes
   maxImages = 4;
   allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-  maxSizeBytes = 5 * 1024 * 1024; // 5 MB
+  maxSizeBytes = 5 * 1024 * 1024;
   images: { file: File; preview: string; name: string; size: number }[] = [];
   imageErrors: string[] = [];
 
@@ -43,9 +54,7 @@ export class FormCreatePropiedadComponent implements OnInit {
     this.propiedadForm = this.createForm();
   }
 
-  ngOnInit(): void {
-    // this.cargarAgentes(); // No longer needed
-  }
+  ngOnInit(): void {}
 
   createForm(): FormGroup {
     return this.fb.group({
@@ -53,13 +62,27 @@ export class FormCreatePropiedadComponent implements OnInit {
       descripcion: ['', [Validators.required, Validators.maxLength(1000)]],
       precio: [null, [Validators.min(0.01)]],
       direccion: ['', [Validators.required, Validators.maxLength(200)]],
-      latitud: [null],
-      longitud: [null],
-      idAgenteResponsable: [null]
+      idAgenteResponsable: [null],
+      idProvincia: [null],
+      idLocalidad: [null]
     });
   }
 
-  // manejar selección de archivos
+  onProvinciaSelected(prov: ProvinciaDto | null): void {
+    this.selectedProvinciaId = prov?.id ?? null;
+    this.selectedProvinciaNombre = prov?.nombre ?? null;
+    this.propiedadForm.patchValue({ idProvincia: prov?.id ?? null, idLocalidad: null });
+  }
+
+  onLocalidadChange(id: number | null): void {
+    this.propiedadForm.patchValue({ idLocalidad: id });
+  }
+
+  onLocationChange(coords: LatLng): void {
+    this.selectedLat = coords.lat;
+    this.selectedLng = coords.lng;
+  }
+
   async onFilesSelected(event: Event) {
     this.imageErrors = [];
     const input = event.target as HTMLInputElement;
@@ -67,7 +90,7 @@ export class FormCreatePropiedadComponent implements OnInit {
     const files = Array.from(input.files);
 
     if (this.images.length + files.length > this.maxImages) {
-      this.imageErrors.push(`Solo puedes agregar hasta ${this.maxImages} imágenes.`);
+      this.imageErrors.push(`Solo podés agregar hasta ${this.maxImages} imágenes.`);
     }
 
     for (const f of files) {
@@ -77,17 +100,16 @@ export class FormCreatePropiedadComponent implements OnInit {
         continue;
       }
       if (f.size > this.maxSizeBytes) {
-        this.imageErrors.push(`${f.name}: supera ${this.maxSizeBytes / (1024 * 1024)} MB.`);
+        this.imageErrors.push(`${f.name}: supera 5MB.`);
         continue;
       }
       try {
         const preview = await this.readFileAsDataURL(f);
         this.images.push({ file: f, preview, name: f.name, size: f.size });
       } catch {
-        this.imageErrors.push(`${f.name}: no se pudo leer la imagen.`);
+        this.imageErrors.push(`${f.name}: no se pudo leer.`);
       }
     }
-    // limpiar input para permitir re-subir mismo archivo luego
     if (input) input.value = '';
   }
 
@@ -101,9 +123,7 @@ export class FormCreatePropiedadComponent implements OnInit {
   }
 
   removeImage(index: number) {
-    if (index >= 0 && index < this.images.length) {
-      this.images.splice(index, 1);
-    }
+    this.images.splice(index, 1);
   }
 
   onSubmit(): void {
@@ -117,26 +137,25 @@ export class FormCreatePropiedadComponent implements OnInit {
         descripcion: formData.descripcion,
         precio: formData.precio || undefined,
         direccion: formData.direccion,
-        latitud: formData.latitud || undefined,
-        longitud: formData.longitud || undefined,
+        latitud: this.selectedLat || undefined,
+        longitud: this.selectedLng || undefined,
         idAgenteResponsable: formData.idAgenteResponsable || undefined,
-        idInmobiliaria: 0 // This will be set automatically by the backend from token
+        idLocalidad: formData.idLocalidad || undefined,
+        idInmobiliaria: 0
       };
 
-      // incluir imágenes (array de dataURLs) si existen
       if (this.images.length > 0) {
         createDto.Imagenes = this.images.map(i => i.preview);
       }
 
       this.propiedadesService.crearPropiedad(createDto).subscribe({
-        next: (response) => {
+        next: () => {
           this.loading = false;
           this.router.navigate(['/propiedades']);
         },
         error: (error) => {
           this.loading = false;
           this.error = error.error?.message || 'Error al crear la propiedad';
-          console.error('Error creating property:', error);
         }
       });
     } else {
@@ -146,8 +165,7 @@ export class FormCreatePropiedadComponent implements OnInit {
 
   markFormGroupTouched(): void {
     Object.keys(this.propiedadForm.controls).forEach(key => {
-      const control = this.propiedadForm.get(key);
-      control?.markAsTouched();
+      this.propiedadForm.get(key)?.markAsTouched();
     });
   }
 
@@ -158,15 +176,9 @@ export class FormCreatePropiedadComponent implements OnInit {
   getFieldError(fieldName: string): string {
     const field = this.propiedadForm.get(fieldName);
     if (field?.touched && field?.errors) {
-      if (field.errors['required']) {
-        return `Este campo es obligatorio`;
-      }
-      if (field.errors['maxlength']) {
-        return `Máximo ${field.errors['maxlength'].requiredLength} caracteres`;
-      }
-      if (field.errors['min']) {
-        return `El valor debe ser mayor a ${field.errors['min'].min}`;
-      }
+      if (field.errors['required']) return 'Este campo es obligatorio';
+      if (field.errors['maxlength']) return `Máximo ${field.errors['maxlength'].requiredLength} caracteres`;
+      if (field.errors['min']) return `El valor debe ser mayor a ${field.errors['min'].min}`;
     }
     return '';
   }
@@ -177,8 +189,6 @@ export class FormCreatePropiedadComponent implements OnInit {
   }
 
   onUsuarioAsignadoChange(userId: number | null): void {
-    this.propiedadForm.patchValue({
-      idAgenteResponsable: userId
-    });
+    this.propiedadForm.patchValue({ idAgenteResponsable: userId });
   }
 }

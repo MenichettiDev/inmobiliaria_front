@@ -4,194 +4,136 @@
       <div class="card">
         <div class="card-header">
           <h4 class="mb-0">
-            <i class="fas fa-plus me-2"></i>
-            Crear Nueva Propiedad
+            <i class="fas fa-plus me-2"></i>Crear Nueva Propiedad
           </h4>
         </div>
         <div class="card-body">
           <form [formGroup]="propiedadForm" (ngSubmit)="onSubmit()">
+
+            <!-- Título -->
+            <div class="mb-3">
+              <label class="form-label">Título <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" formControlName="titulo"
+                [class.is-invalid]="isFieldInvalid('titulo')" placeholder="Título de la propiedad" />
+              <div class="invalid-feedback">{{ getFieldError('titulo') }}</div>
+            </div>
+
+            <!-- Descripción -->
+            <div class="mb-3">
+              <label class="form-label">Descripción <span class="text-danger">*</span></label>
+              <textarea class="form-control" formControlName="descripcion"
+                [class.is-invalid]="isFieldInvalid('descripcion')"
+                placeholder="Descripción de la propiedad" rows="3"></textarea>
+              <div class="invalid-feedback">{{ getFieldError('descripcion') }}</div>
+            </div>
+
+            <!-- Precio + Dirección -->
             <div class="row">
-              <div class="col-md-12 mb-3">
-                <label class="form-label">
-                  Título <span class="text-danger">*</span>
-                </label>
-                <input
-                  type="text"
-                  class="form-control"
-                  formControlName="titulo"
-                  [class.is-invalid]="isFieldInvalid('titulo')"
-                  placeholder="Título de la propiedad"
-                />
-                <div class="invalid-feedback">
-                  {{ getFieldError("titulo") }}
-                </div>
-              </div>
-
-              <div class="col-md-12 mb-3">
-                <label class="form-label">
-                  Descripción <span class="text-danger">*</span>
-                </label>
-                <textarea
-                  class="form-control"
-                  formControlName="descripcion"
-                  [class.is-invalid]="isFieldInvalid('descripcion')"
-                  placeholder="Descripción de la propiedad"
-                  rows="4"
-                ></textarea>
-                <div class="invalid-feedback">
-                  {{ getFieldError("descripcion") }}
-                </div>
-              </div>
-
               <div class="col-md-6 mb-3">
                 <label class="form-label">Precio</label>
-                <input
-                  type="number"
-                  class="form-control"
-                  formControlName="precio"
-                  [class.is-invalid]="isFieldInvalid('precio')"
-                  placeholder="Precio de venta"
-                  min="0"
-                  step="0.01"
-                />
-                <div class="invalid-feedback">
-                  {{ getFieldError("precio") }}
+                <div class="input-group">
+                  <span class="input-group-text">$</span>
+                  <input type="number" class="form-control" formControlName="precio"
+                    [class.is-invalid]="isFieldInvalid('precio')" placeholder="0.00" min="0" step="0.01" />
                 </div>
+                <div class="invalid-feedback d-block">{{ getFieldError('precio') }}</div>
               </div>
-
               <div class="col-md-6 mb-3">
-                <label class="form-label">
-                  Dirección <span class="text-danger">*</span>
-                </label>
-                <input
-                  type="text"
-                  class="form-control"
-                  formControlName="direccion"
-                  [class.is-invalid]="isFieldInvalid('direccion')"
-                  placeholder="Dirección completa"
-                />
-                <div class="invalid-feedback">
-                  {{ getFieldError("direccion") }}
-                </div>
+                <label class="form-label">Dirección <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" formControlName="direccion"
+                  [class.is-invalid]="isFieldInvalid('direccion')" placeholder="Calle y número" />
+                <div class="invalid-feedback">{{ getFieldError('direccion') }}</div>
               </div>
+            </div>
 
+            <!-- Provincia + Localidad -->
+            <div class="row">
               <div class="col-md-6 mb-3">
-                <label class="form-label">Latitud</label>
-                <input
-                  type="number"
-                  class="form-control"
-                  formControlName="latitud"
-                  placeholder="Coordenada latitud"
-                  step="any"
-                />
+                <label class="form-label">Provincia</label>
+                <app-cbo-provincia
+                  [ngModel]="propiedadForm.get('idProvincia')?.value"
+                  [ngModelOptions]="{standalone: true}"
+                  (provinciaSelected)="onProvinciaSelected($event)"
+                ></app-cbo-provincia>
               </div>
-
               <div class="col-md-6 mb-3">
-                <label class="form-label">Longitud</label>
-                <input
-                  type="number"
-                  class="form-control"
-                  formControlName="longitud"
-                  placeholder="Coordenada longitud"
-                  step="any"
-                />
+                <label class="form-label">Localidad</label>
+                <app-cbo-localidad
+                  [idProvincia]="selectedProvinciaId"
+                  [ngModel]="propiedadForm.get('idLocalidad')?.value"
+                  (ngModelChange)="onLocalidadChange($event)"
+                  [ngModelOptions]="{standalone: true}"
+                ></app-cbo-localidad>
               </div>
+            </div>
 
-              <div class="col-md-12 mb-3">
-                <label class="form-label">Agente Responsable</label>
-                <app-cbo-usuario
-                  [ngModel]="propiedadForm.get('idAgenteResponsable')?.value"
-                  (ngModelChange)="onUsuarioAsignadoChange($event)"
-                  placeholder="Seleccionar agente responsable"
-                  [showOnlyActive]="true"
-                ></app-cbo-usuario>
+            <!-- Agente -->
+            <div class="mb-3">
+              <label class="form-label">Agente Responsable</label>
+              <app-cbo-usuario
+                [ngModel]="propiedadForm.get('idAgenteResponsable')?.value"
+                (ngModelChange)="onUsuarioAsignadoChange($event)"
+                placeholder="Seleccionar agente responsable"
+                [showOnlyActive]="true"
+              ></app-cbo-usuario>
+            </div>
+
+            <!-- Mapa -->
+            <div class="mb-3">
+              <label class="form-label">
+                <i class="bi bi-geo-alt-fill text-danger me-1"></i>Ubicación en el mapa
+                <span class="text-muted small ms-1">(opcional)</span>
+              </label>
+              <app-map-picker
+                [lat]="selectedLat"
+                [lng]="selectedLng"
+                [provinciaNombre]="selectedProvinciaNombre"
+                (locationChange)="onLocationChange($event)"
+              ></app-map-picker>
+            </div>
+
+            <!-- Imágenes -->
+            <div class="mb-4">
+              <label class="form-label">
+                <i class="bi bi-images me-1"></i>Imágenes
+                <span class="text-muted small ms-1">(jpg/png, máx {{ maxImages }}, 5MB c/u)</span>
+              </label>
+              <input type="file" accept=".jpg,.jpeg,.png" multiple
+                (change)="onFilesSelected($event)" class="form-control" />
+              <div *ngIf="imageErrors.length" class="mt-2">
+                <div *ngFor="let err of imageErrors" class="text-danger small">{{ err }}</div>
               </div>
-
-              <!-- Imágenes (hasta 4) -->
-              <div class="col-md-12 mb-3">
-                <label class="form-label"
-                  >Imágenes (jpg/jpeg/png) - Máx {{ maxImages }} - 5MB c/u
-                </label>
-                <input
-                  type="file"
-                  accept=".jpg,.jpeg,.png"
-                  multiple
-                  (change)="onFilesSelected($event)"
-                  class="form-control"
-                />
-                <div *ngIf="imageErrors.length" class="text-danger mt-2">
-                  <div *ngFor="let err of imageErrors">{{ err }}</div>
-                </div>
-
-                <div class="image-previews d-flex flex-wrap gap-2 mt-2">
-                  <div
-                    *ngFor="let img of images; let i = index"
-                    class="preview-item position-relative"
-                  >
-                    <img
-                      [src]="img.preview"
-                      [alt]="img.name"
-                      style="
-                        width: 140px;
-                        height: 90px;
-                        object-fit: cover;
-                        border-radius: 4px;
-                        border: 1px solid #ddd;
-                      "
-                    />
-                    <button
-                      type="button"
-                      class="btn btn-sm btn-danger position-absolute top-0 end-0"
-                      (click)="removeImage(i)"
-                      title="Quitar"
-                      style="transform: translate(30%, -30%)"
-                    >
-                      &times;
-                    </button>
-                    <div
-                      class="small text-muted mt-1"
-                      style="
-                        max-width: 140px;
-                        white-space: nowrap;
-                        overflow: hidden;
-                        text-overflow: ellipsis;
-                      "
-                    >
-                      {{ img.name }}
-                    </div>
+              <div class="image-previews d-flex flex-wrap gap-2 mt-2">
+                <div *ngFor="let img of images; let i = index" class="preview-item position-relative">
+                  <img [src]="img.preview" [alt]="img.name"
+                    style="width:140px;height:90px;object-fit:cover;border-radius:4px;border:1px solid #ddd;" />
+                  <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0"
+                    (click)="removeImage(i)" title="Quitar" style="transform:translate(30%,-30%)">&times;</button>
+                  <div class="small text-muted mt-1"
+                    style="max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                    {{ img.name }}
                   </div>
                 </div>
               </div>
             </div>
 
+            <!-- Error -->
             <div *ngIf="error" class="alert alert-danger mb-3">
-              <i class="fas fa-exclamation-triangle me-2"></i>
-              {{ error }}
+              <i class="fas fa-exclamation-triangle me-2"></i>{{ error }}
             </div>
 
+            <!-- Botones -->
             <div class="d-flex gap-2">
-              <button
-                type="submit"
-                class="btn btn-primary"
-                [disabled]="loading || propiedadForm.invalid"
-              >
-                <span
-                  *ngIf="loading"
-                  class="spinner-border spinner-border-sm me-1"
-                ></span>
+              <button type="submit" class="btn btn-primary" [disabled]="loading || propiedadForm.invalid">
+                <span *ngIf="loading" class="spinner-border spinner-border-sm me-1"></span>
                 <i *ngIf="!loading" class="fas fa-save me-1"></i>
-                {{ loading ? "Guardando..." : "Crear Propiedad" }}
+                {{ loading ? 'Guardando...' : 'Crear Propiedad' }}
               </button>
-              <button
-                type="button"
-                class="btn btn-secondary"
-                (click)="onCancel()"
-                [disabled]="loading"
-              >
-                <i class="fas fa-times me-1"></i>
-                Cancelar
+              <button type="button" class="btn btn-secondary" (click)="onCancel()" [disabled]="loading">
+                <i class="fas fa-times me-1"></i>Cancelar
               </button>
             </div>
+
           </form>
         </div>
       </div>

@@ -1,0 +1,2 @@
+.cbo-wrapper { position: relative; }
+.cbo-spinner { position: absolute; right: 32px; top: 50%; transform: translateY(-50%); }

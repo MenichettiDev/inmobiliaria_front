@@ -1,6 +1,7 @@
 @import "./styles/design-tokens.css";
 @import "./styles/prime-overrides.css";
 @import "./styles/prime-overrides-v2.css";
+@import "leaflet/dist/leaflet.css";
 
 /* ==========================================================
    Base Theme Variables (Mapped to Design Tokens)

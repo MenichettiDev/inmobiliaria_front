@@ -1,0 +1,15 @@
+<div class="cbo-wrapper">
+  <select
+    class="form-select form-select-sm"
+    [disabled]="disabled || loading"
+    [ngModel]="selectedId"
+    (ngModelChange)="onSelect($event)"
+  >
+    <option [value]="null">-- Seleccionar Provincia --</option>
+    <option *ngFor="let p of provincias" [value]="p.id">{{ p.nombre }}</option>
+  </select>
+  <div *ngIf="loading" class="cbo-spinner">
+    <span class="spinner-border spinner-border-sm text-secondary"></span>
+  </div>
+  <small *ngIf="error" class="text-danger">{{ error }}</small>
+</div>

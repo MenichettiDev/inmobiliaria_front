@@ -4,6 +4,10 @@ import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } 
 import { Router, ActivatedRoute } from '@angular/router';
 import { PropiedadesService } from '../propiedades.service';
 import { CboUsuarioComponent } from '../../usuario/components/cbo-usuario/cbo-usuario.component';
+import { CboProvinciaComponent } from '../../../shared/cbo/cbo-provincia/cbo-provincia.component';
+import { CboLocalidadComponent } from '../../../shared/cbo/cbo-localidad/cbo-localidad.component';
+import { MapPickerComponent, LatLng } from '../../../shared/components/map-picker/map-picker.component';
+import { ProvinciaDto } from '../../../shared/services/geografia.service';
 
 interface UpdatePropiedadDto {
   id: number;
@@ -16,22 +20,28 @@ interface UpdatePropiedadDto {
   idAgenteResponsable?: number;
   idEstadoAdmin?: number;
   idEstadoOperativo?: number;
+  idLocalidad?: number;
   idInmobiliaria?: number;
 }
 
 @Component({
   selector: 'app-form-edit-propiedad',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, CboUsuarioComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, CboUsuarioComponent, CboProvinciaComponent, CboLocalidadComponent, MapPickerComponent],
   templateUrl: './form-edit-propiedad.component.html',
   styleUrl: './form-edit-propiedad.component.css'
 })
 export class FormEditPropiedadComponent implements OnInit {
   propiedadForm: FormGroup;
-  loading: boolean = false;
-  error: string = '';
-  propiedadId: number = 0;
-  isLoadingPropiedad: boolean = true;
+  loading = false;
+  error = '';
+  propiedadId = 0;
+  isLoadingPropiedad = true;
+
+  selectedLat: number | null = null;
+  selectedLng: number | null = null;
+  selectedProvinciaId: number | null = null;
+  selectedProvinciaNombre: string | null = null;
 
   estadosAdministrativos = [
     { id: 1, nombre: 'Propiedad visible y operativa' },
@@ -39,10 +49,10 @@ export class FormEditPropiedadComponent implements OnInit {
   ];
 
   estadosOperativos = [
-    { id: 1, nombre: 'Propiedad disponible para alquiler o venta' },
-    { id: 2, nombre: 'Propiedad actualmente alquilada' },
-    { id: 3, nombre: 'Propiedad vendida' },
-    { id: 4, nombre: 'Propiedad reservada' }
+    { id: 1, nombre: 'Disponible' },
+    { id: 2, nombre: 'Alquilada' },
+    { id: 3, nombre: 'Vendida' },
+    { id: 4, nombre: 'Reservada' }
   ];
 
   constructor(
@@ -69,11 +79,11 @@ export class FormEditPropiedadComponent implements OnInit {
       descripcion: ['', [Validators.maxLength(1000)]],
       precio: [null, [Validators.min(0.01)]],
       direccion: ['', [Validators.maxLength(200)]],
-      latitud: [null],
-      longitud: [null],
       idAgenteResponsable: [null],
       idEstadoAdmin: [null],
-      idEstadoOperativo: [null]
+      idEstadoOperativo: [null],
+      idProvincia: [null],
+      idLocalidad: [null]
     });
   }
 
@@ -84,29 +94,49 @@ export class FormEditPropiedadComponent implements OnInit {
     this.propiedadesService.obtenerPropiedad(this.propiedadId).subscribe({
       next: (response) => {
         if (response.success && response.data) {
-          const propiedad = response.data;
+          const p = response.data;
+          this.selectedLat = p.latitud || null;
+          this.selectedLng = p.longitud || null;
           this.propiedadForm.patchValue({
-            titulo: propiedad.titulo,
-            descripcion: propiedad.descripcion,
-            precio: propiedad.precio,
-            direccion: propiedad.direccion,
-            latitud: propiedad.latitud,
-            longitud: propiedad.longitud,
-            idAgenteResponsable: propiedad.idAgenteResponsable,
-            idEstadoAdmin: propiedad.idEstadoAdmin,
-            idEstadoOperativo: propiedad.idEstadoOperativo
+            titulo: p.titulo,
+            descripcion: p.descripcion,
+            precio: p.precio,
+            direccion: p.direccion,
+            idAgenteResponsable: p.idAgenteResponsable,
+            idEstadoAdmin: p.idEstadoAdmin,
+            idEstadoOperativo: p.idEstadoOperativo,
+            idLocalidad: (p as any).idLocalidad || null
           });
+          // Si viene idProvincia de la propiedad (via localidad)
+          this.selectedProvinciaId = (p as any).idProvincia || null;
+          if (this.selectedProvinciaId) {
+            this.propiedadForm.patchValue({ idProvincia: this.selectedProvinciaId });
+          }
         } else {
           this.error = response.message || 'Error al cargar la propiedad';
         }
         this.isLoadingPropiedad = false;
       },
       error: (error) => {
-        console.error('Error loading property:', error);
         this.error = error.error?.message || 'Error al cargar la propiedad';
         this.isLoadingPropiedad = false;
       }
     });
+  }
+
+  onProvinciaSelected(prov: ProvinciaDto | null): void {
+    this.selectedProvinciaId = prov?.id ?? null;
+    this.selectedProvinciaNombre = prov?.nombre ?? null;
+    this.propiedadForm.patchValue({ idProvincia: prov?.id ?? null, idLocalidad: null });
+  }
+
+  onLocalidadChange(id: number | null): void {
+    this.propiedadForm.patchValue({ idLocalidad: id });
+  }
+
+  onLocationChange(coords: LatLng): void {
+    this.selectedLat = coords.lat;
+    this.selectedLng = coords.lng;
   }
 
   onSubmit(): void {
@@ -121,22 +151,22 @@ export class FormEditPropiedadComponent implements OnInit {
         descripcion: formData.descripcion || undefined,
         precio: formData.precio || undefined,
         direccion: formData.direccion || undefined,
-        latitud: formData.latitud || undefined,
-        longitud: formData.longitud || undefined,
+        latitud: this.selectedLat || undefined,
+        longitud: this.selectedLng || undefined,
         idAgenteResponsable: formData.idAgenteResponsable || undefined,
         idEstadoAdmin: formData.idEstadoAdmin || undefined,
-        idEstadoOperativo: formData.idEstadoOperativo || undefined
+        idEstadoOperativo: formData.idEstadoOperativo || undefined,
+        idLocalidad: formData.idLocalidad || undefined
       };
 
       this.propiedadesService.actualizarPropiedad(this.propiedadId, updateDto).subscribe({
-        next: (response) => {
+        next: () => {
           this.loading = false;
           this.router.navigate(['/propiedades']);
         },
         error: (error) => {
           this.loading = false;
           this.error = error.error?.message || 'Error al actualizar la propiedad';
-          console.error('Error updating property:', error);
         }
       });
     } else {
@@ -146,8 +176,7 @@ export class FormEditPropiedadComponent implements OnInit {
 
   markFormGroupTouched(): void {
     Object.keys(this.propiedadForm.controls).forEach(key => {
-      const control = this.propiedadForm.get(key);
-      control?.markAsTouched();
+      this.propiedadForm.get(key)?.markAsTouched();
     });
   }
 
@@ -158,15 +187,9 @@ export class FormEditPropiedadComponent implements OnInit {
   getFieldError(fieldName: string): string {
     const field = this.propiedadForm.get(fieldName);
     if (field?.touched && field?.errors) {
-      if (field.errors['required']) {
-        return `Este campo es obligatorio`;
-      }
-      if (field.errors['maxlength']) {
-        return `Máximo ${field.errors['maxlength'].requiredLength} caracteres`;
-      }
-      if (field.errors['min']) {
-        return `El valor debe ser mayor a ${field.errors['min'].min}`;
-      }
+      if (field.errors['required']) return 'Este campo es obligatorio';
+      if (field.errors['maxlength']) return `Máximo ${field.errors['maxlength'].requiredLength} caracteres`;
+      if (field.errors['min']) return `El valor debe ser mayor a ${field.errors['min'].min}`;
     }
     return '';
   }
@@ -177,8 +200,6 @@ export class FormEditPropiedadComponent implements OnInit {
   }
 
   onUsuarioAsignadoChange(userId: number | null): void {
-    this.propiedadForm.patchValue({
-      idAgenteResponsable: userId
-    });
+    this.propiedadForm.patchValue({ idAgenteResponsable: userId });
   }
 }

@@ -1,0 +1,17 @@
+<div class="cbo-wrapper">
+  <select
+    class="form-select form-select-sm"
+    [disabled]="disabled || loading || !idProvincia"
+    [ngModel]="selectedId"
+    (ngModelChange)="onSelect($event)"
+  >
+    <option [value]="null">{{ idProvincia ? '-- Seleccionar Localidad --' : '-- Primero elegí provincia --' }}</option>
+    <option *ngFor="let l of localidades" [value]="l.id">
+      {{ l.nombre }}{{ l.codigoPostal ? ' (' + l.codigoPostal + ')' : '' }}
+    </option>
+  </select>
+  <div *ngIf="loading" class="cbo-spinner">
+    <span class="spinner-border spinner-border-sm text-secondary"></span>
+  </div>
+  <small *ngIf="error" class="text-danger">{{ error }}</small>
+</div>
