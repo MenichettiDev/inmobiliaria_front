@@ -3,9 +3,6 @@
   <div class="map-hint" *ngIf="!readonly">
     <i class="bi bi-cursor-fill"></i>
     <span *ngIf="lat == null">Hacé click en el mapa para marcar la ubicación</span>
-    <span *ngIf="lat != null">
-      {{ lat | number:'1.5-5' }}, {{ lng | number:'1.5-5' }}
-      &mdash; click para mover el marcador
-    </span>
+    <span *ngIf="lat != null">Ubicación marcada &mdash; click para mover el marcador</span>
   </div>
 </div>

@@ -2,6 +2,7 @@ import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { environment } from '../../../../../environments/environment';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { MapPickerComponent, LatLng } from '../../../../shared/components/map-picker/map-picker.component';
 
 interface Imagen {
   id: number;
@@ -36,7 +37,7 @@ interface Propiedad {
 @Component({
   selector: 'app-modal-detalle-propiedad',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MapPickerComponent],
   templateUrl: './modal-detalle-propiedad.component.html',
   styleUrls: ['./modal-detalle-propiedad.component.css']
 })

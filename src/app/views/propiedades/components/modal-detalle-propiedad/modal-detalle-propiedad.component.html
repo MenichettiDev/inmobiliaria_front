@@ -43,6 +43,17 @@
         · Actualizado: {{ formatDate(propiedad?.actualizadoEn) }}</span
       >
     </p>
+    <!-- Mapa (Solo lectura) -->
+    <div class="mt-4" *ngIf="propiedad?.latitud && propiedad?.longitud">
+      <label class="form-label fw-bold">
+        <i class="bi bi-geo-alt-fill text-danger me-1"></i> Ubicación
+      </label>
+      <app-map-picker
+        [lat]="propiedad?.latitud ?? null"
+        [lng]="propiedad?.longitud ?? null"
+        [readonly]="true"
+      ></app-map-picker>
+    </div>
   </div>
 </div>
 

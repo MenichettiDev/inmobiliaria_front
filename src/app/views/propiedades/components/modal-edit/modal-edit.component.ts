@@ -4,12 +4,13 @@ import { CboUsuarioComponent } from "../../../usuario/components/cbo-usuario/cbo
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { environment } from '../../../../../environments/environment';
+import { MapPickerComponent, LatLng } from '../../../../shared/components/map-picker/map-picker.component';
 
 @Component({
   selector: 'app-modal-edit',
   templateUrl: './modal-edit.component.html',
   styleUrl: './modal-edit.component.css',
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, CboUsuarioComponent]
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, CboUsuarioComponent, MapPickerComponent]
 })
 export class ModalEditComponent implements OnInit, OnChanges {
   @Input() propiedad: any = null;
@@ -29,6 +30,11 @@ export class ModalEditComponent implements OnInit, OnChanges {
   imagesToRemove: number[] = [];
   newFiles: File[] = [];
   newFilePreviews: string[] = [];
+
+  // Ubicación para el mapa
+  selectedLat: number | null = null;
+  selectedLng: number | null = null;
+  selectedProvinciaNombre: string | null = null;
 
   constructor(private fb: FormBuilder) {
     this.propiedadForm = this.fb.group({
@@ -84,10 +90,12 @@ export class ModalEditComponent implements OnInit, OnChanges {
       idAgenteResponsable: this.propiedad.idAgenteResponsable || null,
       direccion: this.propiedad.direccion || '',
       idEstadoAdmin: this.propiedad.idEstadoAdmin || (this.estadosAdministrativos[0]?.id || null),
-      idEstadoOperativo: this.propiedad.idEstadoOperativo || (this.estadosOperativos[0]?.id || null),
-      latitud: this.propiedad.latitud || null,
-      longitud: this.propiedad.longitud || null
+      idEstadoOperativo: this.propiedad.idEstadoOperativo || (this.estadosOperativos[0]?.id || null)
     });
+
+    this.selectedLat = this.propiedad.latitud || null;
+    this.selectedLng = this.propiedad.longitud || null;
+    this.selectedProvinciaNombre = this.propiedad.provinciaNombre || null;
   }
 
   private buildUrl(url?: string): string {
@@ -160,6 +168,11 @@ export class ModalEditComponent implements OnInit, OnChanges {
     this.propiedadForm.patchValue({ idAgenteResponsable: usuarioId });
   }
 
+  onLocationChange(coords: LatLng) {
+    this.selectedLat = coords.lat;
+    this.selectedLng = coords.lng;
+  }
+
   onSubmit() {
     if (this.propiedadForm.invalid) {
       this.propiedadForm.markAllAsTouched();
@@ -169,7 +182,9 @@ export class ModalEditComponent implements OnInit, OnChanges {
     this.loading = true;
     const payload: any = {
       ...this.propiedad,
-      ...this.propiedadForm.value
+      ...this.propiedadForm.value,
+      latitud: this.selectedLat,
+      longitud: this.selectedLng
     };
     if (this.imagesToRemove && this.imagesToRemove.length) payload.imagesToRemove = [...this.imagesToRemove];
     if (this.newFiles && this.newFiles.length) payload.newFiles = [...this.newFiles];

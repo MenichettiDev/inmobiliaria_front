@@ -109,6 +109,7 @@ export class FormEditPropiedadComponent implements OnInit {
           });
           // Si viene idProvincia de la propiedad (via localidad)
           this.selectedProvinciaId = (p as any).idProvincia || null;
+          this.selectedProvinciaNombre = (p as any).provinciaNombre || null;
           if (this.selectedProvinciaId) {
             this.propiedadForm.patchValue({ idProvincia: this.selectedProvinciaId });
           }

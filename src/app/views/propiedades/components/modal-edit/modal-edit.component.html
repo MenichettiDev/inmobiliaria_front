@@ -158,41 +158,18 @@
             </div>
           </div>
 
-          <!-- Coordenadas -->
+          <!-- Mapa -->
           <div class="mb-4">
-            <label class="form-label">Coordenadas (opcional)</label>
-            <div class="row">
-              <div class="col-md-6">
-                <div class="mb-3">
-                  <label for="latitud" class="form-label">Latitud</label>
-                  <input
-                    type="number"
-                    class="form-control"
-                    id="latitud"
-                    formControlName="latitud"
-                    placeholder="-34.6118"
-                    step="0.00000001"
-                  />
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="mb-3">
-                  <label for="longitud" class="form-label">Longitud</label>
-                  <input
-                    type="number"
-                    class="form-control"
-                    id="longitud"
-                    formControlName="longitud"
-                    placeholder="-58.3960"
-                    step="0.00000001"
-                  />
-                </div>
-              </div>
-            </div>
-            <small class="text-muted">
-              <i class="bi bi-info-circle"></i>
-              Las coordenadas ayudan a ubicar la propiedad en el mapa
-            </small>
+            <label class="form-label">
+              <i class="bi bi-geo-alt-fill text-danger me-1"></i>Ubicación en el mapa
+              <span class="text-muted small ms-1">(click para mover el marcador)</span>
+            </label>
+            <app-map-picker
+              [lat]="selectedLat"
+              [lng]="selectedLng"
+              [provinciaNombre]="selectedProvinciaNombre"
+              (locationChange)="onLocationChange($event)"
+            ></app-map-picker>
           </div>
 
           <!-- Imágenes: existentes -->
