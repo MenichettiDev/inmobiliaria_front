@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { AuthService } from '../../../views/auth/auth.service';
-import { TopbarComponent } from "../topbar/topbar.component";
 
 interface MenuItem {
   id: number;
@@ -21,7 +20,7 @@ interface MenuItem {
   standalone: true,
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.css'],
-  imports: [CommonModule, RouterModule, NgbTooltipModule, TopbarComponent],
+  imports: [CommonModule, RouterModule, NgbTooltipModule],
 })
 export class SidebarComponent implements OnInit {
   // Propiedades requeridas por el template

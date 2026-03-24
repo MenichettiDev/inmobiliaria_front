@@ -39,6 +39,9 @@
 
 /* Navigation */
 .nav {
+  display: flex !important;
+  flex-direction: column !important;
+  flex-wrap: nowrap !important;
   flex: 1;
   padding: var(--space-4) var(--space-3);
   overflow-y: auto;

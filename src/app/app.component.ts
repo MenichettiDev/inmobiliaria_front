@@ -6,9 +6,13 @@ import { Subscription } from 'rxjs';
 import { AuthService } from './../app/views/auth/auth.service';
 import { SidebarService } from './services/sidebar.service';
 
+import { TopbarComponent } from './shared/components/topbar/topbar.component';
+import { PageTitleService } from './services/page-title.service';
+
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, SidebarComponent, CommonModule],
+  standalone: true,
+  imports: [RouterOutlet, SidebarComponent, TopbarComponent, CommonModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
@@ -22,17 +26,29 @@ export class AppComponent implements OnInit, OnDestroy {
 
   isLoggedIn: boolean = false; // Variable que guardará el estado de login
   isSidebarVisible: boolean = true; // Controla si el sidebar está visible (desde SidebarService)
-  private loggedInSubscription!: Subscription;  // Usamos '!' para decirle a TypeScript que esta propiedad será inicializada más tarde
+  private loggedInSubscription!: Subscription;
   private sidebarSubscription!: Subscription;
+
+  // Propiedades para el Topbar
+  userEmail: string = '';
+  displayEmail: string = '';
+  userLegajo: string = '';
+  displayLegajo: string = '';
+  displayRole: string = '';
+  displayUserLabel: string = '';
+  pageTitle: string = 'Inmobiliaria SaaS';
 
   constructor(
     public router: Router,
     public activatedRoute: ActivatedRoute,
-    public authService: AuthService
-    , private sidebarService: SidebarService
+    public authService: AuthService,
+    private sidebarService: SidebarService,
+    private pageTitleService: PageTitleService
   ) {
-    // Inicializar el estado desde el inicio
     this.isLoggedIn = this.authService.isLoggedIn();
+    if (this.isLoggedIn) {
+      this.loadUserData();
+    }
   }
 
   ngOnInit(): void {
@@ -40,17 +56,11 @@ export class AppComponent implements OnInit, OnDestroy {
     this.loggedInSubscription = this.authService.loggedIn$.subscribe(
       (loggedInStatus) => {
         this.isLoggedIn = loggedInStatus;
-        // Cuando el usuario está logueado, aplicamos una clase al body para
-        // mostrar el efecto 'más blanqueado' del fondo. Al desloguear, la quitamos.
-        try {
-          if (loggedInStatus) {
-            document.body.classList.add('bg-blanch');
-          } else {
-            document.body.classList.remove('bg-blanch');
-          }
-        } catch (e) {
-          // En entornos donde document no está disponible (SSR/tests), evitamos fallos
-          // console.warn('No se pudo modificar body class:', e);
+        if (loggedInStatus) {
+          document.body.classList.add('bg-blanch');
+          this.loadUserData();
+        } else {
+          document.body.classList.remove('bg-blanch');
         }
       }
     );
@@ -59,10 +69,14 @@ export class AppComponent implements OnInit, OnDestroy {
     this.sidebarSubscription = this.sidebarService.visible$.subscribe(v => {
       this.isSidebarVisible = v;
     });
+
+    // Suscribirse al título de la página
+    this.pageTitleService.metadata$.subscribe(m => {
+      this.pageTitle = m.title;
+    });
   }
 
   ngOnDestroy(): void {
-    // Limpiamos la suscripción al destruir el componente
     if (this.loggedInSubscription) {
       this.loggedInSubscription.unsubscribe();
     }
@@ -71,4 +85,33 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
 
+  private loadUserData(): void {
+    const user = this.authService.getUser();
+    if (user) {
+      this.userEmail = user.email || '';
+      this.displayEmail = this.userEmail.length > 22 ? this.userEmail.slice(0, 19) + '...' : this.userEmail;
+      this.userLegajo = ''; // No hay legajo en la nueva estructura
+      this.displayLegajo = '';
+      this.displayRole = user.rolNombre || '';
+      this.displayUserLabel = user.nombre || 'Usuario';
+    }
+  }
+
+  // Métodos para el Topbar
+  onPerfilModalToggled(isVisible: boolean): void {
+    // Implementar si es necesario
+  }
+
+  navigateToHome(): void {
+    this.router.navigate(['/dashboard/resumen']);
+  }
+
+  confirmLogout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
+
+  toggleSidebar(): void {
+    this.sidebarService.toggle();
+  }
 }

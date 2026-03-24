@@ -5,22 +5,6 @@
     [ngClass]="{ hidden: !isSidebarVisible, visible: isSidebarVisible }"
   >
     <!-- Topbar Component (Inside sidebar wrapper for desktop layout coherence) -->
-    <app-topbar
-      [isLoggedIn]="isLoggedIn"
-      [isSmallScreen]="isSmallScreen"
-      [userEmail]="userEmail"
-      [displayEmail]="displayEmail"
-      [userLegajo]="userLegajo"
-      [displayLegajo]="displayLegajo"
-      [userRole]="displayRole"
-      [displayRole]="displayRole"
-      [userLabel]="displayUserLabel"
-      [pageTitle]="pageTitle"
-      (perfilModalToggled)="onPerfilModalToggled($event)"
-      (homeNavigation)="navigateToHome()"
-      (logoutRequested)="confirmLogout()"
-      (sidebarToggled)="toggleSidebar()"
-    ></app-topbar>
     <!-- Logo -->
     <div class="sidebar-img">
       <img
