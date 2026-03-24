@@ -15,6 +15,7 @@ import {
 } from 'rxjs';
 import { Router } from '@angular/router';
 import { AuthService } from '../../app/views/auth/auth.service';
+import { ContextService } from '../services/context.service';
 
 // URLs que nunca llevan Authorization ni pasan por el flujo de refresh
 const AUTH_URLS = ['/auth/login', '/auth/refresh'];
@@ -23,13 +24,22 @@ function isAuthUrl(url: string): boolean {
   return AUTH_URLS.some((path) => url.includes(path));
 }
 
-function addAuthHeader(req: HttpRequest<unknown>, token: string): HttpRequest<unknown> {
+function addAuthHeader(req: HttpRequest<unknown>, token: string, contextService: ContextService): HttpRequest<unknown> {
   const isFormData = req.body instanceof FormData;
+  const subdomain = contextService.getSubdomain();
+
+  const headers: { [key: string]: string } = {
+    Authorization: `Bearer ${token}`,
+    ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
+  };
+
+  // Agregar X-Subdomain si existe en desarrollo local
+  if (subdomain && subdomain !== 'www') {
+    headers['X-Subdomain'] = subdomain;
+  }
+
   return req.clone({
-    setHeaders: {
-      Authorization: `Bearer ${token}`,
-      ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
-    },
+    setHeaders: headers,
   });
 }
 
@@ -42,6 +52,7 @@ function handleRefreshFailure(authService: AuthService, router: Router): void {
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const router = inject(Router);
+  const contextService = inject(ContextService);
 
   // Pasar sin modificar las rutas de auth
   if (!req.url.includes('/api/') || isAuthUrl(req.url)) {
@@ -59,14 +70,14 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   // Refresh proactivo: token vence en < 60s → renovar antes de enviar
   if (authService.isTokenExpiringSoon(60) && !authService.isRefreshing) {
-    return refreshAndRetry(req, next, authService, router);
+    return refreshAndRetry(req, next, authService, router, contextService);
   }
 
   // Token válido: adjuntar y enviar
-  return next(addAuthHeader(req, token)).pipe(
+  return next(addAuthHeader(req, token, contextService)).pipe(
     catchError((error: HttpErrorResponse) => {
       if (error.status === 401) {
-        return handleUnauthorized(req, next, authService, router);
+        return handleUnauthorized(req, next, authService, router, contextService);
       }
       return throwError(() => error);
     })
@@ -81,7 +92,8 @@ function handleUnauthorized(
   req: HttpRequest<unknown>,
   next: HttpHandlerFn,
   authService: AuthService,
-  router: Router
+  router: Router,
+  contextService: ContextService
 ) {
   if (!authService.getRefreshToken()) {
     handleRefreshFailure(authService, router);
@@ -93,18 +105,19 @@ function handleUnauthorized(
     return authService.refreshTokenSubject.pipe(
       filter((token) => token !== null),
       take(1),
-      switchMap((token) => next(addAuthHeader(req, token!)))
+      switchMap((token) => next(addAuthHeader(req, token!, contextService)))
     );
   }
 
-  return refreshAndRetry(req, next, authService, router);
+  return refreshAndRetry(req, next, authService, router, contextService);
 }
 
 function refreshAndRetry(
   req: HttpRequest<unknown>,
   next: HttpHandlerFn,
   authService: AuthService,
-  router: Router
+  router: Router,
+  contextService: ContextService
 ) {
   authService.isRefreshing = true;
   authService.refreshTokenSubject.next(null);
@@ -113,7 +126,7 @@ function refreshAndRetry(
     switchMap((response) => {
       authService.isRefreshing = false;
       authService.refreshTokenSubject.next(response.token);
-      return next(addAuthHeader(req, response.token));
+      return next(addAuthHeader(req, response.token, contextService));
     }),
     catchError((err) => {
       handleRefreshFailure(authService, router);

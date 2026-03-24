@@ -1,11 +1,33 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './guards/auth.guard';
+import { PublicLayoutComponent } from './views/public/public-layout/public-layout.component';
+import { PublicPropiedadesComponent } from './views/public/public-propiedades/public-propiedades.component';
+import { PublicPropiedadDetalleComponent } from './views/public/public-propiedad-detalle/public-propiedad-detalle.component';
 
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: '/login',
+    redirectTo: '/portal',
     pathMatch: 'full',
+  },
+  // RUTAS PÚBLICAS
+  {
+    path: 'portal',
+    component: PublicLayoutComponent,
+    children: [
+      {
+        path: '',
+        component: PublicPropiedadesComponent,
+      },
+      {
+        path: 'propiedades',
+        component: PublicPropiedadesComponent,
+      },
+      {
+        path: 'propiedades/:id',
+        component: PublicPropiedadDetalleComponent,
+      },
+    ],
   },
   {
     path: 'login',
