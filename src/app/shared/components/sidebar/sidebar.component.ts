@@ -76,7 +76,7 @@ export class SidebarComponent implements OnInit {
           id: 22,
           descripcion: 'Crear',
           icono: 'bi bi-plus-circle',
-          link: '/propiedades/crear',
+          link: '/propiedades/create',
           roles: [2, 3, 4], // Solo Admin, Supervisor y Agente
         },
       ],
