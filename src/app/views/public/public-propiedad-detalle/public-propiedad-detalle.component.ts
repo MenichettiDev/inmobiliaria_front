@@ -49,7 +49,7 @@ import { PublicPropiedadesService, PropiedadPublicaDto } from '../../../services
           </div>
 
           <div class="precio-principal">
-            <h2 *ngIf="propiedad.precio">${{ propiedad.precio | number:'1.0-0' }}</h2>
+            <h2 *ngIf="propiedad.precio">$ {{ propiedad.precio | number:'1.0-0' }}</h2>
           </div>
 
           <div class="detalles-basicos">

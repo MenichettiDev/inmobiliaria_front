@@ -41,9 +41,32 @@ export class ContextService {
   }
 
   private extractSubdomain(hostname: string): string | null {
+    // Ignorar IPs (127.0.0.1, ::1, etc)
+    if (hostname === '127.0.0.1' || hostname === '::1' || hostname.startsWith('[::')) {
+      return null;
+    }
+
+    // Ignorar localhost sin subdominio
+    if (hostname === 'localhost') {
+      return null;
+    }
+
     const parts = hostname.split('.');
-    // Si hay más de 2 partes (ej: tenant1.dominio.com), el primer parte es el subdominio
-    return parts.length > 2 ? parts[0] : null;
+
+    // Caso 1: tenant.localhost (2 partes)
+    if (parts.length === 2 && parts[1] === 'localhost') {
+      return parts[0]; // Retorna el subdominio
+    }
+
+    // Caso 2: tenant.dominio.com (3+ partes)
+    if (parts.length > 2) {
+      const subdomain = parts[0];
+      // Asegurar que no es una IP (todos los parts son números)
+      const isNumericIP = parts.every(part => /^\d+$/.test(part));
+      return isNumericIP ? null : subdomain;
+    }
+
+    return null;
   }
 
   getContext(): AppContext | null {

@@ -5,6 +5,7 @@ import { SidebarComponent } from "./shared/components/sidebar/sidebar.component"
 import { Subscription } from 'rxjs';
 import { AuthService } from './../app/views/auth/auth.service';
 import { SidebarService } from './services/sidebar.service';
+import { ContextService } from './services/context.service';
 
 import { TopbarComponent } from './shared/components/topbar/topbar.component';
 import { PageTitleService } from './services/page-title.service';
@@ -38,12 +39,18 @@ export class AppComponent implements OnInit, OnDestroy {
   displayUserLabel: string = '';
   pageTitle: string = 'Inmobiliaria SaaS';
 
+  // Getter dinámico para isPublicMode (se recalcula cada vez que se accede)
+  get isPublicMode(): boolean {
+    return this.contextService.isPublic();
+  }
+
   constructor(
     public router: Router,
     public activatedRoute: ActivatedRoute,
     public authService: AuthService,
     private sidebarService: SidebarService,
-    private pageTitleService: PageTitleService
+    private pageTitleService: PageTitleService,
+    private contextService: ContextService
   ) {
     this.isLoggedIn = this.authService.isLoggedIn();
     if (this.isLoggedIn) {

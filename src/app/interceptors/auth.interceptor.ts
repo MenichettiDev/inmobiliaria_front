@@ -19,9 +19,15 @@ import { ContextService } from '../services/context.service';
 
 // URLs que nunca llevan Authorization ni pasan por el flujo de refresh
 const AUTH_URLS = ['/auth/login', '/auth/refresh'];
+// URLs públicas que no requieren token
+const PUBLIC_URLS = ['/api/public/'];
 
 function isAuthUrl(url: string): boolean {
   return AUTH_URLS.some((path) => url.includes(path));
+}
+
+function isPublicUrl(url: string): boolean {
+  return PUBLIC_URLS.some((path) => url.includes(path));
 }
 
 function addAuthHeader(req: HttpRequest<unknown>, token: string, contextService: ContextService): HttpRequest<unknown> {
@@ -54,14 +60,25 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
   const contextService = inject(ContextService);
 
-  // Pasar sin modificar las rutas de auth
-  if (!req.url.includes('/api/') || isAuthUrl(req.url)) {
+  // Rutas de auth y públicas: agregar subdominio pero sin token
+  if (isAuthUrl(req.url) || isPublicUrl(req.url)) {
+    const subdomain = contextService.getSubdomain();
+    if (subdomain && subdomain !== 'www') {
+      req = req.clone({
+        setHeaders: { 'X-Subdomain': subdomain }
+      });
+    }
+    return next(req);
+  }
+
+  // No es API: pasar sin modificar
+  if (!req.url.includes('/api/')) {
     return next(req);
   }
 
   const token = authService.getToken();
 
-  // Sin token: redirigir a login
+  // Sin token en rutas privadas: redirigir a login
   if (!token) {
     authService.logout();
     router.navigate(['/login']);

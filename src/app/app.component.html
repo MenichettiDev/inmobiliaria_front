@@ -1,5 +1,5 @@
 <div class="app-container">
-  <div *ngIf="isLoggedIn">
+  <div *ngIf="isLoggedIn && !isPublicMode">
     <app-topbar
       [isLoggedIn]="isLoggedIn"
       [isSmallScreen]="false"
@@ -20,8 +20,8 @@
   </div>
 
   <div class="main-wrapper"
-       [class.with-sidebar]="isLoggedIn && isSidebarVisible"
-       [class.logged-in]="isLoggedIn">
+       [class.with-sidebar]="isLoggedIn && !isPublicMode && isSidebarVisible"
+       [class.logged-in]="isLoggedIn && !isPublicMode">
     <router-outlet></router-outlet>
   </div>
 </div>

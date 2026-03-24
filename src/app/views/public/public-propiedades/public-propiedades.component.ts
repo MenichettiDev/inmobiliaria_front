@@ -64,7 +64,7 @@ import { ContextService } from '../../../services/context.service';
             <h3>{{ prop.titulo }}</h3>
             <p class="direccion">📍 {{ prop.direccion }}</p>
             <p class="precio" *ngIf="prop.precio">
-              <strong>${{ prop.precio | number:'1.0-0' }}</strong>
+              <strong>$ {{ prop.precio | number:'1.0-0' }}</strong>
             </p>
             <p class="descripcion">{{ prop.descripcion | slice:0:100 }}...</p>
           </div>
