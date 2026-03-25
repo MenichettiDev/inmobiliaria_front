@@ -6,10 +6,8 @@
     font-family: var(--font-family-primary);
 }
 
-/* El fondo ahora es global (ver src/styles.css). Aquí solo nos aseguramos
-   de que los contenedores del login sean transparentes para dejar ver
-   la imagen de fondo aplicable a todo el sitio. */
-.login-page, .fullscreen-background, .container {
+/* Estilos del login con fondo personalizado */
+.login-page {
     background: transparent;
 }
 
@@ -23,7 +21,19 @@
     align-items: center;
     padding: 1rem; /* espacio en móviles */
     min-height: 100vh; /* garantizar altura completa incluso con mobile browsers */
-    z-index: 2; /* estar por encima del overlay global (ver src/styles.css .bg-blanch) */
+    z-index: 10; /* estar por encima de todo */
+    /* Fondo con imagen SVG */
+    background-image: url('/assets/images/backgrounds/login-bg.svg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-color: #1e3c72; /* fallback color */
+}
+
+.container {
+    background: transparent;
+    position: relative;
+    z-index: 11; /* asegurar que está por encima del fondo */
 }
 
 /* Container con Glassmorphism */

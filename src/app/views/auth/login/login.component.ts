@@ -59,9 +59,11 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     // Check if already logged in and redirect only if coming from login
+    // Usar setTimeout para evitar cambios de ruta en el mismo ciclo de detección de cambios
     if (this.authService.isLoggedIn()) {
-      // Solo redirigir al dashboard si el usuario ya está autenticado
-      this.router.navigate(['/dashboard']);
+      setTimeout(() => {
+        this.router.navigate(['/dashboard']);
+      }, 0);
     }
   }
 
