@@ -552,7 +552,6 @@ app-root,
 }
 
 html {
-  overflow-x: hidden;
   width: 100%;
 }
 
@@ -563,8 +562,6 @@ body {
   margin: 0;
   padding: 0;
   width: 100%;
-  overflow-x: hidden;
-  height: 100%;
 }
 
 a {
@@ -581,12 +578,11 @@ a:hover {
    Utility Classes
    ========================================================== */
 .no-overflow {
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 .container-fluid {
   max-width: 100%;
-  overflow-x: hidden;
 }
 
 /* Optional brand variant for PrimeNG tooltips */

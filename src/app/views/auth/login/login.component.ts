@@ -7,7 +7,7 @@ import {
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../auth/auth.service';
 import { LoginService } from '../login.service';
 import { SpinnerComponent } from '../../../shared/components/spinner/spinner.component'; // nuevo import
@@ -21,6 +21,7 @@ import { ToastModalComponent } from '../../../shared/components/toast-modal/toas
     NgbTooltipModule,
     SpinnerComponent,
     ToastModalComponent, // registrar ToastModalComponent
+    RouterModule,
   ], // registrar SpinnerComponent y ToastModalComponent
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],

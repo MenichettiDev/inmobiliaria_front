@@ -55,8 +55,9 @@ import { ContextService } from '../../../services/context.service';
       <div class="propiedades-grid" *ngIf="!cargando && !error && propiedades.length > 0">
         <div *ngFor="let prop of propiedades" class="propiedad-card">
           <div class="card-imagen">
-            <img [src]="prop.urlImagenes && prop.urlImagenes.length > 0 ? prop.urlImagenes[0] : '/assets/no-image.png'"
-                 [alt]="prop.titulo">
+            <img [src]="getImageUrl(prop.urlImagenes)"
+                 [alt]="prop.titulo"
+                 (error)="onImageError($event, prop.id)">
             <span class="badge-tenant">{{ prop.inmobiliariaNombre }}</span>
           </div>
 
@@ -290,11 +291,12 @@ export class PublicPropiedadesComponent implements OnInit {
 
   contextoEs: 'PUBLIC' | 'TENANT' = 'PUBLIC';
   subdominioActual: string | null = null;
+  imageErrorsHandled = new Set<number>();
 
   constructor(
     private propiedadesService: PublicPropiedadesService,
     private contextService: ContextService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.contextoEs = this.contextService.getContextType();
@@ -308,20 +310,20 @@ export class PublicPropiedadesComponent implements OnInit {
 
     const request$ = this.contextoEs === 'TENANT' && this.subdominioActual
       ? this.propiedadesService.getPropiedadesByTenant(
-          this.subdominioActual,
-          this.page,
-          this.pageSize,
-          this.filtroTitulo || undefined,
-          this.filtroPrecioMin || undefined,
-          this.filtroPrecioMax || undefined
-        )
+        this.subdominioActual,
+        this.page,
+        this.pageSize,
+        this.filtroTitulo || undefined,
+        this.filtroPrecioMin || undefined,
+        this.filtroPrecioMax || undefined
+      )
       : this.propiedadesService.getPropiedadesPublicas(
-          this.page,
-          this.pageSize,
-          this.filtroTitulo || undefined,
-          this.filtroPrecioMin || undefined,
-          this.filtroPrecioMax || undefined
-        );
+        this.page,
+        this.pageSize,
+        this.filtroTitulo || undefined,
+        this.filtroPrecioMin || undefined,
+        this.filtroPrecioMax || undefined
+      );
 
     request$.subscribe({
       next: (response) => {
@@ -358,6 +360,24 @@ export class PublicPropiedadesComponent implements OnInit {
     if (this.page < this.totalPages) {
       this.page++;
       this.cargarPropiedades();
+    }
+  }
+
+  getImageUrl(urlImagenes: string[] | undefined): string {
+    if (urlImagenes && urlImagenes.length > 0) {
+      return this.propiedadesService.getImageUrl(urlImagenes[0]);
+    }
+    return '/assets/images/backgrounds/no-image.jpg';
+  }
+
+  onImageError(event: Event, propId: number): void {
+    if (this.imageErrorsHandled.has(propId)) {
+      return;
+    }
+    this.imageErrorsHandled.add(propId);
+    const img = event.target as HTMLImageElement;
+    if (!img.src.includes('no-image.jpg')) {
+      img.src = '/assets/images/backgrounds/no-image.jpg';
     }
   }
 }

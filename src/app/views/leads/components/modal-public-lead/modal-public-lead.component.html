@@ -1,0 +1,119 @@
+<div class="modal-header bg-primary text-white">
+  <h5 class="modal-title">
+    <i class="fas fa-envelope me-2"></i>
+    Contactar Inmobiliaria
+  </h5>
+  <button
+    type="button"
+    class="btn-close btn-close-white"
+    (click)="cerrarModal()"
+    aria-label="Close"
+    [disabled]="loading"
+  ></button>
+</div>
+
+<div class="modal-body">
+  <!-- Propiedad Info -->
+  <div class="alert alert-info" *ngIf="propiedadTitulo">
+    <i class="fas fa-home me-2"></i>
+    <strong>Propiedad:</strong> {{ propiedadTitulo }}
+  </div>
+
+  <!-- Error Alert -->
+  <div *ngIf="error" class="alert alert-danger" role="alert">
+    <i class="fas fa-exclamation-triangle me-1"></i>
+    {{ error }}
+  </div>
+
+  <form #leadForm="ngForm" (ngSubmit)="crearLead()">
+    <div class="mb-3">
+      <label class="form-label">
+        Nombre Completo <span class="text-danger">*</span>
+      </label>
+      <input
+        type="text"
+        class="form-control"
+        [(ngModel)]="nuevoLead.nombreCompleto"
+        name="nombreCompleto"
+        required
+        #nombreCompleto="ngModel"
+        placeholder="Tu nombre y apellido"
+        [disabled]="loading"
+      />
+      <div
+        *ngIf="nombreCompleto.invalid && nombreCompleto.touched"
+        class="text-danger small mt-1"
+      >
+        El nombre completo es requerido
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Email</label>
+      <input
+        type="email"
+        class="form-control"
+        [(ngModel)]="nuevoLead.email"
+        name="email"
+        #email="ngModel"
+        placeholder="tu@email.com"
+        [disabled]="loading"
+      />
+      <div
+        *ngIf="email.invalid && email.touched"
+        class="text-danger small mt-1"
+      >
+        Ingresa un email válido
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Teléfono</label>
+      <input
+        type="tel"
+        class="form-control"
+        [(ngModel)]="nuevoLead.telefono"
+        name="telefono"
+        placeholder="+54 9 11 1234-5678"
+        [disabled]="loading"
+      />
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Mensaje</label>
+      <textarea
+        class="form-control"
+        [(ngModel)]="nuevoLead.observaciones"
+        name="observaciones"
+        rows="3"
+        placeholder="Cuéntanos sobre tu interés en esta propiedad..."
+        [disabled]="loading"
+      ></textarea>
+    </div>
+  </form>
+</div>
+
+<div class="modal-footer">
+  <button
+    type="button"
+    class="btn btn-secondary"
+    (click)="cerrarModal()"
+    [disabled]="loading"
+  >
+    <i class="fas fa-times me-1"></i>
+    Cancelar
+  </button>
+  <button
+    type="button"
+    class="btn btn-primary"
+    (click)="crearLead()"
+    [disabled]="loading || !leadForm.form.valid"
+  >
+    <span
+      *ngIf="loading"
+      class="spinner-border spinner-border-sm me-1"
+    ></span>
+    <i *ngIf="!loading" class="fas fa-paper-plane me-1"></i>
+    {{ loading ? "Enviando..." : "Enviar Contacto" }}
+  </button>
+</div>

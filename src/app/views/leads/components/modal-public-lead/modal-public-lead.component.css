@@ -1,0 +1,46 @@
+.modal-header {
+  border-bottom: none;
+}
+
+.modal-title {
+  margin: 0;
+  font-weight: 600;
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.modal-footer {
+  border-top: 1px solid #dee2e6;
+  padding: 1rem;
+  background-color: #f8f9fa;
+}
+
+.form-label {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.text-danger {
+  color: #dc3545;
+}
+
+.alert {
+  margin-bottom: 1rem;
+}
+
+.btn-primary {
+  background-color: #667eea;
+  border-color: #667eea;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: #5568d3;
+  border-color: #5568d3;
+}
+
+.btn-close-white {
+  filter: brightness(0) invert(1);
+}

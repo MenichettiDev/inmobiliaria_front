@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { PublicPropiedadesService, PropiedadPublicaDto } from '../../../services/public-propiedades.service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ModalPublicLeadComponent } from '../../leads/components/modal-public-lead/modal-public-lead.component';
 
 @Component({
   selector: 'app-public-propiedad-detalle',
@@ -29,15 +31,18 @@ import { PublicPropiedadesService, PropiedadPublicaDto } from '../../../services
         <!-- Galería de imágenes -->
         <div class="galeria">
           <div class="imagen-principal">
-            <img [src]="imagenActual" [alt]="propiedad.titulo">
+            <img [src]="imagenActual"
+                 [alt]="propiedad.titulo"
+                 (error)="onImageError($event)">
           </div>
           <div class="thumbnails" *ngIf="propiedad.urlImagenes && propiedad.urlImagenes.length > 1">
             <img *ngFor="let img of propiedad.urlImagenes"
-                 [src]="img"
-                 (click)="imagenActual = img"
-                 [class.activa]="imagenActual === img"
+                 [src]="getImageUrlForTemplate(img)"
+                 (click)="onThumbnailClick(img)"
+                 [class.activa]="imagenActual === getImageUrlForTemplate(img)"
                  [alt]="propiedad.titulo"
-                 class="thumbnail">
+                 class="thumbnail"
+                 (error)="onThumbnailError($event)">
           </div>
         </div>
 
@@ -57,10 +62,6 @@ import { PublicPropiedadesService, PropiedadPublicaDto } from '../../../services
               <span class="label">Dirección:</span>
               <span class="valor">{{ propiedad.direccion }}</span>
             </div>
-            <div class="detalle-item" *ngIf="propiedad.latitud">
-              <span class="label">Ubicación:</span>
-              <span class="valor">{{ propiedad.latitud | number:'1.6-6' }}, {{ propiedad.longitud | number:'1.6-6' }}</span>
-            </div>
             <div class="detalle-item" *ngIf="propiedad.publicadaEn">
               <span class="label">Publicada:</span>
               <span class="valor">{{ propiedad.publicadaEn | date:'short' }}</span>
@@ -72,23 +73,12 @@ import { PublicPropiedadesService, PropiedadPublicaDto } from '../../../services
             <p>{{ propiedad.descripcion }}</p>
           </div>
 
-          <!-- Mapa (si tiene coordenadas) -->
-          <div class="mapa" *ngIf="propiedad.latitud && propiedad.longitud">
-            <h3>Ubicación en Mapa</h3>
-            <p class="mapa-info">
-              Coordenadas: {{ propiedad.latitud }}, {{ propiedad.longitud }}
-            </p>
-            <p style="color: #999; font-size: 0.9rem;">
-              Mapa interactivo: Implementar con Leaflet o Google Maps
-            </p>
-          </div>
-
-          <!-- Contacto -->
-          <div class="contacto">
-            <h3>Información de Contacto</h3>
-            <p>Para más información sobre esta propiedad, contacta con:</p>
-            <strong>{{ propiedad.inmobiliariaNombre }}</strong>
-            <p style="color: #666; font-size: 0.9rem;">Visita nuestro sitio para más detalles</p>
+          <!-- Botón Contactar -->
+          <div class="contacto-button">
+            <button class="btn btn-primary btn-lg w-100" (click)="abrirModalContacto()">
+              <i class="fas fa-envelope me-2"></i>
+              Contactar a {{ propiedad.inmobiliariaNombre }}
+            </button>
           </div>
         </div>
       </div>
@@ -283,6 +273,30 @@ import { PublicPropiedadesService, PropiedadPublicaDto } from '../../../services
       margin: 0.5rem 0;
       color: #666;
     }
+
+    .contacto-button {
+      border-top: 1px solid #eee;
+      padding-top: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      font-weight: 500;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #5568d3 0%, #6a3d99 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-lg {
+      padding: 0.75rem 1.5rem;
+      font-size: 1.05rem;
+    }
   `]
 })
 export class PublicPropiedadDetalleComponent implements OnInit {
@@ -294,8 +308,9 @@ export class PublicPropiedadDetalleComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private propiedadesService: PublicPropiedadesService
-  ) {}
+    private propiedadesService: PublicPropiedadesService,
+    private modalService: NgbModal
+  ) { }
 
   ngOnInit(): void {
     this.route.params.subscribe((params) => {
@@ -318,8 +333,8 @@ export class PublicPropiedadDetalleComponent implements OnInit {
           this.propiedad = response.data;
           this.imagenActual =
             this.propiedad.urlImagenes && this.propiedad.urlImagenes.length > 0
-              ? this.propiedad.urlImagenes[0]
-              : '/assets/no-image.png';
+              ? this.propiedadesService.getImageUrl(this.propiedad.urlImagenes[0])
+              : '/assets/images/backgrounds/no-image.jpg';
         } else {
           this.error = response.message || 'Propiedad no encontrada';
         }
@@ -331,5 +346,50 @@ export class PublicPropiedadDetalleComponent implements OnInit {
         this.cargando = false;
       }
     });
+  }
+
+  onImageError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    if (!img.src.includes('no-image.jpg')) {
+      img.src = '/assets/images/backgrounds/no-image.jpg';
+    }
+  }
+
+  onThumbnailError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    if (!img.src.includes('no-image.jpg')) {
+      img.src = '/assets/images/backgrounds/no-image.jpg';
+    }
+  }
+
+  getImageUrlForTemplate(imagePath: string): string {
+    return this.propiedadesService.getImageUrl(imagePath);
+  }
+
+  onThumbnailClick(imagePath: string): void {
+    this.imagenActual = this.propiedadesService.getImageUrl(imagePath);
+  }
+
+  abrirModalContacto(): void {
+    const modalRef = this.modalService.open(ModalPublicLeadComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false
+    });
+
+    modalRef.componentInstance.propiedadId = this.propiedadId || 0;
+    modalRef.componentInstance.propiedadTitulo = this.propiedad?.titulo || '';
+
+    modalRef.result.then(
+      (result) => {
+        if (result?.success) {
+          // Lead creado exitosamente
+          alert('¡Gracias! Tu contacto ha sido enviado a la inmobiliaria.');
+        }
+      },
+      (reason) => {
+        // Modal cerrado sin acción
+      }
+    );
   }
 }

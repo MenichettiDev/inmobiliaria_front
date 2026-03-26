@@ -3,6 +3,12 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
+// Obtener la URL base del servidor (sin /api)
+const getServerBaseUrl = (): string => {
+  const apiUrl = environment.apiUrl;
+  return apiUrl.replace('/api', '');
+};
+
 export interface PropiedadPublicaDto {
   id: number;
   titulo: string;
@@ -40,8 +46,9 @@ export interface BaseResponseDto<T> {
 })
 export class PublicPropiedadesService {
   private apiUrl = `${environment.apiUrl}/public`;
+  private serverBaseUrl = getServerBaseUrl();
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   /**
    * Obtiene propiedades publicadas cross-tenant
@@ -99,5 +106,20 @@ export class PublicPropiedadesService {
     }
 
     return this.http.get<BaseResponseDto<PaginatedResponseDto<PropiedadPublicaDto>>>(url);
+  }
+
+  /**
+   * Construye la URL completa de una imagen
+   */
+  getImageUrl(imagePath: string): string {
+    if (!imagePath) {
+      return '/assets/images/backgrounds/no-image.jpg';
+    }
+    // Si es una URL absoluta ya, devolverla tal cual
+    if (imagePath.startsWith('http')) {
+      return imagePath;
+    }
+    // Si es una ruta relativa del servidor, agregar la URL base
+    return `${this.serverBaseUrl}${imagePath}`;
   }
 }

@@ -1,0 +1,29 @@
+<svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fondo gris claro -->
+  <rect width="400" height="300" fill="#f0f0f0"/>
+
+  <!-- Decoración superior -->
+  <rect x="0" y="0" width="400" height="3" fill="#e0e0e0"/>
+
+  <!-- Icono de imagen -->
+  <g transform="translate(100, 50)">
+    <!-- Marco de la imagen -->
+    <rect x="0" y="0" width="200" height="150" fill="none" stroke="#d0d0d0" stroke-width="2" rx="4"/>
+
+    <!-- Montañas (paisaje simple) -->
+    <polygon points="20,100 60,50 100,80 140,30 180,90" fill="#e0e0e0" opacity="0.6"/>
+
+    <!-- Sol -->
+    <circle cx="160" cy="40" r="12" fill="#f5a623" opacity="0.7"/>
+  </g>
+
+  <!-- Texto informativo -->
+  <text x="200" y="220" font-family="Arial, sans-serif" font-size="16" fill="#999999" text-anchor="middle" font-weight="500">
+    Sin imagen disponible
+  </text>
+
+  <!-- Texto adicional más pequeño -->
+  <text x="200" y="245" font-family="Arial, sans-serif" font-size="12" fill="#cccccc" text-anchor="middle">
+    La propiedad aún no tiene fotos
+  </text>
+</svg>

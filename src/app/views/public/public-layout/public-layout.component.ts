@@ -1,17 +1,17 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-public-layout',
   standalone: true,
-  imports: [RouterOutlet, CommonModule],
+  imports: [RouterOutlet, CommonModule, RouterModule],
   template: `
     <div class="public-layout">
       <!-- Header simplificado -->
       <header class="public-header">
         <div class="container">
-          <h1>ProPiedadesAr</h1>
+          <h1>Centro Inmo</h1>
           <nav>
             <a routerLink="/portal" routerLinkActive="active">Inicio</a>
             <a routerLink="/portal/propiedades" routerLinkActive="active">Propiedades</a>
@@ -37,7 +37,7 @@ import { CommonModule } from '@angular/common';
     .public-layout {
       display: flex;
       flex-direction: column;
-      min-height: 100vh;
+      min-height: 100%;
       background-color: #f5f5f5;
     }
 
@@ -105,4 +105,4 @@ import { CommonModule } from '@angular/common';
     }
   `]
 })
-export class PublicLayoutComponent {}
+export class PublicLayoutComponent { }
