@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { PublicPropiedadesService, PropiedadPublicaDto } from '../../../services/public-propiedades.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ModalPublicLeadComponent } from '../../leads/components/modal-public-lead/modal-public-lead.component';
+import { UsuarioWebAuthService } from '../../../services/usuario-web-auth.service';
+import { PortalService } from '../../../services/portal.service';
 
 @Component({
   selector: 'app-public-propiedad-detalle',
@@ -50,7 +52,15 @@ import { ModalPublicLeadComponent } from '../../leads/components/modal-public-le
         <div class="info">
           <div class="header-info">
             <h1>{{ propiedad.titulo }}</h1>
-            <span class="inmobiliaria-badge">{{ propiedad.inmobiliariaNombre }}</span>
+            <div class="header-actions">
+              <span class="inmobiliaria-badge">{{ propiedad.inmobiliariaNombre }}</span>
+              <button class="btn-favorito"
+                      (click)="toggleFavorito()"
+                      [class.activo]="esFavorito"
+                      [title]="esFavorito ? 'Remover de favoritos' : 'Agregar a favoritos'">
+                <i [class]="esFavorito ? 'fas fa-heart' : 'far fa-heart'"></i>
+              </button>
+            </div>
           </div>
 
           <div class="precio-principal">
@@ -195,6 +205,38 @@ import { ModalPublicLeadComponent } from '../../leads/components/modal-public-le
       flex: 1;
     }
 
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .btn-favorito {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #ddd;
+      transition: all 0.3s;
+      padding: 0.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      hover-color: #667eea;
+    }
+
+    .btn-favorito:hover {
+      background: rgba(102, 126, 234, 0.1);
+      color: #667eea;
+    }
+
+    .btn-favorito.activo {
+      color: #e74c3c;
+    }
+
     .inmobiliaria-badge {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
@@ -305,11 +347,16 @@ export class PublicPropiedadDetalleComponent implements OnInit {
   cargando = true;
   error: string | null = null;
   propiedadId: number | null = null;
+  esFavorito = false;
+  cargandoFavorito = false;
 
   constructor(
     private route: ActivatedRoute,
     private propiedadesService: PublicPropiedadesService,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    private authService: UsuarioWebAuthService,
+    private portalService: PortalService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -317,6 +364,7 @@ export class PublicPropiedadDetalleComponent implements OnInit {
       this.propiedadId = parseInt(params['id'], 10);
       if (this.propiedadId) {
         this.cargarPropiedad();
+        this.cargarEstadoFavorito();
       }
     });
   }
@@ -391,5 +439,42 @@ export class PublicPropiedadDetalleComponent implements OnInit {
         // Modal cerrado sin acción
       }
     );
+  }
+
+  private cargarEstadoFavorito(): void {
+    if (!this.authService.isLoggedInSync() || !this.propiedadId) {
+      this.esFavorito = false;
+      return;
+    }
+
+    this.portalService.getFavoritos().subscribe({
+      next: (response) => {
+        const favoritos = response.data || [];
+        this.esFavorito = favoritos.some(f => f.idPropiedad === this.propiedadId);
+      },
+      error: () => {
+        this.esFavorito = false;
+      }
+    });
+  }
+
+  toggleFavorito(): void {
+    if (!this.authService.isLoggedInSync()) {
+      this.router.navigate(['/portal/login']);
+      return;
+    }
+
+    if (!this.propiedadId || this.cargandoFavorito) return;
+
+    this.cargandoFavorito = true;
+    this.portalService.toggleFavorito(this.propiedadId).subscribe({
+      next: () => {
+        this.esFavorito = !this.esFavorito;
+        this.cargandoFavorito = false;
+      },
+      error: () => {
+        this.cargandoFavorito = false;
+      }
+    });
   }
 }

@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
-import { RouterOutlet, RouterModule } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { RouterOutlet, RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { UsuarioWebAuthService } from '../../../services/usuario-web-auth.service';
 
 @Component({
   selector: 'app-public-layout',
@@ -12,10 +13,25 @@ import { CommonModule } from '@angular/common';
       <header class="public-header">
         <div class="container">
           <h1>Centro Inmo</h1>
-          <nav>
+          <nav class="nav-menu">
             <a routerLink="/portal" routerLinkActive="active">Inicio</a>
             <a routerLink="/portal/propiedades" routerLinkActive="active">Propiedades</a>
-            <a routerLink="/login">Ingresar</a>
+
+            <!-- Si está logueado: mostrar perfil + dropdown -->
+            <div *ngIf="usuarioWeb$ | async as usuario" class="user-menu">
+              <span class="usuario-nombre">{{ usuario.nombre }}</span>
+              <div class="dropdown">
+                <a routerLink="/portal/favoritos">Mis Favoritos</a>
+                <a routerLink="/portal/consultas">Mis Consultas</a>
+                <button (click)="onLogout()" class="btn-logout">Cerrar Sesión</button>
+              </div>
+            </div>
+
+            <!-- Si no está logueado: botones Ingresar/Registrarse -->
+            <div *ngIf="!(usuarioWeb$ | async)" class="auth-buttons">
+              <a routerLink="/portal/login" class="btn-login">Ingresar</a>
+              <a routerLink="/portal/register" class="btn-register">Registrarse</a>
+            </div>
           </nav>
         </div>
       </header>
@@ -103,6 +119,117 @@ import { CommonModule } from '@angular/common';
     .public-footer p {
       margin: 0;
     }
+
+    .nav-menu {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .user-menu {
+      position: relative;
+    }
+
+    .usuario-nombre {
+      cursor: pointer;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      transition: background 0.3s;
+    }
+
+    .usuario-nombre:hover {
+      background: rgba(255,255,255,0.1);
+    }
+
+    .dropdown {
+      display: none;
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: white;
+      color: #333;
+      border-radius: 4px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      min-width: 200px;
+      z-index: 1000;
+    }
+
+    .user-menu:hover .dropdown {
+      display: block;
+    }
+
+    .dropdown a,
+    .dropdown button {
+      display: block;
+      width: 100%;
+      padding: 0.75rem 1rem;
+      text-align: left;
+      color: #333;
+      text-decoration: none;
+      border: none;
+      background: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .dropdown a:hover,
+    .dropdown button:hover {
+      background: #f5f5f5;
+    }
+
+    .btn-logout {
+      color: #dc3545;
+      font-weight: 500;
+    }
+
+    .auth-buttons {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .btn-login,
+    .btn-register {
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      text-decoration: none;
+      transition: all 0.3s;
+      font-weight: 500;
+    }
+
+    .btn-login {
+      color: white;
+      border: 1px solid white;
+    }
+
+    .btn-login:hover {
+      background: white;
+      color: #667eea;
+    }
+
+    .btn-register {
+      background: white;
+      color: #667eea;
+    }
+
+    .btn-register:hover {
+      transform: scale(1.05);
+    }
   `]
 })
-export class PublicLayoutComponent { }
+export class PublicLayoutComponent implements OnInit {
+  usuarioWeb$: any;
+
+  constructor(
+    private authService: UsuarioWebAuthService,
+    private router: Router
+  ) {
+    this.usuarioWeb$ = this.authService.getLoggedInUser();
+  }
+
+  ngOnInit(): void { }
+
+  onLogout(): void {
+    this.authService.logout();
+    this.router.navigate(['/portal']);
+  }
+}

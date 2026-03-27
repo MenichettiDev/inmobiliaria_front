@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LeadsService } from '../../service/leads.service';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { UsuarioWebAuthService } from '../../../../services/usuario-web-auth.service';
 
 interface CreatePublicLeadDto {
   nombreCompleto: string;
@@ -10,6 +11,7 @@ interface CreatePublicLeadDto {
   telefono?: string;
   idPropiedad: number;
   observaciones?: string;
+  idUsuarioWeb?: number;
 }
 
 @Component({
@@ -36,11 +38,22 @@ export class ModalPublicLeadComponent implements OnInit {
 
   constructor(
     private leadsService: LeadsService,
-    public activeModal: NgbActiveModal
+    public activeModal: NgbActiveModal,
+    private authService: UsuarioWebAuthService
   ) { }
 
   ngOnInit(): void {
     this.nuevoLead.idPropiedad = this.propiedadId;
+
+    // Pre-fill form if user is logged in
+    if (this.authService.isLoggedInSync()) {
+      const usuario = this.authService.getUser();
+      if (usuario) {
+        this.nuevoLead.nombreCompleto = usuario.nombre || '';
+        this.nuevoLead.email = usuario.email || '';
+        this.nuevoLead.idUsuarioWeb = usuario.id;
+      }
+    }
   }
 
   cerrarModal(): void {
@@ -83,12 +96,14 @@ export class ModalPublicLeadComponent implements OnInit {
   }
 
   private resetForm(): void {
+    const usuario = this.authService.isLoggedInSync() ? this.authService.getUser() : null;
     this.nuevoLead = {
-      nombreCompleto: '',
-      email: '',
+      nombreCompleto: usuario?.nombre || '',
+      email: usuario?.email || '',
       telefono: '',
       idPropiedad: this.propiedadId,
-      observaciones: ''
+      observaciones: '',
+      idUsuarioWeb: usuario?.id
     };
     this.error = '';
   }
