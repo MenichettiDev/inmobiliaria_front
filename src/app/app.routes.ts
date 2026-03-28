@@ -4,8 +4,6 @@ import { webAuthGuard } from './guards/web-auth.guard';
 import { PublicLayoutComponent } from './views/public/public-layout/public-layout.component';
 import { PublicPropiedadesComponent } from './views/public/public-propiedades/public-propiedades.component';
 import { PublicPropiedadDetalleComponent } from './views/public/public-propiedad-detalle/public-propiedad-detalle.component';
-import { PublicLoginComponent } from './views/public/public-login/public-login.component';
-import { PublicRegisterComponent } from './views/public/public-register/public-register.component';
 import { PublicFavoritosComponent } from './views/public/public-favoritos/public-favoritos.component';
 import { PublicMisConsultasComponent } from './views/public/public-mis-consultas/public-mis-consultas.component';
 
@@ -31,14 +29,6 @@ export const routes: Routes = [
       {
         path: 'propiedades/:id',
         component: PublicPropiedadDetalleComponent,
-      },
-      {
-        path: 'login',
-        component: PublicLoginComponent,
-      },
-      {
-        path: 'register',
-        component: PublicRegisterComponent,
       },
       {
         path: 'favoritos',

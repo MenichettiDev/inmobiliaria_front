@@ -460,7 +460,7 @@ export class PublicPropiedadDetalleComponent implements OnInit {
 
   toggleFavorito(): void {
     if (!this.authService.isLoggedInSync()) {
-      this.router.navigate(['/portal/login']);
+      this.router.navigate(['/login']);
       return;
     }
 

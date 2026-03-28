@@ -346,11 +346,49 @@ input[inputmode="numeric"] {
         max-width: 80px;
         height: 80px;
     }
+}
 
-    .btn-back-to-portal {
-        font-size: 0.8rem;
-        padding: 0.4rem 0.8rem;
-    }
+/* Divider */
+.divider {
+    text-align: center;
+    margin: var(--space-6) 0;
+    position: relative;
+    color: var(--neutral-500);
+    font-size: 0.9rem;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 45%;
+    height: 1px;
+    background: var(--neutral-300);
+}
+
+.divider::before {
+    left: 0;
+}
+
+.divider::after {
+    right: 0;
+}
+
+/* Google Sign-In Button */
+#google-login-button {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: var(--space-4);
+}
+
+#google-login-button :global(div) {
+    width: 100% !important;
+}
+
+.w-100 {
+    width: 100%;
 }
 
 @media (max-width: 360px) {

@@ -12,6 +12,10 @@ import { AuthService } from '../../auth/auth.service';
 import { LoginService } from '../login.service';
 import { SpinnerComponent } from '../../../shared/components/spinner/spinner.component'; // nuevo import
 import { ToastModalComponent } from '../../../shared/components/toast-modal/toast-modal.component'; // nuevo import
+import { UsuarioWebAuthService } from '../../../services/usuario-web-auth.service';
+import { environment } from '../../../../environments/environment';
+
+declare var google: any;
 
 @Component({
   selector: 'app-login',
@@ -66,6 +70,47 @@ export class LoginComponent implements OnInit {
         this.router.navigate(['/dashboard']);
       }, 0);
     }
+
+    // Inicializar Google Sign-In
+    this.initializeGoogleSignIn();
+  }
+
+  /**
+   * Inicializa el botón de Google Sign-In
+   */
+  private initializeGoogleSignIn(): void {
+    setTimeout(() => {
+      if (typeof google !== 'undefined' && google.accounts) {
+        google.accounts.id.initialize({
+          client_id: environment.googleClientId,
+          callback: (response: any) => this.handleGoogleLogin(response)
+        });
+
+        google.accounts.id.renderButton(
+          document.getElementById('google-login-button'),
+          {
+            type: 'standard',
+            size: 'large',
+            text: 'signin_with'
+          }
+        );
+      }
+    }, 500);
+  }
+
+  /**
+   * Maneja el login con Google
+   */
+  private handleGoogleLogin(response: any): void {
+    if (!response.credential) {
+      this.showErrorToast('Error al procesar credenciales de Google');
+      return;
+    }
+
+    // Para usuarios internos (inmobiliarias) usar el AuthService existente
+    // Para usuarios web, usar UsuarioWebAuthService
+    // Por ahora solo soportamos usuarios internos con Google
+    this.showErrorToast('Google OAuth para usuarios internos pronto disponible');
   }
 
   onSubmit(): void {

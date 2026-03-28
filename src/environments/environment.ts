@@ -3,6 +3,6 @@ export const environment = {
   apiUrl: 'http://localhost:2000/api',
   publicDomain: 'localhost:4200',        // Dominio público (sin subdominio)
   tenantSubdomain: 'demo',               // Subdominio default para testing
-  googleClientId: 'PLACEHOLDER_GOOGLE_CLIENT_ID',  // Google OAuth Client ID
+  googleClientId: '1091859375836-fu42r5e8sav2ri33igitm55ogg7j2qpp.apps.googleusercontent.com',  // Google OAuth Client ID
 };
 

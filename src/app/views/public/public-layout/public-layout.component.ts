@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterOutlet, RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { UsuarioWebAuthService } from '../../../services/usuario-web-auth.service';
+import { Observable } from 'rxjs';
+import { UsuarioWebAuthService, UsuarioWeb } from '../../../services/usuario-web-auth.service';
 
 @Component({
   selector: 'app-public-layout',
@@ -19,7 +20,7 @@ import { UsuarioWebAuthService } from '../../../services/usuario-web-auth.servic
 
             <!-- Si está logueado: mostrar perfil + dropdown -->
             <div *ngIf="usuarioWeb$ | async as usuario" class="user-menu">
-              <span class="usuario-nombre">{{ usuario.nombre }}</span>
+              <span class="usuario-nombre">{{ usuario?.nombre }}</span>
               <div class="dropdown">
                 <a routerLink="/portal/favoritos">Mis Favoritos</a>
                 <a routerLink="/portal/consultas">Mis Consultas</a>
@@ -27,10 +28,9 @@ import { UsuarioWebAuthService } from '../../../services/usuario-web-auth.servic
               </div>
             </div>
 
-            <!-- Si no está logueado: botones Ingresar/Registrarse -->
+            <!-- Si no está logueado: botones Ingresar -->
             <div *ngIf="!(usuarioWeb$ | async)" class="auth-buttons">
-              <a routerLink="/portal/login" class="btn-login">Ingresar</a>
-              <a routerLink="/portal/register" class="btn-register">Registrarse</a>
+              <a routerLink="/login" class="btn-login">Ingresar</a>
             </div>
           </nav>
         </div>
@@ -217,7 +217,7 @@ import { UsuarioWebAuthService } from '../../../services/usuario-web-auth.servic
   `]
 })
 export class PublicLayoutComponent implements OnInit {
-  usuarioWeb$: any;
+  usuarioWeb$: Observable<UsuarioWeb | null>;
 
   constructor(
     private authService: UsuarioWebAuthService,
