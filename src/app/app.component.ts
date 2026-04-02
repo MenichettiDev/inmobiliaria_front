@@ -41,6 +41,10 @@ export class AppComponent implements OnInit, OnDestroy {
 
   // Getter dinámico para isPublicMode (se recalcula cada vez que se accede)
   get isPublicMode(): boolean {
+    // Si está logueado, NO es modo público (mostrar sidebar y topbar)
+    if (this.isLoggedIn) return false;
+
+    // Si NO está logueado, depende del contexto del dominio
     return this.contextService.isPublic();
   }
 

@@ -21,6 +21,9 @@
         (click)="setMain(idx)"
       >
         <img [src]="buildUrl(im.url)" alt="thumb-{{ idx }}" (error)="(null)" />
+        <span *ngIf="im.esPrincipal" class="badge-principal">
+          <i class="bi bi-star-fill"></i>
+        </span>
       </button>
     </div>
   </div>

@@ -9,6 +9,7 @@ interface Imagen {
   idPropiedad: number;
   url: string;
   orden: number;
+  esPrincipal?: boolean;
   creadoEn: string;
   propiedadTitulo?: string;
 }
@@ -56,7 +57,9 @@ export class ModalDetallePropiedadComponent implements OnChanges {
 
   getMainImage(): string {
     if (!this.propiedad?.imagenes?.length) return 'assets/images/backgrounds/vacia.jpg';
-    const img = this.propiedad.imagenes[this.mainIndex] || this.propiedad.imagenes[0];
+    // Priorizar imagen principal, luego la del mainIndex, luego la primera
+    const imagenPrincipal = this.propiedad.imagenes.find(img => img.esPrincipal);
+    const img = imagenPrincipal || this.propiedad.imagenes[this.mainIndex] || this.propiedad.imagenes[0];
     return this.buildUrl(img?.url);
   }
 

@@ -132,6 +132,24 @@
             </div>
 
           </form>
+
+          <!-- Imágenes (fuera del formulario) -->
+          <div *ngIf="!isLoadingPropiedad" class="mt-4 pt-4 border-top">
+            <!-- Galería de imágenes -->
+            <app-imagenes-galeria
+              [propiedadId]="propiedadId"
+              [imagenes]="imagenes"
+              (imagenesChanged)="onImagenesChanged($event)"
+            ></app-imagenes-galeria>
+
+            <!-- Componente para subir imagen -->
+            <app-imagen-upload
+              [propiedadId]="propiedadId"
+              [totalSubidas]="imagenes.length"
+              [maxImagenes]="maxImagenes"
+              (imagenSubida)="onImagenSubida($event)"
+            ></app-imagen-upload>
+          </div>
         </div>
       </div>
     </div>

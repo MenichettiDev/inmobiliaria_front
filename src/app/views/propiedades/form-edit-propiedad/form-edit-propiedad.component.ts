@@ -8,6 +8,9 @@ import { CboProvinciaComponent } from '../../../shared/cbo/cbo-provincia/cbo-pro
 import { CboLocalidadComponent } from '../../../shared/cbo/cbo-localidad/cbo-localidad.component';
 import { MapPickerComponent, LatLng } from '../../../shared/components/map-picker/map-picker.component';
 import { ProvinciaDto } from '../../../shared/services/geografia.service';
+import { ImagenUploadComponent } from '../components/imagen-upload/imagen-upload.component';
+import { ImagenesGaleriaComponent } from '../components/imagenes-galeria/imagenes-galeria.component';
+import { Imagen } from '../models/imagen.model';
 
 interface UpdatePropiedadDto {
   id: number;
@@ -27,7 +30,17 @@ interface UpdatePropiedadDto {
 @Component({
   selector: 'app-form-edit-propiedad',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, CboUsuarioComponent, CboProvinciaComponent, CboLocalidadComponent, MapPickerComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    CboUsuarioComponent,
+    CboProvinciaComponent,
+    CboLocalidadComponent,
+    MapPickerComponent,
+    ImagenUploadComponent,
+    ImagenesGaleriaComponent
+  ],
   templateUrl: './form-edit-propiedad.component.html',
   styleUrl: './form-edit-propiedad.component.css'
 })
@@ -42,6 +55,10 @@ export class FormEditPropiedadComponent implements OnInit {
   selectedLng: number | null = null;
   selectedProvinciaId: number | null = null;
   selectedProvinciaNombre: string | null = null;
+
+  // Imágenes
+  imagenes: Imagen[] = [];
+  maxImagenes: number | null = null;
 
   estadosAdministrativos = [
     { id: 1, nombre: 'Propiedad visible y operativa' },
@@ -113,6 +130,8 @@ export class FormEditPropiedadComponent implements OnInit {
           if (this.selectedProvinciaId) {
             this.propiedadForm.patchValue({ idProvincia: this.selectedProvinciaId });
           }
+          // Cargar imágenes
+          this.cargarImagenes();
         } else {
           this.error = response.message || 'Error al cargar la propiedad';
         }
@@ -202,5 +221,30 @@ export class FormEditPropiedadComponent implements OnInit {
 
   onUsuarioAsignadoChange(userId: number | null): void {
     this.propiedadForm.patchValue({ idAgenteResponsable: userId });
+  }
+
+  // ─── Métodos para Imágenes ───────────────────────────────────────
+  cargarImagenes(): void {
+    this.propiedadesService.getImagenesByPropiedad(this.propiedadId).subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          this.imagenes = response.data;
+          // Ordenar por orden
+          this.imagenes.sort((a, b) => a.orden - b.orden);
+        }
+      },
+      error: (error) => {
+        console.error('Error al cargar imágenes:', error);
+      }
+    });
+  }
+
+  onImagenSubida(imagen: Imagen): void {
+    this.imagenes.push(imagen);
+    this.imagenes.sort((a, b) => a.orden - b.orden);
+  }
+
+  onImagenesChanged(imagenes: Imagen[]): void {
+    this.imagenes = imagenes;
   }
 }

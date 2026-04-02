@@ -1,0 +1,78 @@
+<div class="propiedades-wrapper">
+  <div class="propiedades-header">
+    <h2>{{ contextoEs === 'TENANT' ? 'Propiedades Disponibles' : 'Catálogo de Propiedades' }}</h2>
+    <p class="subtitle">Explora nuestras propiedades publicadas</p>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filtros">
+    <input
+      type="text"
+      placeholder="Buscar por título..."
+      [(ngModel)]="filtroTitulo"
+      (keyup)="onFiltrosChange()"
+      class="input-filtro"
+    >
+    <input
+      type="number"
+      placeholder="Precio mín"
+      [(ngModel)]="filtroPrecioMin"
+      (change)="onFiltrosChange()"
+      class="input-filtro"
+    >
+    <input
+      type="number"
+      placeholder="Precio máx"
+      [(ngModel)]="filtroPrecioMax"
+      (change)="onFiltrosChange()"
+      class="input-filtro"
+    >
+  </div>
+
+  <!-- Cargando -->
+  <div *ngIf="cargando" class="loading">
+    <p>Cargando propiedades...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error" class="error">
+    <p>{{ error }}</p>
+  </div>
+
+  <!-- Grid de propiedades -->
+  <div class="propiedades-grid" *ngIf="!cargando && !error && propiedades.length > 0">
+    <div *ngFor="let prop of propiedades" class="propiedad-card">
+      <div class="card-imagen">
+        <img [src]="getImageUrl(prop.urlImagenes)"
+             [alt]="prop.titulo"
+             (error)="onImageError($event, prop.id)">
+        <span class="badge-tenant">{{ prop.inmobiliariaNombre }}</span>
+      </div>
+
+      <div class="card-contenido">
+        <h3>{{ prop.titulo }}</h3>
+        <p class="direccion">📍 {{ prop.direccion }}</p>
+        <p class="precio" *ngIf="prop.precio">
+          <strong>$ {{ prop.precio | number:'1.0-0' }}</strong>
+        </p>
+        <p class="descripcion">{{ prop.descripcion | slice:0:100 }}...</p>
+      </div>
+
+      <div class="card-acciones">
+        <a [routerLink]="['/portal/propiedades', prop.id]" class="btn-ver">Ver Detalle</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sin resultados -->
+  <div *ngIf="!cargando && !error && propiedades.length === 0" class="sin-resultados">
+    <p>No se encontraron propiedades</p>
+  </div>
+
+  <!-- Paginación -->
+  <div class="paginacion" *ngIf="totalPages > 1">
+    <button (click)="paginaAnterior()" [disabled]="page === 1" class="btn-pag">← Anterior</button>
+    <span>Página {{ page }} de {{ totalPages }}</span>
+    <button (click)="paginaSiguiente()" [disabled]="page === totalPages" class="btn-pag">Siguiente →</button>
+  </div>
+</div>

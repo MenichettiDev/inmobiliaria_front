@@ -9,17 +9,6 @@ import { CboLocalidadComponent } from '../../../shared/cbo/cbo-localidad/cbo-loc
 import { MapPickerComponent, LatLng } from '../../../shared/components/map-picker/map-picker.component';
 import { ProvinciaDto } from '../../../shared/services/geografia.service';
 
-interface CreatePropiedadDto {
-  titulo: string;
-  descripcion: string;
-  precio?: number;
-  direccion: string;
-  latitud?: number;
-  longitud?: number;
-  idAgenteResponsable?: number;
-  idLocalidad?: number;
-  idInmobiliaria: number;
-}
 
 @Component({
   selector: 'app-form-create-propiedad',
@@ -127,40 +116,45 @@ export class FormCreatePropiedadComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.propiedadForm.valid) {
-      this.loading = true;
-      this.error = '';
-
-      const formData = this.propiedadForm.value;
-      const createDto: CreatePropiedadDto & { Imagenes?: string[] } = {
-        titulo: formData.titulo,
-        descripcion: formData.descripcion,
-        precio: formData.precio || undefined,
-        direccion: formData.direccion,
-        latitud: this.selectedLat || undefined,
-        longitud: this.selectedLng || undefined,
-        idAgenteResponsable: formData.idAgenteResponsable || undefined,
-        idLocalidad: formData.idLocalidad || undefined,
-        idInmobiliaria: 0
-      };
-
-      if (this.images.length > 0) {
-        createDto.Imagenes = this.images.map(i => i.preview);
-      }
-
-      this.propiedadesService.crearPropiedad(createDto).subscribe({
-        next: () => {
-          this.loading = false;
-          this.router.navigate(['/propiedades']);
-        },
-        error: (error) => {
-          this.loading = false;
-          this.error = error.error?.message || 'Error al crear la propiedad';
-        }
-      });
-    } else {
+    if (!this.propiedadForm.valid) {
       this.markFormGroupTouched();
+      return;
     }
+
+    this.loading = true;
+    this.error = '';
+
+    const formValues = this.propiedadForm.value;
+    const propiedadJson = JSON.stringify({
+      titulo: formValues.titulo,
+      descripcion: formValues.descripcion,
+      precio: formValues.precio || null,
+      direccion: formValues.direccion,
+      latitud: this.selectedLat || null,
+      longitud: this.selectedLng || null,
+      idAgenteResponsable: formValues.idAgenteResponsable || null,
+      idLocalidad: formValues.idLocalidad || null,
+      idInmobiliaria: 0
+    });
+
+    const multipart = new FormData();
+    multipart.append('propiedadJson', propiedadJson);
+    this.images.forEach((img, i) => multipart.append(`imagen_${i}`, img.file, img.file.name));
+
+    this.propiedadesService.crearPropiedadConImagenes(multipart).subscribe({
+      next: (response: any) => {
+        this.loading = false;
+        if (response.property?.success || response.success) {
+          this.router.navigate(['/propiedades']);
+        } else {
+          this.error = response.property?.message || response.message || 'No se pudo crear la propiedad';
+        }
+      },
+      error: (error: any) => {
+        this.loading = false;
+        this.error = error.error?.message || 'Error al crear la propiedad';
+      }
+    });
   }
 
   markFormGroupTouched(): void {

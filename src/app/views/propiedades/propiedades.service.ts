@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpEvent } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { Imagen, ImagenesResponse, ImagenResponse } from './models/imagen.model';
 
 export interface Propiedad {
     id: number;
@@ -80,6 +81,10 @@ export class PropiedadesService {
         return this.http.post<CreatePropiedadResponse>(`${this.apiUrl}`, propiedad);
     }
 
+    crearPropiedadConImagenes(formData: FormData): Observable<any> {
+        return this.http.post<any>(`${this.apiUrl}`, formData);
+    }
+
 
     actualizarPropiedad(id: number, propiedad: any): Observable<UpdatePropiedadResponse> {
         return this.http.put<UpdatePropiedadResponse>(`${this.apiUrl}/${id}`, propiedad);
@@ -104,5 +109,44 @@ export class PropiedadesService {
 
     getPropiedadesCombo(): Observable<any> {
         return this.http.get<any>(`${this.apiUrl}/combo`);
+    }
+
+    // ─── Métodos para Imágenes ───────────────────────────────────────
+    // GET imagenes de una propiedad
+    getImagenesByPropiedad(propiedadId: number): Observable<ImagenesResponse> {
+        return this.http.get<ImagenesResponse>(`${environment.apiUrl}/imagenpropiedad/propiedad/${propiedadId}`);
+    }
+
+    // POST subir imagen (multipart/form-data)
+    subirImagen(formData: FormData): Observable<HttpEvent<ImagenResponse>> {
+        return this.http.post<ImagenResponse>(
+            `${environment.apiUrl}/imagenpropiedad/upload`,
+            formData,
+            {
+                reportProgress: true,
+                observe: 'events'
+            }
+        );
+    }
+
+    // DELETE eliminar imagen
+    eliminarImagen(id: number): Observable<any> {
+        return this.http.delete<any>(`${environment.apiUrl}/imagenpropiedad/${id}`);
+    }
+
+    // PUT reordenar imágenes
+    reordenarImagenes(propiedadId: number, ordenes: number[]): Observable<any> {
+        return this.http.put<any>(
+            `${environment.apiUrl}/imagenpropiedad/propiedad/${propiedadId}/reordenar`,
+            ordenes
+        );
+    }
+
+    // PUT marcar imagen como principal
+    hacerImagenPrincipal(id: number): Observable<ImagenResponse> {
+        return this.http.put<ImagenResponse>(
+            `${environment.apiUrl}/imagenpropiedad/${id}/hacer-principal`,
+            {}
+        );
     }
 }

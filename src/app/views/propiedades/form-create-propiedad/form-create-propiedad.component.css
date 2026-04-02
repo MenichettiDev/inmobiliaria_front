@@ -1,0 +1,89 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.container-fluid {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.card {
+  width: 100%;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - var(--topbar-height) - 2rem);
+}
+
+.card-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 1.5rem;
+  flex-shrink: 0;
+}
+
+.card-header h4 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #333;
+}
+
+.card-body {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 1.5rem;
+}
+
+.card-body form {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Buttons at the bottom */
+.d-flex.gap-2 {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e0e0e0;
+  flex-shrink: 0;
+}
+
+/* Ensure buttons are always visible */
+.btn {
+  white-space: nowrap;
+}
+
+/* Responsive for smaller screens */
+@media (max-width: 768px) {
+  .card {
+    max-height: calc(100vh - var(--topbar-height) - 1rem);
+  }
+
+  .card-header {
+    padding: 1rem;
+  }
+
+  .card-body {
+    padding: 1rem;
+  }
+
+  .card-header h4 {
+    font-size: 1.1rem;
+  }
+
+  .row .col-md-6 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  .d-flex.gap-2 {
+    flex-direction: column;
+  }
+
+  .d-flex.gap-2 .btn {
+    width: 100%;
+  }
+}

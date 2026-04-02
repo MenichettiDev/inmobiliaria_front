@@ -1,0 +1,93 @@
+<div class="imagenes-galeria-container">
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title mb-3">
+        <i class="bi bi-images"></i> Galería de Imágenes
+      </h5>
+
+      <!-- Mensaje -->
+      <div
+        *ngIf="mensaje"
+        [class]="'alert mb-3 alert-' + (tipoMensaje === 'error' ? 'danger' : 'success')"
+      >
+        <i
+          [class]="
+            tipoMensaje === 'error'
+              ? 'bi bi-exclamation-circle'
+              : 'bi bi-check-circle'
+          "
+        ></i>
+        {{ mensaje }}
+      </div>
+
+      <!-- Contenedor vacío -->
+      <div *ngIf="imagenesLocal.length === 0" class="empty-state">
+        <i class="bi bi-image"></i>
+        <p>No hay imágenes aún</p>
+        <small class="text-muted">Usa el formulario arriba para agregar imágenes</small>
+      </div>
+
+      <!-- Grid de imágenes -->
+      <div
+        *ngIf="imagenesLocal.length > 0"
+        cdkDropList
+        #imageList="cdkDropList"
+        [cdkDropListData]="imagenesLocal"
+        (cdkDropListDropped)="drop($event)"
+        class="images-grid"
+      >
+        <div
+          *ngFor="let imagen of imagenesLocal; let i = index"
+          cdkDrag
+          class="image-card"
+          [class.disabled]="cargando || eliminando.has(imagen.id)"
+        >
+          <!-- Badge Principal -->
+          <div *ngIf="imagen.esPrincipal" class="badge-principal">
+            <i class="bi bi-star-fill"></i> Principal
+          </div>
+
+          <!-- Imagen -->
+          <img [src]="imagen.url" [alt]="'Imagen ' + (i + 1)" class="image" />
+
+          <!-- Overlay de acciones -->
+          <div class="overlay">
+            <button
+              type="button"
+              class="btn btn-sm btn-warning"
+              *ngIf="!imagen.esPrincipal"
+              (click)="hacerPrincipal(imagen)"
+              [disabled]="cargando"
+              title="Hacer principal"
+            >
+              <i class="bi bi-star"></i> Principal
+            </button>
+            <button
+              type="button"
+              class="btn btn-sm btn-danger"
+              (click)="eliminarImagen(imagen)"
+              [disabled]="cargando || eliminando.has(imagen.id)"
+              title="Eliminar"
+            >
+              <i [class]="eliminando.has(imagen.id) ? 'bi bi-hourglass-split' : 'bi bi-trash'"></i>
+              {{ eliminando.has(imagen.id) ? "..." : "Eliminar" }}
+            </button>
+          </div>
+
+          <!-- Número de orden -->
+          <div class="order-number">{{ i + 1 }}</div>
+
+          <!-- Drag hint -->
+          <div class="drag-hint">
+            <i class="bi bi-arrows-move"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Info de reordenar -->
+      <small *ngIf="imagenesLocal.length > 1" class="text-muted d-block mt-2">
+        <i class="bi bi-info-circle"></i> Arrastra para reordenar las imágenes
+      </small>
+    </div>
+  </div>
+</div>
