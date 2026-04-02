@@ -29,7 +29,7 @@ export class FormCreatePropiedadComponent implements OnInit {
   selectedProvinciaNombre: string | null = null;
 
   // imágenes
-  maxImages = 4;
+  maxImages = 20;
   allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
   maxSizeBytes = 5 * 1024 * 1024;
   images: { file: File; preview: string; name: string; size: number }[] = [];
@@ -73,33 +73,72 @@ export class FormCreatePropiedadComponent implements OnInit {
   }
 
   async onFilesSelected(event: Event) {
-    this.imageErrors = [];
     const input = event.target as HTMLInputElement;
     if (!input?.files) return;
     const files = Array.from(input.files);
+    await this.handleFiles(files);
+    if (input) input.value = '';
+  }
 
+  onDragOver(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    const element = event.currentTarget as HTMLElement;
+    element.classList.add('drag-over');
+  }
+
+  onDragLeave(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    const element = event.currentTarget as HTMLElement;
+    element.classList.remove('drag-over');
+  }
+
+  onDrop(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    const element = event.currentTarget as HTMLElement;
+    element.classList.remove('drag-over');
+    
+    if (event.dataTransfer?.files) {
+      const files = Array.from(event.dataTransfer.files);
+      this.handleFiles(files);
+    }
+  }
+
+  async handleFiles(files: File[]) {
+    this.imageErrors = [];
+    
     if (this.images.length + files.length > this.maxImages) {
-      this.imageErrors.push(`Solo podés agregar hasta ${this.maxImages} imágenes.`);
+      this.imageErrors.push(`Solo podés agregar hasta ${this.maxImages} imágenes en total.`);
     }
 
     for (const f of files) {
       if (this.images.length >= this.maxImages) break;
       if (!this.allowedTypes.includes(f.type)) {
-        this.imageErrors.push(`${f.name}: formato no permitido.`);
+        this.imageErrors.push(`${f.name}: formato no permitido (usar jpg o png).`);
         continue;
       }
       if (f.size > this.maxSizeBytes) {
-        this.imageErrors.push(`${f.name}: supera 5MB.`);
+        this.imageErrors.push(`${f.name}: el archivo supera los 5MB.`);
         continue;
       }
       try {
         const preview = await this.readFileAsDataURL(f);
         this.images.push({ file: f, preview, name: f.name, size: f.size });
       } catch {
-        this.imageErrors.push(`${f.name}: no se pudo leer.`);
+        this.imageErrors.push(`${f.name}: error al leer el archivo.`);
       }
     }
-    if (input) input.value = '';
+  }
+
+  formatBytes(bytes: number, decimals = 2) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
   }
 
   private readFileAsDataURL(file: File): Promise<string> {

@@ -95,25 +95,58 @@
             <!-- Imágenes -->
             <div class="mb-4">
               <label class="form-label">
-                <i class="bi bi-images me-1"></i>Imágenes
-                <span class="text-muted small ms-1">(jpg/png, máx {{ maxImages }}, 5MB c/u)</span>
+                <i class="bi bi-images me-1"></i>Imágenes de la propiedad
+                <span class="text-muted small ms-1">(Máx {{ maxImages }}, 5MB c/u)</span>
               </label>
-              <input type="file" accept=".jpg,.jpeg,.png" multiple
-                (change)="onFilesSelected($event)" class="form-control" />
-              <div *ngIf="imageErrors.length" class="mt-2">
-                <div *ngFor="let err of imageErrors" class="text-danger small">{{ err }}</div>
+              
+              <!-- Dropzone Area -->
+              <div class="upload-dropzone" 
+                   (click)="fileInput.click()"
+                   (dragover)="onDragOver($event)"
+                   (dragleave)="onDragLeave($event)"
+                   (drop)="onDrop($event)">
+                <div class="dropzone-content">
+                  <i class="bi bi-cloud-arrow-up h1 text-primary"></i>
+                  <h5>Arrastrá tus fotos acá</h5>
+                  <p class="text-muted">o hacé clic para buscar en tu equipo</p>
+                  <span class="badge bg-light text-dark border">jpg, jpeg, png</span>
+                </div>
+                <input type="file" #fileInput accept=".jpg,.jpeg,.png" multiple
+                  (change)="onFilesSelected($event)" style="display: none;" />
               </div>
-              <div class="image-previews d-flex flex-wrap gap-2 mt-2">
-                <div *ngFor="let img of images; let i = index" class="preview-item position-relative">
-                  <img [src]="img.preview" [alt]="img.name"
-                    style="width:140px;height:90px;object-fit:cover;border-radius:4px;border:1px solid #ddd;" />
-                  <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0"
-                    (click)="removeImage(i)" title="Quitar" style="transform:translate(30%,-30%)">&times;</button>
-                  <div class="small text-muted mt-1"
-                    style="max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-                    {{ img.name }}
+
+              <!-- Errores de imagen -->
+              <div *ngIf="imageErrors.length" class="mt-2">
+                <div *ngFor="let err of imageErrors" class="alert alert-warning py-2 small mb-1">
+                  <i class="bi bi-exclamation-triangle me-2"></i>{{ err }}
+                </div>
+              </div>
+
+              <!-- Previzualización -->
+              <div class="image-grid mt-3" *ngIf="images.length > 0">
+                <div *ngFor="let img of images; let i = index" class="image-card">
+                  <div class="image-wrapper">
+                    <img [src]="img.preview" [alt]="img.name" />
+                    <div class="image-overlay">
+                      <button type="button" class="btn btn-danger btn-sm rounded-circle" 
+                        (click)="removeImage(i)" title="Eliminar imagen">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </div>
+                    <div class="badge-principal" *ngIf="i === 0">
+                      <span>Portada</span>
+                    </div>
+                  </div>
+                  <div class="image-info">
+                    <span class="image-name" [title]="img.name">{{ img.name }}</span>
+                    <span class="image-size">{{ formatBytes(img.size) }}</span>
                   </div>
                 </div>
+              </div>
+              
+              <div class="text-muted small mt-2" *ngIf="images.length > 0">
+                <i class="bi bi-info-circle me-1"></i>
+                La primera imagen será utilizada como foto de portada. Podés arrastrar hasta {{ maxImages }} archivos simultáneamente.
               </div>
             </div>
 
