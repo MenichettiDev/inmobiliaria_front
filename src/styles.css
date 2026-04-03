@@ -129,9 +129,9 @@ app-root,
 
 /* ==========================================================
    Table design system (global reusable)
-   - .pyre-table: modern table appearance without striped rows
-   - .pyre-table thead: subtle background
-   - .pyre-table tbody tr:hover: soft elevation/hover
+   - .inmobiliaria-table: modern table appearance without striped rows
+   - .inmobiliaria-table thead: subtle background
+   - .inmobiliaria-table tbody tr:hover: soft elevation/hover
    - .btn-icon: small icon-only buttons
    ========================================================== */
 
@@ -151,7 +151,7 @@ app-root,
   --icon-btn-hover-bg: rgba(0, 0, 0, 0.04);
 }
 
-.pyre-table-wrapper {
+.inmobiliaria-table-wrapper {
   background: transparent;
   /* contenedor interno plano */
   border: none;
@@ -162,7 +162,7 @@ app-root,
 
 /* Clase utilitaria: bordes suaves / difuminados para contenedores
    Aplica un borde sutil y una sombra difusa que crea el efecto de "borde difuminado" */
-.pyre-table-wrapper.soft-edge {
+.inmobiliaria-table-wrapper.soft-edge {
   border-radius: var(--border-radius-lg);
   background: var(--table-surface);
   border: 1px solid var(--soft-edge-border);
@@ -171,11 +171,11 @@ app-root,
 }
 
 /* Sensación de profundidad: aplicar sombras múltiples y un halo difuso
-   usar junto con `.soft-edge` como `.pyre-table-wrapper.soft-edge.depth` */
+   usar junto con `.soft-edge` como `.inmobiliaria-table-wrapper.soft-edge.depth` */
 
 /* Sensación de profundidad: ahora aplicable también directamente sobre la tabla */
-.pyre-table.soft-edge.depth,
-.pyre-table-wrapper.soft-edge.depth {
+.inmobiliaria-table.soft-edge.depth,
+.inmobiliaria-table-wrapper.soft-edge.depth {
   box-shadow: var(--depth-shadow-1), var(--depth-shadow-2);
   position: relative;
   /* Evitar scroll innecesario */
@@ -188,8 +188,8 @@ app-root,
    Soportado tanto para el wrapper como para la tabla (cuando se aplica
    la clase directamente sobre la tabla, el pseudo-elemento se posará
    detrás de ésta gracias a z-index). */
-.pyre-table.soft-edge.depth::after,
-.pyre-table-wrapper.soft-edge.depth::after {
+.inmobiliaria-table.soft-edge.depth::after,
+.inmobiliaria-table-wrapper.soft-edge.depth::after {
   content: "";
   position: absolute;
   left: -8px;
@@ -203,7 +203,7 @@ app-root,
   opacity: 0.95;
 }
 
-.pyre-table {
+.inmobiliaria-table {
   width: 100%;
   border-collapse: collapse;
   /* cambiar a collapse para que los bordes de celdas se muestren
@@ -213,38 +213,38 @@ app-root,
 }
 
 /* Bordes redondeados suaves para la tabla interior */
-.pyre-table {
+.inmobiliaria-table {
   border-radius: 8px;
   overflow: hidden;
   /* asegurar que las celdas no sobresalgan en las esquinas */
 }
 
 /* Encabezado y celdas de esquinas redondeadas para un acabado limpio */
-.pyre-table thead.dark-header th:first-child,
-.pyre-table thead th:first-child {
+.inmobiliaria-table thead.dark-header th:first-child,
+.inmobiliaria-table thead th:first-child {
   border-top-left-radius: 8px;
 }
 
-.pyre-table thead.dark-header th:last-child,
-.pyre-table thead th:last-child {
+.inmobiliaria-table thead.dark-header th:last-child,
+.inmobiliaria-table thead th:last-child {
   border-top-right-radius: 8px;
 }
 
 /* Última fila: quitar el borde inferior en las celdas para que se vea la curvatura */
-.pyre-table tbody tr:last-child td {
+.inmobiliaria-table tbody tr:last-child td {
   border-bottom: none;
 }
 
 /* Redondear esquinas inferiores en la última celda izquierda/derecha */
-.pyre-table tbody tr:last-child td:first-child {
+.inmobiliaria-table tbody tr:last-child td:first-child {
   border-bottom-left-radius: 8px;
 }
 
-.pyre-table tbody tr:last-child td:last-child {
+.inmobiliaria-table tbody tr:last-child td:last-child {
   border-bottom-right-radius: 8px;
 }
 
-.pyre-table thead th {
+.inmobiliaria-table thead th {
   background: transparent;
   color: var(--color-text-secondary);
   font-weight: 600;
@@ -260,8 +260,8 @@ app-root,
 /* Encabezado oscuro alternativo: fondo gris oscuro y texto blanco
    Esta regla tiene mayor especificidad para facilitar su override cuando
    se necesite mostrar un header con alto contraste visual. */
-.pyre-table thead.dark-header th,
-.pyre-table thead.dark-header tr th {
+.inmobiliaria-table thead.dark-header th,
+.inmobiliaria-table thead.dark-header tr th {
   background: #2f2f34;
   /* gris oscuro neutro */
   color: var(--color-white) !important;
@@ -275,7 +275,7 @@ app-root,
   --table-header-dark-color: var(--color-white);
 }
 
-.pyre-table thead.dark-bg th {
+.inmobiliaria-table thead.dark-bg th {
   background: var(--table-header-dark-bg) !important;
   color: var(--table-header-dark-color) !important;
 }
@@ -379,23 +379,23 @@ app-root,
 }
 
 /* Asegurar que la tabla use todo el ancho del shell disponible */
-.pyre-table {
+.inmobiliaria-table {
   width: 100%;
 }
 
-.pyre-table tbody tr {
+.inmobiliaria-table tbody tr {
   background: var(--color-white);
   transition: background 0.12s var(--transition-fast),
     transform 0.12s var(--transition-fast);
 }
 
-.pyre-table tbody tr+tr {
+.inmobiliaria-table tbody tr+tr {
   margin-top: 0;
   /* sin separación vertical, solo línea */
 }
 
 /* Eliminamos el efecto hover por defecto para filas: sin cambio de fondo ni elevación */
-.pyre-table tbody tr:hover {
+.inmobiliaria-table tbody tr:hover {
   background: inherit;
   /* mantener el fondo blanco por defecto */
   transform: none;
@@ -403,13 +403,13 @@ app-root,
 }
 
 /* Clase utilitaria: si en algún lugar queremos volver a activar hover, añadir `no-row-hover` a la tabla y usar `row-hover` */
-.pyre-table.row-hover tbody tr:hover {
+.inmobiliaria-table.row-hover tbody tr:hover {
   background: var(--table-row-hover);
   transform: translateY(-1px);
 }
 
 /* aplicar la línea suave en las celdas para que sea claramente visible */
-.pyre-table td {
+.inmobiliaria-table td {
   /* eliminar border-bottom directo y usar pseudo-elemento en la fila */
   padding: 1rem 1.25rem;
   /* más espacio horizontal para que el contenido no quede pegado */
@@ -417,16 +417,16 @@ app-root,
 }
 
 /* Espacio extra en la primera columna (Legajo) */
-.pyre-table th:first-child,
-.pyre-table td:first-child {
+.inmobiliaria-table th:first-child,
+.inmobiliaria-table td:first-child {
   padding-left: 3rem;
   /* aumentar separación para Legajo */
 }
 
 /* Espacio extra en la última columna (Acciones) */
-.pyre-table th:last-child,
-.pyre-table td:last-child,
-.pyre-table .text-end {
+.inmobiliaria-table th:last-child,
+.inmobiliaria-table td:last-child,
+.inmobiliaria-table .text-end {
   padding-right: 3rem;
   /* aumentar separación para Acciones */
 }
@@ -434,24 +434,24 @@ app-root,
 /* Responsive: reducir padding en pantallas pequeñas para evitar overflow */
 @media (max-width: 767.98px) {
 
-  .pyre-table th:first-child,
-  .pyre-table td:first-child {
+  .inmobiliaria-table th:first-child,
+  .inmobiliaria-table td:first-child {
     padding-left: 1rem;
   }
 
-  .pyre-table th:last-child,
-  .pyre-table td:last-child,
-  .pyre-table .text-end {
+  .inmobiliaria-table th:last-child,
+  .inmobiliaria-table td:last-child,
+  .inmobiliaria-table .text-end {
     padding-right: 1rem;
   }
 }
 
 /* Separador sutil centrado: pseudo-elemento en cada fila que no llega a los bordes */
-.pyre-table tbody tr {
+.inmobiliaria-table tbody tr {
   position: relative;
 }
 
-.pyre-table tbody tr::after {
+.inmobiliaria-table tbody tr::after {
   content: "";
   position: absolute;
   left: 3rem;
@@ -462,7 +462,7 @@ app-root,
   background: var(--table-row-divider);
 }
 
-.pyre-table .text-end {
+.inmobiliaria-table .text-end {
   padding-right: 1rem;
 }
 
@@ -490,7 +490,7 @@ app-root,
   cursor: not-allowed;
 }
 
-.pyre-badge {
+.inmobiliaria-badge {
   display: inline-block;
   padding: 0.25rem 0.5rem;
   border-radius: 999px;
@@ -498,12 +498,12 @@ app-root,
   font-weight: 600;
 }
 
-.pyre-badge.activo {
+.inmobiliaria-badge.activo {
   background: var(--color-success);
   color: var(--color-white);
 }
 
-.pyre-badge.inactivo {
+.inmobiliaria-badge.inactivo {
   background: var(--color-error);
   color: var(--color-white);
 }
@@ -678,8 +678,8 @@ a:hover {
   }
 }
 
-/* Wrapper for shared pyre tables: premium card feel */
-.pyre-table-shell {
+/* Wrapper for shared inmobiliaria tables: premium card feel */
+.inmobiliaria-table-shell {
   background: #ffffff;
   border: 1px solid var(--neutral-100);
   border-radius: var(--radius-lg);
@@ -691,12 +691,12 @@ a:hover {
   transition: var(--transition-normal);
 }
 
-.pyre-table-shell:hover {
+.inmobiliaria-table-shell:hover {
   box-shadow: var(--shadow-lg);
 }
 
 /* If you want the table to be full-bleed inside the shell, remove table's margin */
-.pyre-table-shell .p-datatable {
+.inmobiliaria-table-shell .p-datatable {
   margin: 0;
 }
 
@@ -975,10 +975,10 @@ a:hover {
 }
 
 /* ====== Reglas globales para filtros: unificar altura/apariencia con los combos (.search-input) ====== */
-.pyre-filter-bar .form-control,
-.pyre-filter-bar input[type="text"],
-.pyre-filter-bar select.form-select,
-.pyre-filter-bar .filter-input {
+.inmobiliaria-filter-bar .form-control,
+.inmobiliaria-filter-bar input[type="text"],
+.inmobiliaria-filter-bar select.form-select,
+.inmobiliaria-filter-bar .filter-input {
   min-height: 42px;
   height: 42px;
   padding: 10px 12px;
@@ -992,9 +992,9 @@ a:hover {
 }
 
 /* Focus coherente con los combos */
-.pyre-filter-bar .form-control:focus,
-.pyre-filter-bar input[type="text"]:focus,
-.pyre-filter-bar select.form-select:focus {
+.inmobiliaria-filter-bar .form-control:focus,
+.inmobiliaria-filter-bar input[type="text"]:focus,
+.inmobiliaria-filter-bar select.form-select:focus {
   outline: none;
   border-color: var(--color-primary, #3b82f6);
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
@@ -1003,9 +1003,9 @@ a:hover {
 /* Ajustes responsivos: reducir ligeramente en móviles */
 @media (max-width: 768px) {
 
-  .pyre-filter-bar .form-control,
-  .pyre-filter-bar input[type="text"],
-  .pyre-filter-bar select.form-select {
+  .inmobiliaria-filter-bar .form-control,
+  .inmobiliaria-filter-bar input[type="text"],
+  .inmobiliaria-filter-bar select.form-select {
     min-height: 40px;
     height: 40px;
     padding: 8px 10px;
@@ -1014,8 +1014,8 @@ a:hover {
 }
 
 /* Alineación vertical de elementos dentro de la barra de filtros */
-.pyre-filter-bar .filter-input-group,
-.pyre-filter-bar .filter-item {
+.inmobiliaria-filter-bar .filter-input-group,
+.inmobiliaria-filter-bar .filter-item {
   display: flex;
   align-items: center;
 }

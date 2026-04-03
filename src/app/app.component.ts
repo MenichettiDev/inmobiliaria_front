@@ -18,7 +18,7 @@ import { PageTitleService } from './services/page-title.service';
   styleUrl: './app.component.css'
 })
 export class AppComponent implements OnInit, OnDestroy {
-  title = 'pyre';
+  title = 'inmobiliaria';
 
   selectedObjetivo: string = '';
   currentRoute: string = '';

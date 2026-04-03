@@ -1,4 +1,4 @@
-# GUÍA DE DISEÑO FRONTEND - PYRE
+# GUÍA DE DISEÑO FRONTEND - inmobiliaria
 ## Documentación completa de estructura visual, componentes y patrones de interfaz
 
 ---

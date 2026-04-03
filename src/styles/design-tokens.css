@@ -1,5 +1,5 @@
 /* ==========================================================
-   Pyre Design System - Design Tokens (Modern SaaS)
+   inmobiliaria Design System - Design Tokens (Modern SaaS)
    ========================================================== */
 
 :root {
@@ -121,15 +121,15 @@
    Activar con: document.documentElement.setAttribute('data-theme', 'dark')
    ============================================ */
 [data-theme="dark"] {
-  --color-bg-base:    #0f172a;
+  --color-bg-base: #0f172a;
   --color-bg-surface: #1e293b;
   --color-bg-overlay: rgba(30, 41, 59, 0.92);
-  --color-text:       #f1f5f9;
+  --color-text: #f1f5f9;
   --color-text-secondary: #94a3b8;
   --color-text-muted: #475569;
-  --color-border:     #334155;
+  --color-border: #334155;
 
-  --glass-bg:     rgba(30, 41, 59, 0.85);
+  --glass-bg: rgba(30, 41, 59, 0.85);
   --glass-border: rgba(255, 255, 255, 0.08);
   --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
 

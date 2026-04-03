@@ -139,7 +139,7 @@
 }
 
 /* wrapper to center external paginator under the table */
-:host .pyre-paginator-wrap {
+:host .inmobiliaria-paginator-wrap {
   width: 100%;
   display: flex;
   justify-content: center;
@@ -147,37 +147,37 @@
 }
 
 /* ensure the app-paginator keeps a reasonable width when aligned right */
-:host .pyre-paginator-wrap app-paginator {
+:host .inmobiliaria-paginator-wrap app-paginator {
   max-width: 720px;
   width: auto;
 }
 
 /* on small screens keep it centered and full-width for usability */
 @media (max-width:480px) {
-  :host .pyre-paginator-wrap {
+  :host .inmobiliaria-paginator-wrap {
     justify-content: center
   }
 
-  :host .pyre-paginator-wrap app-paginator {
+  :host .inmobiliaria-paginator-wrap app-paginator {
     width: 100%;
     max-width: none
   }
 }
 
 /* Paginator bar (soft gray) - similar look to filter bar */
-:host .pyre-paginator-bar {
+:host .inmobiliaria-paginator-bar {
   background: rgba(16, 24, 40, 0.03);
   padding: 10px 16px;
   margin-top: 12px;
   margin-bottom: 6px;
 }
 
-:host .pyre-paginator-bar .pyre-paginator-wrap {
+:host .inmobiliaria-paginator-bar .inmobiliaria-paginator-wrap {
   justify-content: center
 }
 
 @media (max-width:480px) {
-  :host .pyre-paginator-bar {
+  :host .inmobiliaria-paginator-bar {
     padding: 8px
   }
 }
@@ -296,7 +296,7 @@
 }
 
 /* Filter bar styles - improved and more compact */
-:host .pyre-filter-bar {
+:host .inmobiliaria-filter-bar {
   background: var(--color-bg-alt);
   border-radius: 0;
   /* removed rounding as requested */
@@ -306,7 +306,7 @@
   box-shadow: var(--shadow-sm);
 }
 
-:host .pyre-filter-bar .filter-row {
+:host .inmobiliaria-filter-bar .filter-row {
   display: flex;
   gap: 12px;
   /* Reducido para acomodar más filtros */
@@ -319,7 +319,7 @@
   /* Reducido: solo para el botón de buscar compacto */
 }
 
-:host .pyre-filter-bar .filter-item {
+:host .inmobiliaria-filter-bar .filter-item {
   display: flex;
   min-width: 160px;
   flex: 1
@@ -328,7 +328,7 @@
 /* Sin flex-direction column - sin labels */
 
 /* Estilo especial para el filter-item que contiene el botón de reset */
-:host .pyre-filter-bar .filter-item-with-reset {
+:host .inmobiliaria-filter-bar .filter-item-with-reset {
   display: flex;
   min-width: 200px;
   /* Un poco más ancho para acomodar el botón */
@@ -336,7 +336,7 @@
 }
 
 /* Contenedor para el select y el botón de reset */
-:host .pyre-filter-bar .filter-input-group {
+:host .inmobiliaria-filter-bar .filter-input-group {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -344,12 +344,12 @@
 }
 
 /* Hacer que el select ocupe el espacio disponible */
-:host .pyre-filter-bar .filter-input-group select {
+:host .inmobiliaria-filter-bar .filter-input-group select {
   flex: 1;
 }
 
 /* Labels removidos para interfaz más limpia - los placeholders son suficientes */
-/*:host .pyre-filter-bar label{
+/*:host .inmobiliaria-filter-bar label{
   font-size:13px;
   font-weight:600;
   color:var(--color-text-secondary);
@@ -358,8 +358,8 @@
   letter-spacing:0.5px;
 }*/
 
-:host .pyre-filter-bar input,
-:host .pyre-filter-bar select {
+:host .inmobiliaria-filter-bar input,
+:host .inmobiliaria-filter-bar select {
   padding: 10px 12px;
   border-radius: 6px;
   border: 1px solid rgba(16, 24, 40, 0.1);
@@ -368,15 +368,15 @@
   transition: all 0.2s ease;
 }
 
-:host .pyre-filter-bar input:focus,
-:host .pyre-filter-bar select:focus {
+:host .inmobiliaria-filter-bar input:focus,
+:host .inmobiliaria-filter-bar select:focus {
   outline: none;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
   /* Destacar más el campo activo */
 }
 
-:host .pyre-filter-bar .filter-actions {
+:host .inmobiliaria-filter-bar .filter-actions {
   position: absolute;
   right: 0;
   top: 50%;
@@ -389,7 +389,7 @@
   /* Espaciado entre botones */
 }
 
-:host .pyre-filter-bar .filter-actions button {
+:host .inmobiliaria-filter-bar .filter-actions button {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -400,7 +400,7 @@
 }
 
 /* Estilo moderno para el botón de búsqueda - solo icono */
-:host .pyre-filter-bar .filter-actions .search-button {
+:host .inmobiliaria-filter-bar .filter-actions .search-button {
   background: #3b82f6 !important;
   /* Azul moderno (blue-500 de Tailwind) */
   border: none !important;
@@ -423,14 +423,14 @@
   justify-content: center !important;
 }
 
-:host .pyre-filter-bar .filter-actions .search-button:hover {
+:host .inmobiliaria-filter-bar .filter-actions .search-button:hover {
   background: #2563eb !important;
   /* Azul más oscuro al hover (blue-600) */
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
   transform: translateY(-2px) !important;
 }
 
-:host .pyre-filter-bar .filter-actions .search-button:active {
+:host .inmobiliaria-filter-bar .filter-actions .search-button:active {
   background: #1d4ed8 !important;
   /* Azul aún más oscuro al click (blue-700) */
   transform: translateY(0) !important;
@@ -438,7 +438,7 @@
 }
 
 /* Mejorar el icono dentro del botón - optimizado para botón solo con icono */
-:host .pyre-filter-bar .filter-actions .pi-search {
+:host .inmobiliaria-filter-bar .filter-actions .pi-search {
   font-size: 16px !important;
   /* Icono tamaño adecuado */
   margin: 0 !important;
@@ -446,7 +446,7 @@
 }
 
 /* Estilo para el botón de reset - más sutil y estético */
-:host .pyre-filter-bar .filter-actions .reset-button {
+:host .inmobiliaria-filter-bar .filter-actions .reset-button {
   background: transparent !important;
   border: none !important;
   color: #9ca3af !important;
@@ -468,7 +468,7 @@
   animation: fadeInScale 0.3s ease-out !important;
 }
 
-:host .pyre-filter-bar .filter-actions .reset-button:hover {
+:host .inmobiliaria-filter-bar .filter-actions .reset-button:hover {
   background: #f3f4f6 !important;
   /* Fondo gris muy claro al hover */
   color: #6b7280 !important;
@@ -477,19 +477,19 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
 }
 
-:host .pyre-filter-bar .filter-actions .reset-button:active {
+:host .inmobiliaria-filter-bar .filter-actions .reset-button:active {
   transform: scale(0.95) !important;
   background: #e5e7eb !important;
 }
 
 /* Icono del botón reset */
-:host .pyre-filter-bar .filter-actions .pi-times {
+:host .inmobiliaria-filter-bar .filter-actions .pi-times {
   font-size: 12px !important;
   font-weight: bold !important;
 }
 
 /* Estilo para el botón de reset inline - al lado del último filtro */
-:host .pyre-filter-bar .reset-button-inline {
+:host .inmobiliaria-filter-bar .reset-button-inline {
   background: transparent !important;
   border: none !important;
   color: #9ca3af !important;
@@ -512,7 +512,7 @@
   /* No se encoge */
 }
 
-:host .pyre-filter-bar .reset-button-inline:hover {
+:host .inmobiliaria-filter-bar .reset-button-inline:hover {
   background: #f3f4f6 !important;
   /* Fondo gris muy claro al hover */
   color: #6b7280 !important;
@@ -521,13 +521,13 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
 }
 
-:host .pyre-filter-bar .reset-button-inline:active {
+:host .inmobiliaria-filter-bar .reset-button-inline:active {
   transform: scale(0.95) !important;
   background: #e5e7eb !important;
 }
 
 /* Icono del botón reset inline */
-:host .pyre-filter-bar .pi-filter-slash {
+:host .inmobiliaria-filter-bar .pi-filter-slash {
   font-size: 11px !important;
   font-weight: 500 !important;
 }
@@ -546,7 +546,7 @@
 }
 
 @media (max-width:520px) {
-  :host .pyre-filter-bar .filter-row {
+  :host .inmobiliaria-filter-bar .filter-row {
     flex-direction: column;
     align-items: stretch;
     padding-right: 0;
@@ -557,29 +557,29 @@
     /* Más espacio entre filtros en móvil */
   }
 
-  :host .pyre-filter-bar .filter-item {
+  :host .inmobiliaria-filter-bar .filter-item {
     min-width: unset;
     width: 100%;
   }
 
-  :host .pyre-filter-bar .filter-item-with-reset {
+  :host .inmobiliaria-filter-bar .filter-item-with-reset {
     min-width: unset;
     width: 100%;
   }
 
-  :host .pyre-filter-bar .filter-input-group {
+  :host .inmobiliaria-filter-bar .filter-input-group {
     gap: 12px;
     /* Un poco más de espacio en móvil */
   }
 
-  :host .pyre-filter-bar .reset-button-inline {
+  :host .inmobiliaria-filter-bar .reset-button-inline {
     min-width: 36px !important;
     max-width: 36px !important;
     height: 36px !important;
     padding: 8px !important;
   }
 
-  :host .pyre-filter-bar .filter-actions {
+  :host .inmobiliaria-filter-bar .filter-actions {
     position: absolute;
     left: 0;
     right: 0;
@@ -595,7 +595,7 @@
     padding: 0 var(--spacing-md);
   }
 
-  :host .pyre-filter-bar .filter-actions .search-button {
+  :host .inmobiliaria-filter-bar .filter-actions .search-button {
     width: auto;
     /* Ancho automático en lugar de 100% */
     min-width: 48px !important;
@@ -609,7 +609,7 @@
     /* Padding ligeramente mayor en móvil */
   }
 
-  :host .pyre-filter-bar .filter-actions .reset-button {
+  :host .inmobiliaria-filter-bar .filter-actions .reset-button {
     padding: 10px !important;
     min-width: 40px !important;
     max-width: 40px !important;
@@ -619,16 +619,16 @@
 
 /* Estilos para pantallas medianas - mejor distribución de filtros */
 @media (max-width: 1200px) and (min-width: 521px) {
-  :host .pyre-filter-bar .filter-item {
+  :host .inmobiliaria-filter-bar .filter-item {
     min-width: 140px;
     /* Más pequeño en pantallas medianas */
   }
 
-  :host .pyre-filter-bar .filter-item-with-reset {
+  :host .inmobiliaria-filter-bar .filter-item-with-reset {
     min-width: 180px;
   }
 
-  :host .pyre-filter-bar .filter-row {
+  :host .inmobiliaria-filter-bar .filter-row {
     gap: 10px;
     /* Gap más pequeño */
     padding-right: 55px;
@@ -645,7 +645,7 @@
 }
 
 /* Estilos para mejorar la accesibilidad de los inputs (para soportar envío con Enter) */
-:host .pyre-filter-bar input:focus {
+:host .inmobiliaria-filter-bar input:focus {
   outline: none;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
@@ -653,14 +653,14 @@
 }
 
 /* Indicador visual para campos que están en foco (ayuda a usuarios a saber qué campo está activo) */
-:host .pyre-filter-bar input:focus::placeholder {
+:host .inmobiliaria-filter-bar input:focus::placeholder {
   color: rgba(59, 130, 246, 0.5);
   /* Color del placeholder cambia al enfocar */
   transition: color 0.2s ease;
 }
 
 /* Añadir un leve efecto cuando se presiona Enter en un input (retroalimentación visual) */
-:host .pyre-filter-bar input.input-submitted {
+:host .inmobiliaria-filter-bar input.input-submitted {
   animation: pulse-border 0.3s ease;
 }
 

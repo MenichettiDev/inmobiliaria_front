@@ -1,5 +1,5 @@
 /* ==========================================================
-   Pyre - Sidebar Premium Styles
+   inmobiliaria - Sidebar Premium Styles
    ========================================================== */
 
 .sidebar {
@@ -34,7 +34,8 @@
   height: 38px;
   width: auto;
   cursor: pointer;
-  filter: brightness(0) invert(1); /* Ensure logo is white if it's dark */
+  filter: brightness(0) invert(1);
+  /* Ensure logo is white if it's dark */
 }
 
 /* Navigation */
@@ -133,6 +134,7 @@
 .nav::-webkit-scrollbar {
   width: 4px;
 }
+
 .nav::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-full);

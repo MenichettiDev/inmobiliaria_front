@@ -1,6 +1,6 @@
-<div class="pyre-table-shell">
+<div class="inmobiliaria-table-shell">
   <!-- Filter bar (soft gray) -->
-  <div class="pyre-filter-bar">
+  <div class="inmobiliaria-filter-bar">
     <div class="filter-row" [class]="'filter-count-' + enabledFilters.length">
       <div class="filter-item" *ngIf="isFilterEnabled('legajo')">
         <input type="text" [(ngModel)]="filtroLegajo" placeholder="Legajo" (keyup.enter)="onSearch()" />
@@ -95,8 +95,8 @@
   </p-table>
 
   <!-- External paginator (shared) -->
-  <div *ngIf="useExternalPaginator" class="pyre-paginator-bar">
-    <div class="pyre-paginator-wrap">
+  <div *ngIf="useExternalPaginator" class="inmobiliaria-paginator-bar">
+    <div class="inmobiliaria-paginator-wrap">
       <app-paginator [length]="length || totalRecords" [pageSize]="rows" [pageIndex]="pageIndex"
         (pageChange)="onExternalPageChange($event)">
       </app-paginator>
