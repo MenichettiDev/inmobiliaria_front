@@ -1,0 +1,77 @@
+<div class="public-layout">
+
+  <!-- ── TOPBAR PUBLICITARIO ── -->
+  <div class="portal-topbar">
+    <div class="portal-topbar__inner">
+      <span class="portal-topbar__msg">
+        🏠 <strong>CentroInmo</strong> &mdash; La plataforma inmobiliaria para toda Argentina &middot;
+        <a href="#" class="portal-topbar__link">Publicá tu propiedad</a>
+      </span>
+    </div>
+  </div>
+
+  <!-- ── HEADER ── -->
+  <header class="portal-header">
+    <div class="portal-header__inner">
+
+      <!-- Logo -->
+      <a routerLink="/portal" class="portal-logo">
+        <span class="portal-logo__icon">🏠</span>
+        <span class="portal-logo__name">CentroInmo</span>
+      </a>
+
+      <!-- Nav -->
+      <nav class="portal-nav">
+        <a routerLink="/portal/propiedades" routerLinkActive="active" class="portal-nav__link">
+          Propiedades
+        </a>
+
+        <!-- Usuario logueado -->
+        <div *ngIf="usuarioWeb$ | async as usuario" class="portal-user-menu">
+          <button class="portal-user-menu__trigger">
+            <span class="portal-user-menu__avatar">{{ usuario.nombre?.charAt(0) | uppercase }}</span>
+            <span class="portal-user-menu__name">{{ usuario.nombre }}</span>
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+          </button>
+          <div class="portal-user-menu__dropdown">
+            <a routerLink="/portal/favoritos" class="portal-user-menu__item">
+              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+              Mis Favoritos
+            </a>
+            <a routerLink="/portal/consultas" class="portal-user-menu__item">
+              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+              Mis Consultas
+            </a>
+            <div class="portal-user-menu__divider"></div>
+            <button (click)="onLogout()" class="portal-user-menu__item portal-user-menu__item--danger">
+              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+              Cerrar Sesión
+            </button>
+          </div>
+        </div>
+
+        <!-- No logueado -->
+        <a *ngIf="!(usuarioWeb$ | async)" routerLink="/login" class="portal-btn-login">
+          Ingresar
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ── CONTENIDO ── -->
+  <main class="portal-main">
+    <router-outlet></router-outlet>
+  </main>
+
+  <!-- ── FOOTER ── -->
+  <footer class="portal-footer">
+    <div class="portal-footer__inner">
+      <div class="portal-footer__brand">
+        <span class="portal-logo__icon">🏠</span>
+        <span>CentroInmo</span>
+      </div>
+      <p class="portal-footer__copy">&copy; {{ currentYear }} CentroInmo. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+</div>

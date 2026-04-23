@@ -2,7 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { PublicPropiedadesService, PropiedadPublicaDto } from '../../../services/public-propiedades.service';
+import {
+  PublicPropiedadesService, PropiedadPublicaDto,
+  FiltroOpcionDto, PublicFiltrosDto
+} from '../../../services/public-propiedades.service';
 import { ContextService } from '../../../services/context.service';
 
 @Component({
@@ -21,9 +24,20 @@ export class PublicPropiedadesComponent implements OnInit {
   pageSize = 12;
   totalPages = 0;
 
+  // Filtros de texto y precio
   filtroTitulo = '';
   filtroPrecioMin: number | null = null;
   filtroPrecioMax: number | null = null;
+
+  // Filtros de inmobiliaria y provincia
+  filtroInmobiliariaId: number | null = null;
+  filtroProvinciaId: number | null = null;
+
+  // Opciones disponibles
+  filtrosOpciones: PublicFiltrosDto = { inmobiliarias: [], provincias: [] };
+  cargandoFiltros = true;
+
+  sidebarAbierto = false;
 
   contextoEs: 'PUBLIC' | 'TENANT' = 'PUBLIC';
   subdominioActual: string | null = null;
@@ -37,7 +51,18 @@ export class PublicPropiedadesComponent implements OnInit {
   ngOnInit(): void {
     this.contextoEs = this.contextService.getContextType();
     this.subdominioActual = this.contextService.getSubdomain();
+    this.cargarFiltrosOpciones();
     this.cargarPropiedades();
+  }
+
+  cargarFiltrosOpciones(): void {
+    this.propiedadesService.getFiltrosOpciones().subscribe({
+      next: (res) => {
+        if (res.success && res.data) this.filtrosOpciones = res.data;
+        this.cargandoFiltros = false;
+      },
+      error: () => { this.cargandoFiltros = false; }
+    });
   }
 
   cargarPropiedades(): void {
@@ -46,20 +71,21 @@ export class PublicPropiedadesComponent implements OnInit {
 
     const request$ = this.contextoEs === 'TENANT' && this.subdominioActual
       ? this.propiedadesService.getPropiedadesByTenant(
-        this.subdominioActual,
-        this.page,
-        this.pageSize,
-        this.filtroTitulo || undefined,
-        this.filtroPrecioMin || undefined,
-        this.filtroPrecioMax || undefined
-      )
+          this.subdominioActual, this.page, this.pageSize,
+          this.filtroTitulo || undefined,
+          this.filtroPrecioMin || undefined,
+          this.filtroPrecioMax || undefined,
+          this.filtroInmobiliariaId || undefined,
+          this.filtroProvinciaId || undefined
+        )
       : this.propiedadesService.getPropiedadesPublicas(
-        this.page,
-        this.pageSize,
-        this.filtroTitulo || undefined,
-        this.filtroPrecioMin || undefined,
-        this.filtroPrecioMax || undefined
-      );
+          this.page, this.pageSize,
+          this.filtroTitulo || undefined,
+          this.filtroPrecioMin || undefined,
+          this.filtroPrecioMax || undefined,
+          this.filtroInmobiliariaId || undefined,
+          this.filtroProvinciaId || undefined
+        );
 
     request$.subscribe({
       next: (response) => {
@@ -85,18 +111,55 @@ export class PublicPropiedadesComponent implements OnInit {
     this.cargarPropiedades();
   }
 
+  setPrecioRange(min: number | null, max: number | null): void {
+    this.filtroPrecioMin = min;
+    this.filtroPrecioMax = max;
+    this.onFiltrosChange();
+  }
+
+  isRangeActivo(min: number | null, max: number | null): boolean {
+    return this.filtroPrecioMin === min && this.filtroPrecioMax === max;
+  }
+
+  setInmobiliaria(id: number): void {
+    this.filtroInmobiliariaId = this.filtroInmobiliariaId === id ? null : id;
+    this.onFiltrosChange();
+  }
+
+  setProvincia(id: number): void {
+    this.filtroProvinciaId = this.filtroProvinciaId === id ? null : id;
+    this.onFiltrosChange();
+  }
+
+  get hayFiltrosActivos(): boolean {
+    return !!(
+      this.filtroTitulo ||
+      this.filtroPrecioMin !== null ||
+      this.filtroPrecioMax !== null ||
+      this.filtroInmobiliariaId !== null ||
+      this.filtroProvinciaId !== null
+    );
+  }
+
+  limpiarFiltros(): void {
+    this.filtroTitulo = '';
+    this.filtroPrecioMin = null;
+    this.filtroPrecioMax = null;
+    this.filtroInmobiliariaId = null;
+    this.filtroProvinciaId = null;
+    this.onFiltrosChange();
+  }
+
+  toggleSidebar(): void {
+    this.sidebarAbierto = !this.sidebarAbierto;
+  }
+
   paginaAnterior(): void {
-    if (this.page > 1) {
-      this.page--;
-      this.cargarPropiedades();
-    }
+    if (this.page > 1) { this.page--; this.cargarPropiedades(); }
   }
 
   paginaSiguiente(): void {
-    if (this.page < this.totalPages) {
-      this.page++;
-      this.cargarPropiedades();
-    }
+    if (this.page < this.totalPages) { this.page++; this.cargarPropiedades(); }
   }
 
   getImageUrl(urlImagenes: string[] | undefined): string {
@@ -107,13 +170,9 @@ export class PublicPropiedadesComponent implements OnInit {
   }
 
   onImageError(event: Event, propId: number): void {
-    if (this.imageErrorsHandled.has(propId)) {
-      return;
-    }
+    if (this.imageErrorsHandled.has(propId)) return;
     this.imageErrorsHandled.add(propId);
     const img = event.target as HTMLImageElement;
-    if (!img.src.includes('no-image.jpg')) {
-      img.src = '/assets/images/backgrounds/no-image.jpg';
-    }
+    if (!img.src.includes('no-image.jpg')) img.src = '/assets/images/backgrounds/no-image.jpg';
   }
 }

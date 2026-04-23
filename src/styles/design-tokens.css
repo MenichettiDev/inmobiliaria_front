@@ -3,6 +3,22 @@
    ========================================================== */
 
 :root {
+  /* 🏠 Portal Público - Identidad institucional */
+  --portal-primary:      #1a3c6e;   /* azul marino institucional */
+  --portal-primary-dark: #122b52;
+  --portal-primary-light:#2554a0;
+  --portal-accent:       #e8622f;   /* naranja CTA */
+  --portal-accent-hover: #cf5024;
+  --portal-bg:           #f4f6f9;
+  --portal-surface:      #ffffff;
+  --portal-border:       #e2e8f0;
+  --portal-text:         #1f2937;
+  --portal-text-muted:   #6b7280;
+  --portal-text-light:   #9ca3af;
+  --portal-shadow-card:  0 2px 12px rgba(26,60,110,0.08);
+  --portal-shadow-hover: 0 8px 24px rgba(26,60,110,0.15);
+  --portal-radius-card:  12px;
+
   /* 🎨 Primary Brand Colors (Indigo) */
   --primary-50: #eef2ff;
   --primary-100: #e0e7ff;

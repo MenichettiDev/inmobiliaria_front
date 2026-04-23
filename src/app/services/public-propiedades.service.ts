@@ -3,11 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
-// Obtener la URL base del servidor (sin /api)
-const getServerBaseUrl = (): string => {
-  const apiUrl = environment.apiUrl;
-  return apiUrl.replace('/api', '');
-};
+const getServerBaseUrl = (): string => environment.apiUrl.replace('/api', '');
 
 export interface PropiedadPublicaDto {
   id: number;
@@ -17,11 +13,24 @@ export interface PropiedadPublicaDto {
   direccion: string;
   latitud?: number;
   longitud?: number;
+  localidadNombre?: string;
+  provinciaNombre?: string;
   publicadaEn?: Date;
   idInmobiliaria: number;
   inmobiliariaNombre: string;
   inmobiliariaSubdominio: string;
   urlImagenes: string[];
+}
+
+export interface FiltroOpcionDto {
+  id: number;
+  nombre: string;
+  cantidad: number;
+}
+
+export interface PublicFiltrosDto {
+  inmobiliarias: FiltroOpcionDto[];
+  provincias: FiltroOpcionDto[];
 }
 
 export interface PaginatedResponseDto<T> {
@@ -41,85 +50,57 @@ export interface BaseResponseDto<T> {
   errors?: string[];
 }
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class PublicPropiedadesService {
   private apiUrl = `${environment.apiUrl}/public`;
   private serverBaseUrl = getServerBaseUrl();
 
   constructor(private http: HttpClient) { }
 
-  /**
-   * Obtiene propiedades publicadas cross-tenant
-   */
-  getPropiedadesPublicas(
-    page: number = 1,
-    pageSize: number = 10,
-    titulo?: string,
-    precioMin?: number,
-    precioMax?: number
-  ): Observable<BaseResponseDto<PaginatedResponseDto<PropiedadPublicaDto>>> {
-    let url = `${this.apiUrl}/propiedades?page=${page}&pageSize=${pageSize}`;
-
-    if (titulo) {
-      url += `&titulo=${encodeURIComponent(titulo)}`;
-    }
-    if (precioMin !== undefined) {
-      url += `&precioMin=${precioMin}`;
-    }
-    if (precioMax !== undefined) {
-      url += `&precioMax=${precioMax}`;
-    }
-
-    return this.http.get<BaseResponseDto<PaginatedResponseDto<PropiedadPublicaDto>>>(url);
+  getFiltrosOpciones(): Observable<BaseResponseDto<PublicFiltrosDto>> {
+    return this.http.get<BaseResponseDto<PublicFiltrosDto>>(`${this.apiUrl}/filtros`);
   }
 
-  /**
-   * Obtiene una propiedad publicada por ID
-   */
+  getPropiedadesPublicas(
+    page = 1, pageSize = 12,
+    titulo?: string, precioMin?: number, precioMax?: number,
+    idInmobiliaria?: number, idProvincia?: number
+  ): Observable<BaseResponseDto<PaginatedResponseDto<PropiedadPublicaDto>>> {
+    const params = this.buildParams({ page, pageSize, titulo, precioMin, precioMax, idInmobiliaria, idProvincia });
+    return this.http.get<BaseResponseDto<PaginatedResponseDto<PropiedadPublicaDto>>>(
+      `${this.apiUrl}/propiedades?${params}`
+    );
+  }
+
   getPropiedadPublica(id: number): Observable<BaseResponseDto<PropiedadPublicaDto>> {
     return this.http.get<BaseResponseDto<PropiedadPublicaDto>>(`${this.apiUrl}/propiedades/${id}`);
   }
 
-  /**
-   * Obtiene propiedades publicadas de un tenant específico por subdominio
-   */
   getPropiedadesByTenant(
     subdominio: string,
-    page: number = 1,
-    pageSize: number = 10,
-    titulo?: string,
-    precioMin?: number,
-    precioMax?: number
+    page = 1, pageSize = 12,
+    titulo?: string, precioMin?: number, precioMax?: number,
+    idInmobiliaria?: number, idProvincia?: number
   ): Observable<BaseResponseDto<PaginatedResponseDto<PropiedadPublicaDto>>> {
-    let url = `${this.apiUrl}/tenant/${subdominio}?page=${page}&pageSize=${pageSize}`;
-
-    if (titulo) {
-      url += `&titulo=${encodeURIComponent(titulo)}`;
-    }
-    if (precioMin !== undefined) {
-      url += `&precioMin=${precioMin}`;
-    }
-    if (precioMax !== undefined) {
-      url += `&precioMax=${precioMax}`;
-    }
-
-    return this.http.get<BaseResponseDto<PaginatedResponseDto<PropiedadPublicaDto>>>(url);
+    const params = this.buildParams({ page, pageSize, titulo, precioMin, precioMax, idInmobiliaria, idProvincia });
+    return this.http.get<BaseResponseDto<PaginatedResponseDto<PropiedadPublicaDto>>>(
+      `${this.apiUrl}/tenant/${subdominio}?${params}`
+    );
   }
 
-  /**
-   * Construye la URL completa de una imagen
-   */
   getImageUrl(imagePath: string): string {
-    if (!imagePath) {
-      return '/assets/images/backgrounds/no-image.jpg';
-    }
-    // Si es una URL absoluta ya, devolverla tal cual
-    if (imagePath.startsWith('http')) {
-      return imagePath;
-    }
-    // Si es una ruta relativa del servidor, agregar la URL base
+    if (!imagePath) return '/assets/images/backgrounds/no-image.jpg';
+    if (imagePath.startsWith('http')) return imagePath;
     return `${this.serverBaseUrl}${imagePath}`;
+  }
+
+  private buildParams(opts: Record<string, string | number | undefined>): string {
+    const p = new URLSearchParams();
+    for (const [key, val] of Object.entries(opts)) {
+      if (val !== undefined && val !== null && val !== '') {
+        p.set(key, String(val));
+      }
+    }
+    return p.toString();
   }
 }

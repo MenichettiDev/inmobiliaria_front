@@ -1,0 +1,77 @@
+<div class="portal-page">
+
+  <div class="portal-page-header">
+    <h1 class="portal-page-header__title">Mis Favoritos</h1>
+    <p class="portal-page-header__sub">Propiedades que has guardado</p>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="portal-state">
+    <div class="portal-spinner"></div>
+    <p class="portal-state__title">Cargando favoritos...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error && !loading" class="portal-state portal-state--error">
+    <svg class="portal-state__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+    </svg>
+    <p class="portal-state__title">{{ error }}</p>
+  </div>
+
+  <!-- Vacío -->
+  <div *ngIf="!loading && favoritos.length === 0 && !error" class="portal-state">
+    <svg class="portal-state__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+    </svg>
+    <p class="portal-state__title">Sin favoritos aún</p>
+    <p class="portal-state__sub">No has guardado ninguna propiedad. Explorá el catálogo y agregá tus favoritas.</p>
+    <a routerLink="/portal/propiedades" class="portal-btn portal-btn--primary pf-empty-cta">
+      Ver Propiedades
+    </a>
+  </div>
+
+  <!-- Grid -->
+  <div *ngIf="!loading && favoritos.length > 0" class="pf-grid">
+    <article *ngFor="let favorito of favoritos" class="pf-card">
+
+      <div class="pf-card__img-wrap">
+        <img
+          [src]="favorito.propiedadImageUrl || '/assets/images/backgrounds/no-image.jpg'"
+          [alt]="favorito.propiedadTitulo"
+          class="pf-card__img"
+        />
+        <button class="pf-card__remove" (click)="removeFavorito(favorito.idPropiedad)" title="Remover de favoritos">
+          <svg viewBox="0 0 20 20" fill="currentColor" width="14" height="14">
+            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="pf-card__body">
+        <h3 class="pf-card__title">{{ favorito.propiedadTitulo }}</h3>
+
+        <p class="pf-card__address" *ngIf="favorito.propiedadDireccion">
+          <svg viewBox="0 0 20 20" fill="currentColor" width="13" height="13"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
+          {{ favorito.propiedadDireccion }}
+        </p>
+
+        <div class="pf-card__price" *ngIf="favorito.propiedadPrecio">
+          USD {{ favorito.propiedadPrecio | number:'1.0-0' }}
+        </div>
+        <div class="pf-card__price pf-card__price--consultar" *ngIf="!favorito.propiedadPrecio">
+          Precio a consultar
+        </div>
+
+        <a
+          [routerLink]="['/portal/propiedades', favorito.idPropiedad]"
+          class="portal-btn portal-btn--outline portal-btn--sm pf-card__cta"
+        >
+          Ver detalle →
+        </a>
+      </div>
+
+    </article>
+  </div>
+
+</div>

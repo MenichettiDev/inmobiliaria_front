@@ -1,0 +1,16 @@
+/* Columna mensaje — truncar */
+.mc-mensaje {
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Columna fecha */
+.mc-fecha {
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .mc-mensaje { max-width: 140px; }
+}

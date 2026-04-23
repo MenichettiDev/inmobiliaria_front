@@ -1,0 +1,57 @@
+<div class="portal-page">
+
+  <div class="portal-page-header">
+    <h1 class="portal-page-header__title">Mis Consultas</h1>
+    <p class="portal-page-header__sub">Historial de contactos enviados a inmobiliarias</p>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="portal-state">
+    <div class="portal-spinner"></div>
+    <p class="portal-state__title">Cargando consultas...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error && !loading" class="portal-state portal-state--error">
+    <svg class="portal-state__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+    </svg>
+    <p class="portal-state__title">{{ error }}</p>
+  </div>
+
+  <!-- Vacío -->
+  <div *ngIf="!loading && consultas.length === 0 && !error" class="portal-state">
+    <svg class="portal-state__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+    </svg>
+    <p class="portal-state__title">Sin consultas aún</p>
+    <p class="portal-state__sub">No has enviado consultas a inmobiliarias. Explorá propiedades y contactate.</p>
+  </div>
+
+  <!-- Tabla -->
+  <div *ngIf="!loading && consultas.length > 0" class="portal-surface portal-table-wrap">
+    <table class="portal-table">
+      <thead>
+        <tr>
+          <th>Propiedad</th>
+          <th>Mensaje</th>
+          <th>Estado</th>
+          <th>Fecha</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let consulta of consultas">
+          <td><strong>{{ consulta.propiedadTitulo }}</strong></td>
+          <td class="mc-mensaje">{{ consulta.mensaje || '(Sin mensaje)' }}</td>
+          <td>
+            <span class="portal-badge" [ngClass]="'portal-badge--' + getEstadoClass(consulta.estadoNombre)">
+              {{ consulta.estadoNombre }}
+            </span>
+          </td>
+          <td class="mc-fecha">{{ consulta.creadoEn | date:'dd/MM/yyyy' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
